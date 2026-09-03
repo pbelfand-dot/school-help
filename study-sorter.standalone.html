@@ -370,7 +370,8 @@ derivative of x^2"></textarea>
         <div class="row">
           <button id="btnPickAll" class="ghost">Select all</button>
           <button id="btnPickNone" class="ghost">Clear</button>
-          <button id="btnPickCalc" class="ghost">Just my Calc AB units</button>
+          <button id="btnPickCalc" class="ghost">Calc AB — Unit 1 Limits</button>
+          <button id="btnPickPsych" class="ghost">AP Psych — Unit 0</button>
         </div>
         <div class="row">
           <label class="lbl">Questions: <select id="genCount">
@@ -435,7 +436,7 @@ derivative of x^2"></textarea>
 
 const SUBJECTS = {
   math:"Math", biology:"Biology", chemistry:"Chemistry", physics:"Physics",
-  history:"History", english:"English", cs:"Computer Science",
+  psychology:"Psychology", history:"History", english:"English", cs:"Computer Science",
   economics:"Economics", geography:"Geography", general:"Unsorted"
 };
 
@@ -446,9 +447,10 @@ const SUBJECT_HINTS = {
   chemistry:["chemistry","chem","atom","molecule","element","compound","reaction","bond","ionic","covalent","mole","stoichiometry","acid","base","ph","periodic","electron","proton","neutron","isotope","solution","solute","catalyst","oxidation","valence","molar","balancing"],
   physics:["physics","force","motion","velocity","acceleration","newton","energy","momentum","gravity","friction","wave","frequency","wavelength","voltage","current","resistance","circuit","ohm","joule","watt","kinetic","potential","mass times","projectile","inertia"],
   history:["history","war","revolution","treaty","empire","president","constitution","amendment","civil","ancient","medieval","century","colonial","independence","dynasty","cold war","depression","holocaust","slavery","suffrage","reconstruction","industrial revolution","renaissance","1776","1861","1914","1939"],
-  english:["english","essay","thesis","paragraph","author","novel","poem","poetry","character","plot","theme","metaphor","simile","symbolism","irony","tone","mood","narrator","imagery","rhetorical","ethos","pathos","logos","citation","grammar","comma","clause","literary","protagonist","foreshadow","alliteration","allusion"],
+  english:["english","essay","thesis","paragraph","author","novel","poem","poetry","character","plot","theme","metaphor","simile","symbolism","irony","tone","mood","narrator","imagery","rhetorical","ethos","pathos","logos","citation","grammar","comma","clause","literary","protagonist","foreshadow","alliteration","allusion","critical lens","critical lenses","critical strategies","formalist","feminist","marxist","reader response","deconstruction","close reading","story of an hour","chopin","kate chopin","yeats","second coming","things fall apart","achebe","mrs mallard","short story","prose","stanza","verse","diction","syntax","motif","speaker","persona","body paragraph","commentary"],
   cs:["code","coding","program","programming","python","javascript","java","variable","loop","function call","array","algorithm","boolean","compile","debug","binary","recursion","big o","syntax","string","integer"],
   economics:["economics","economy","supply","demand","inflation","gdp","market","tariff","tax","scarcity","opportunity cost","monopoly","interest rate","recession","fiscal","monetary"],
+  psychology:["psychology","psych","independent variable","dependent variable","confounding","operational definition","random assignment","random sample","control group","placebo","double blind","correlation","hypothesis","experiment","naturalistic observation","case study","informed consent","debriefing","irb","standard deviation","statistical significance","behavior","cognition","stimulus","researcher","participants","survey method","sampling bias","experimenter bias"],
   geography:["geography","climate","continent","latitude","longitude","erosion","tectonic","volcano","earthquake","biome","population density","map","hemisphere","water cycle","atmosphere"]
 };
 
@@ -589,6 +591,34 @@ const LIB = [
  e:"HOLE \u2014 lim(x\u21921) (5x\u22125)/(x\u00b2\u22125x+4)\n= 5(x\u22121) / [(x\u22121)(x\u22124)] = 5/(x\u22124)\nSubstitute: 5/(1\u22124) = \u22125/3.  The denominator survived, so the answer is \u22125/3.\n\nASYMPTOTE \u2014 lim(x\u2192\u22123) (x\u00b2+4x)/(x\u00b2+3x)\n= x(x+4) / [x(x+3)] = (x+4)/(x+3)\nSubstitute: 1/0.  The denominator died, so the answer is DNE.\n\nSTILL ZERO AFTER CANCELLING \u2014 lim(x\u21922) (x\u00b2\u22124)/(x\u00b2\u22124x+4)\n= (x\u22122)(x+2) / (x\u22122)\u00b2 = (x+2)/(x\u22122)\nSubstitute: 4/0.  DNE. Cancelling once does not make you safe.",
  m:["Writing DNE the moment you see 0/0. That is indeterminate, not an answer \u2014 it means do more work.","Cancelling once and assuming you are finished. Substitute again and re-check the denominator.","Forgetting that the factor you cancelled created a HOLE, not a fixed point \u2014 the function is still undefined there, but the limit exists.","Treating a hole and an asymptote as the same thing. A hole has a limit; an asymptote does not."]},
 
+{t:"Continuity",s:"math",k:["continuity","continuous","discontinuous","three part test","continuous at","removable point"],
+ d:"A function is continuous at a point if you can draw through it without lifting your pencil. Formally that is three separate conditions, and a function fails to be continuous the moment ANY one of them breaks. Test them in order \u2014 if condition 1 or 2 fails you are already done.",
+ f:"f is continuous at x = c when ALL THREE hold:\n  1. f(c) is defined  (the point exists)\n  2. lim(x\u2192c) f(x) exists  (left limit = right limit)\n  3. lim(x\u2192c) f(x) = f(c)  (they agree)\nPolynomials are continuous everywhere. Rational functions are continuous everywhere except where the denominator is zero.",
+ steps:["Check f(c): plug c into whichever piece actually includes c. Undefined \u2192 not continuous, stop.","Check the limit: left-hand and right-hand must both exist and be equal. Unequal \u2192 not continuous, stop.","Compare: does the limit equal f(c)? If not, it is a removable discontinuity.","All three pass \u2192 continuous at c."],
+ e:"f(x) = { x + 1 for x < 2 ; 5 for x = 2 ; 3x \u2212 3 for x > 2 }  at x = 2\n1. f(2) = 5 \u2014 defined \u2713\n2. Left: 2 + 1 = 3. Right: 3(2) \u2212 3 = 3. Limit = 3 \u2713\n3. Limit 3 \u2260 f(2) = 5 \u2717\nCondition 3 fails \u2014 removable discontinuity. Redefining f(2) = 3 would fix it.",
+ m:["Checking only that f(c) exists. That is one condition out of three.","Assuming a limit existing means continuity \u2014 condition 3 can still fail.","At a piecewise boundary, using the wrong piece for f(c). Use the one whose inequality actually contains c (the one with \u2264 or \u2265 or =).","Forgetting that a removable discontinuity is still a discontinuity."]},
+
+{t:"Making a piecewise function continuous (solve for k)",s:"math",k:["find k","solve for k","make continuous","value of k","continuous everywhere","constant that makes"],
+ d:"These ask you to choose a constant so the two pieces meet at the boundary. There is nothing new here \u2014 continuity requires the left-hand limit and the right-hand limit to be equal, so you set the two pieces equal at the boundary point and solve for the unknown.",
+ f:"Set  (left piece at c)  =  (right piece at c)  and solve for the constant.\nIf both pieces already equal f(c) there, the function is continuous.",
+ steps:["Find the boundary value c where the definition switches.","Substitute c into the piece used for x < c.","Substitute c into the piece used for x > c.","Set the two expressions equal.","Solve for the unknown constant.","Sanity check: plug your value back in and confirm both sides give the same number."],
+ e:"f(x) = { x\u00b2 \u2212 1 for x < 3 ; kx for x \u2265 3 }, find k so f is continuous.\nLeft at 3: 3\u00b2 \u2212 1 = 8\nRight at 3: k(3) = 3k\nSet equal: 3k = 8  \u2192  k = 8/3",
+ m:["Solving with the wrong piece on a side \u2014 read the inequalities carefully.","Forgetting to actually solve for the constant after setting the pieces equal.","With a squared or absolute-value term there can be TWO values of k; the question may want both.","Setting the DERIVATIVES equal instead of the function values \u2014 that is differentiability, a stronger condition."]},
+
+{t:"Limits at infinity (horizontal asymptotes)",s:"math",k:["limit at infinity","horizontal asymptote","end behavior","x approaches infinity","degree of numerator","as x goes to infinity"],
+ d:"This asks what a function settles down to as x runs off forever. For a rational function you only need to compare the DEGREE of the top with the degree of the bottom \u2014 the highest-power terms dominate and everything else becomes negligible. The answer is the function's horizontal asymptote.",
+ f:"For a rational function as x \u2192 \u00b1\u221e, compare degrees:\n\u2022 Degree of top < degree of bottom  \u2192  limit is 0  (asymptote y = 0)\n\u2022 Degrees EQUAL  \u2192  limit is the ratio of the LEADING COEFFICIENTS\n\u2022 Degree of top > degree of bottom  \u2192  limit is \u00b1\u221e (no horizontal asymptote)\nAlso: lim(x\u2192\u00b1\u221e) (constant / x\u207f) = 0, and sin x / cos x have NO limit at infinity (they oscillate forever).",
+ steps:["Identify the highest power in the numerator and in the denominator.","Compare the two degrees.","Bottom-heavy \u2192 0.  Equal \u2192 leading coefficient ratio.  Top-heavy \u2192 \u00b1\u221e.","If you must show work, divide every term by the highest power of x in the DENOMINATOR and let the 1/x terms go to 0."],
+ e:"lim(x\u2192\u221e) (3x\u00b2 + 5x)/(7x\u00b2 \u2212 1) \u2014 degrees equal (2 and 2) \u2192 3/7\nlim(x\u2192\u221e) (4x + 1)/(x\u00b2 \u2212 9) \u2014 bottom is bigger \u2192 0\nlim(x\u2192\u221e) (x\u00b3)/(2x + 1) \u2014 top is bigger \u2192 \u221e",
+ m:["Comparing leading coefficients when the degrees are NOT equal \u2014 that rule only applies when degrees match.","Forgetting that a top-heavy rational function has no horizontal asymptote.","With a square root, remember \u221a(x\u00b2) = |x|, so the sign flips as x \u2192 \u2212\u221e.","Saying lim sin x = 0 as x \u2192 \u221e. It never settles \u2014 the limit does not exist."]},
+
+{t:"Infinite limits (vertical asymptotes)",s:"math",k:["infinite limit","vertical asymptote","approaches infinity","goes to infinity","unbounded","one sided infinite"],
+ d:"An INFINITE limit is different from a limit AT infinity. Here x approaches a finite number and the function blows up. Saying the limit is +\u221e or \u2212\u221e is a description of HOW it fails to exist \u2014 the limit still does not exist as a number. Which sign you get depends on which side you come from and on the power in the denominator.",
+ f:"If substitution gives (nonzero)/0, there is a vertical asymptote at that x.\nDecide the sign by testing a value just to that side:\n\u2022 EVEN power in the denominator, e.g. 1/(x\u2212c)\u00b2 \u2192 same sign from both sides, so the two-sided limit is +\u221e or \u2212\u221e.\n\u2022 ODD power, e.g. 1/(x\u2212c) \u2192 opposite signs, so the two-sided limit DOES NOT EXIST.",
+ steps:["Substitute. If you get (nonzero)/0 you have a vertical asymptote.","Pick a test number a hair to the RIGHT of c and check the sign of the whole expression.","Pick a test number a hair to the LEFT of c and check that sign.","Same sign both ways \u2192 the two-sided limit is that infinity. Opposite signs \u2192 DNE.","Note the sign of the numerator too \u2014 a negative numerator flips everything."],
+ e:"lim(x\u21923\u207a) 1/(x\u22123): just right of 3, (x\u22123) is a tiny POSITIVE \u2192 +\u221e\nlim(x\u21923\u207b) 1/(x\u22123): just left of 3, (x\u22123) is a tiny NEGATIVE \u2192 \u2212\u221e\nSo lim(x\u21923) 1/(x\u22123) does not exist.\nBut lim(x\u21923) 1/(x\u22123)\u00b2 = +\u221e, because squaring makes both sides positive.",
+ m:["Mixing up a limit AT infinity (horizontal asymptote) with an INFINITE limit (vertical asymptote).","Writing +\u221e for a two-sided limit across an odd power \u2014 the sides disagree, so it is DNE.","Forgetting to check the numerator's sign.","Treating \u221e as a number you can do arithmetic with."]},
+
 {t:"Limit properties",s:"math",k:["limit properties","limit laws","sum of limits","limit rules","graphically"],
  d:"Limits distribute over the ordinary operations, as long as each individual limit exists. That's what lets you break a messy expression into pieces, read each piece off a graph or table, and recombine.",
  f:"lim(f + g) = lim f + lim g   \u2022   lim(f \u2212 g) = lim f \u2212 lim g\nlim(k\u00b7f) = k\u00b7lim f   \u2022   lim(f\u00b7g) = (lim f)(lim g)\nlim(f/g) = (lim f)/(lim g), provided lim g \u2260 0\nlim[f(x)]\u207f = (lim f)\u207f",
@@ -707,6 +737,45 @@ const LIB = [
  e:"12 V across a 4 Ω resistor: I = 12/4 = 3 A, and P = (3)(12) = 36 W.",
  m:["Adding parallel resistances directly — you add their reciprocals.","Thinking current gets 'used up' as it flows; in series it's identical at every point.","Confusing which quantity is constant: series = same current, parallel = same voltage."]},
 
+/* ================= PSYCHOLOGY ================= */
+{t:"Experimental design: IV, DV, control, confounds",s:"psychology",k:["independent variable","dependent variable","control group","confounding variable","experimental group","operational definition","iv","dv"],
+ d:"An experiment is the ONLY research method that can show cause and effect, because the researcher actively manipulates something instead of just observing. The independent variable is what the researcher changes. The dependent variable is what gets measured \u2014 it DEPENDS on the IV. The control group gets no treatment and exists to give you something to compare against. A confounding variable is any third factor that differs between groups and could explain the results instead of your IV.",
+ f:"IV = what the researcher MANIPULATES (the cause being tested).\nDV = what the researcher MEASURES (the effect, the data collected).\nExperimental group = gets the treatment.  Control group = does not.\nConfound = an uncontrolled difference that offers a rival explanation.\nOperational definition = the exact, measurable way a variable is defined for this study.",
+ steps:["Ask: what did the researcher deliberately change or assign? That is the IV.","Ask: what number or outcome did they record at the end? That is the DV.","Ask: was there a group that got nothing / the usual treatment? That is the control group. Many studies have none.","Ask: what ELSE differed between conditions that could explain the result? That is a confound.","Check the operational definition \u2014 how exactly was the DV measured?"],
+ e:"Waiters draw a smiley face on checks for one month; tips are compared to the previous month.\nIV = whether a smiley face was drawn.  DV = tip amount.\nControl group = none (the same waiters serve as their own baseline).\nConfound = time of year \u2014 the two months differ in more than the smiley face.\n\nFour lost wallets with different photos inside; return rates recorded.\nIV = type of photo.  DV = return rate.  Control = none.  Confound = where each wallet was dropped.",
+ m:["Swapping IV and DV. The DV is the DATA \u2014 the thing with numbers at the end.","Calling the experimental group the control group. The control is the one WITHOUT the treatment.","Naming a confound that was actually controlled for, or naming the DV as a confound.","Assuming every study has a control group. Before/after and correlational designs often do not.","Forgetting that without random assignment you cannot claim cause and effect."]},
+
+{t:"Random sampling vs random assignment",s:"psychology",k:["random sampling","random assignment","representative sample","generalize","population","sample"],
+ d:"These sound alike and are tested constantly because students mix them up. Random SAMPLING is how you choose who is in the study at all \u2014 it controls whether your results generalize to the wider population. Random ASSIGNMENT is how you sort those people into groups once you have them \u2014 it controls whether you can claim cause and effect.",
+ f:"Random SAMPLING \u2192 who gets in the study \u2192 gives you GENERALIZABILITY.\nRandom ASSIGNMENT \u2192 which group they land in \u2192 gives you CAUSATION.\nYou can have one without the other.",
+ e:"Surveying 1,000 randomly chosen citizens = random sampling, no assignment (it is not an experiment).\nTaking 60 volunteers from one psych class and flipping a coin to sort them into two groups = random assignment, no random sampling (results may not generalize beyond that class).",
+ m:["Using the terms interchangeably \u2014 they solve two different problems.","Thinking random assignment fixes a biased sample. It does not; it only balances the groups you already have.","Thinking a large sample alone makes results generalizable. A big biased sample is still biased."]},
+
+{t:"Research methods in psychology",s:"psychology",k:["research method","naturalistic observation","case study","survey","correlational study","experiment method","longitudinal","cross sectional"],
+ d:"Each method trades away something to gain something else. Experiments buy causation at the cost of artificiality. Naturalistic observation buys realism at the cost of control. Case studies buy depth at the cost of generalizability. Surveys buy breadth at the cost of honesty and depth.",
+ f:"EXPERIMENT \u2014 manipulates an IV. Only method that shows CAUSE AND EFFECT.\nCORRELATIONAL \u2014 measures the relationship between two variables. Shows association, never causation.\nNATURALISTIC OBSERVATION \u2014 watching behavior in its real setting without interfering. High realism, no control.\nCASE STUDY \u2014 one person or group in depth. Rich detail, cannot generalize.\nSURVEY \u2014 self-report from many people. Broad and cheap, but vulnerable to dishonesty and wording effects.\nLONGITUDINAL \u2014 same people over time.  CROSS-SECTIONAL \u2014 different ages at one time.",
+ e:"Want to know if caffeine improves memory? Only an experiment can answer that. A survey asking 'does coffee help your memory?' measures beliefs, not memory.",
+ m:["Claiming causation from a correlational study \u2014 the single most common error on the exam.","Confusing naturalistic observation with a case study.","Forgetting that surveys suffer from social desirability bias: people report what makes them look good."]},
+
+{t:"Correlation does not equal causation",s:"psychology",k:["correlation","causation","correlation coefficient","positive correlation","negative correlation","third variable","scatterplot"],
+ d:"A correlation tells you two things move together, and nothing more. There are always three possible explanations: A caused B, B caused A, or some third variable caused both. The correlation coefficient r runs from \u22121 to +1. The SIGN tells you direction; the ABSOLUTE VALUE tells you strength. So \u22120.8 is a stronger relationship than +0.3.",
+ f:"r ranges \u22121.00 to +1.00.\nSign = direction (positive: both rise together. negative: one rises as the other falls).\nAbsolute value = strength. 0 means no linear relationship.\nThird-variable problem: an unmeasured factor may cause both.",
+ e:"Ice cream sales correlate with drowning deaths. Ice cream does not cause drowning \u2014 hot weather (the third variable) drives both.\nr = \u22120.85 is STRONGER than r = +0.40, even though it is negative.",
+ m:["Reading a negative correlation as 'weak' or as 'no relationship'.","Concluding causation from any correlation, however strong.","Confusing a scatterplot's slope with r \u2014 tight clustering, not steepness, means a strong correlation.","Forgetting r only measures LINEAR relationships."]},
+
+{t:"Bias and control in experiments",s:"psychology",k:["placebo","double blind","single blind","experimenter bias","demand characteristics","hawthorne","social desirability","sampling bias","confirmation bias"],
+ d:"People behave differently when they know they are being studied, and researchers unconsciously nudge results toward what they expect. Blinding procedures exist to neutralize both.",
+ f:"PLACEBO EFFECT \u2014 improvement from expectation alone.\nSINGLE-BLIND \u2014 participants do not know their condition.\nDOUBLE-BLIND \u2014 neither participants NOR the researchers interacting with them know. The gold standard.\nEXPERIMENTER BIAS \u2014 the researcher's expectations leak into the results.\nDEMAND CHARACTERISTICS \u2014 participants guess the hypothesis and play along.\nSOCIAL DESIRABILITY BIAS \u2014 self-reports skewed toward looking good.\nSAMPLING BIAS \u2014 the sample does not represent the population.",
+ e:"In a drug trial, the control group gets a sugar pill and neither the patients nor the nurses know who got which. That is double-blind, and it blocks both the placebo effect and experimenter bias at once.",
+ m:["Saying double-blind means the participants are blind twice. It means BOTH sides are blind.","Thinking a placebo is the same as a control group \u2014 a placebo is a specific KIND of control.","Confusing demand characteristics (participants adjusting) with experimenter bias (researcher adjusting)."]},
+
+{t:"Ethics in psychological research",s:"psychology",k:["ethics","informed consent","debriefing","irb","confidentiality","deception","protection from harm"],
+ d:"Every study involving people must be approved beforehand by an ethics board and must protect participants. Deception is permitted only when the study is impossible without it, and only if participants are fully told afterward.",
+ f:"Required: INFORMED CONSENT before, PROTECTION FROM HARM throughout, CONFIDENTIALITY of data, the RIGHT TO WITHDRAW at any time without penalty, and DEBRIEFING afterward (mandatory whenever deception was used).\nAn IRB (Institutional Review Board) reviews and approves the study in advance.",
+ e:"Milgram's obedience studies caused serious distress and are the standard example of why modern ethics boards exist.",
+ m:["Thinking deception is always banned \u2014 it is restricted and requires debriefing, not forbidden.","Forgetting the right to withdraw partway through.","Confusing confidentiality (data kept private) with anonymity (identity never collected at all)."]},
+
+
 /* ================= HISTORY ================= */
 {t:"Causes of World War I",s:"history",k:["world war 1","wwi","ww1","great war","franz ferdinand","alliances","1914"],
  d:"Long-term pressures had been building for decades — Militarism (arms races, especially naval), Alliances (two rival blocs), Imperialism (competition for colonies), and Nationalism (ethnic tensions in the Balkans). The assassination of Archduke Franz Ferdinand in Sarajevo on 28 June 1914 was the spark; the alliance system turned a regional dispute into a continental war within weeks.",
@@ -769,6 +838,24 @@ const LIB = [
  e:"'The wind screamed through the trees' — personification; it makes the storm feel deliberately hostile, raising tension before the disaster.",
  m:["Identifying the device and stopping there.","Calling every comparison a metaphor when 'like' or 'as' makes it a simile.","Claiming symbolism without textual evidence that the author built the pattern."]},
 
+{t:"Critical lenses for reading literature",s:"english",k:["critical lens","critical strategies","literary criticism","formalist","feminist criticism","marxist criticism","reader response","psychological criticism","historical criticism","new criticism","deconstruction"],
+ d:"A critical lens is a set of questions you bring to a text. The same story yields different readings depending on which lens you use, and AP Lit rewards you for applying one consistently rather than drifting between them. None is the 'correct' one \u2014 the point is that your reading stays anchored to evidence in the text.",
+ f:"FORMALIST / NEW CRITICISM \u2014 the text alone: structure, imagery, irony, diction. Ignores author and context.\nBIOGRAPHICAL \u2014 reads the work through the author's life.\nHISTORICAL \u2014 places the work in its period and social conditions.\nPSYCHOLOGICAL \u2014 motives, the unconscious, repression, desire.\nFEMINIST / GENDER \u2014 how the text constructs and polices gender and power.\nMARXIST \u2014 class, money, labor, who holds power and who is exploited.\nREADER-RESPONSE \u2014 meaning is created in the encounter between reader and text.\nDECONSTRUCTIONIST \u2014 finds where the text contradicts or undermines itself.",
+ e:"Reading The Story of an Hour through a FEMINIST lens: Mrs. Mallard's joy is not cruelty but a response to how marriage erased her autonomy \u2014 the 'blind persistence' with which people impose their will on one another.\nThrough a FORMALIST lens: the same story is built on situational irony and the open window as a symbol of possibility.",
+ m:["Naming the lens and then not using it \u2014 the lens has to shape which evidence you pick.","Switching lenses mid-essay without acknowledging it.","Treating a lens as a verdict about the author's intentions rather than a way of reading.","Forgetting that every lens still requires textual evidence."]},
+
+{t:"The Story of an Hour (Kate Chopin)",s:"english",k:["story of an hour","kate chopin","mrs mallard","louise mallard","brently","josephine","richards"],
+ d:"Mrs. Louise Mallard, who has a heart condition, is gently told her husband Brently died in a railroad disaster. She weeps, goes to her room alone, and \u2014 facing an open window \u2014 gradually recognizes a feeling she resists at first and then welcomes: freedom. She descends the stairs. Brently walks in alive. She dies. The doctors say it was 'the joy that kills.' Published in 1894, the story runs barely a thousand words and turns entirely on that last line.",
+ f:"Central irony: the doctors are right about the cause and completely wrong about the meaning \u2014 she dies not from joy at his survival but from the loss of the freedom she had just discovered.\nKey symbols: the OPEN WINDOW (possibility, the life outside), SPRING imagery (rebirth), the ARMCHAIR and her exhaustion (the weight of her old life), the CLOSED DOOR (privacy and self-possession), HEART TROUBLE (both literal and the condition of her marriage).\nStructure: the whole story occupies about one hour, which makes the title a measure of how brief her freedom was.",
+ e:"'There would be no powerful will bending hers in that blind persistence with which men and women believe they have a right to impose a private will upon a fellow-creature.' \u2014 Chopin is careful here: she indicts the institution, not Brently, who was kind.\n\nStrong thesis: 'Chopin uses the open window and the compressed single-hour structure to argue that even a loving marriage could erase a nineteenth-century woman's selfhood \u2014 Louise's freedom is real, and it lasts an hour.'",
+ m:["Reading Louise as simply cruel or as hating her husband. The text says she had 'loved him \u2014 sometimes' and that his hands were 'kind, tender'.","Missing that the final line is ironic and taking the doctors at their word.","Calling it dramatic irony throughout \u2014 the dominant mode is SITUATIONAL irony (the outcome inverts expectation).","Summarizing the plot instead of analyzing how the window, the season, and the hour-long structure build the argument."]},
+
+{t:"Writing a literary analysis paragraph",s:"english",k:["literary analysis","body paragraph","evidence","commentary","topic sentence","close reading","quote integration","teal","cite evidence"],
+ d:"Most lost points come from stopping after the quote. A quote is not an argument \u2014 it is raw material. The analysis is the sentences AFTER the quote that explain how the language creates the effect you claimed. Aim for roughly twice as much commentary as evidence.",
+ f:"Structure: CLAIM (topic sentence tied to your thesis) \u2192 CONTEXT (one clause of setup) \u2192 EVIDENCE (a short embedded quote) \u2192 ANALYSIS (2\u20133 sentences on HOW the language works) \u2192 LINK (back to the thesis).\nEmbed quotes inside your own sentence rather than dropping them in alone.",
+ e:"Weak: 'Chopin writes, \u201cshe was drinking in a very elixir of life through that open window.\u201d This shows she is happy.'\n\nStrong: 'Chopin casts Louise's new freedom as physical sustenance \u2014 she is \u201cdrinking in a very elixir of life through that open window.\u201d The verb \u201cdrinking\u201d makes autonomy something the body consumes, as though she had been starved of it, and \u201celixir\u201d carries a promise of cure that quietly reframes her marriage as the illness.'",
+ m:["Dropping a quote in as its own sentence with no lead-in.","Restating the quote in different words and calling that analysis.","Quoting long passages \u2014 short embedded phrases are stronger and easier to analyze.","Writing plot summary. If a sentence only says what happened, it earns nothing."]},
+
 /* ================= COMPUTER SCIENCE ================= */
 {t:"Variables, loops, and conditionals",s:"cs",k:["variable","loop","for loop","while loop","conditional","if statement","boolean"],
  d:"Variables store values under a name. Conditionals (if/else) let a program choose a path based on a true/false test. Loops repeat code — a for loop when you know how many times, a while loop when you repeat until a condition changes.",
@@ -794,6 +881,24 @@ const LIB = [
  f:"Opportunity cost = value of the single best forgone alternative.",
  e:"You have one free evening. Options: study (grade boost), work a shift ($60), or see friends. If you study, your opportunity cost is whichever one of the other two you valued most — not both combined.",
  m:["Adding up every option you didn't choose.","Ignoring non-money costs like time.","Confusing opportunity cost with sunk cost — sunk costs are already spent and should not affect the decision."]},
+
+{t:"Microeconomics vs macroeconomics",s:"economics",k:["microeconomics","macroeconomics","micro","macro","difference between micro and macro"],
+ d:"Same discipline, different altitude. Microeconomics studies individual decision-makers \u2014 one household, one firm, one market \u2014 and asks how prices and quantities get set there. Macroeconomics studies the whole economy at once and asks about aggregates: total output, the overall price level, and total employment.",
+ f:"MICRO \u2014 supply and demand in one market, consumer choice, firm costs, elasticity, market structures, externalities.\nMACRO \u2014 GDP, inflation, unemployment, fiscal policy (government spending and taxes), monetary policy (the central bank), business cycles, trade balances.",
+ e:"Why did coffee prices rise this year? Micro.  Why did prices rise across the whole economy this year? Macro.",
+ m:["Assuming what is true for one household is true for the whole economy \u2014 that is the fallacy of composition (e.g. one person saving more helps them; everyone saving at once can shrink total demand).","Filing unemployment under micro. The unemployment RATE is a macro aggregate.","Thinking the two are unrelated \u2014 macro is built on micro foundations."]},
+
+{t:"Elasticity of demand",s:"economics",k:["elasticity","elastic","inelastic","price elasticity","responsive to price","total revenue"],
+ d:"Elasticity measures how much quantity responds to a price change. Demand is elastic when buyers are sensitive \u2014 there are substitutes, or the item is a luxury you can skip. It is inelastic when they are not \u2014 necessities, addictive goods, things with no alternative.",
+ f:"Price elasticity of demand = (% change in quantity demanded) \u00f7 (% change in price), read as an absolute value.\n> 1 ELASTIC (quantity responds a lot)  \u2022  < 1 INELASTIC  \u2022  = 1 unit elastic.\nRevenue test: if demand is ELASTIC, raising price LOWERS total revenue. If INELASTIC, raising price RAISES total revenue.",
+ e:"Insulin is highly inelastic \u2014 raise the price and people still buy it. One particular brand of soda is elastic \u2014 raise its price and buyers switch brands.",
+ m:["Confusing a steep-looking curve with inelasticity without checking the actual percentages.","Forgetting that more substitutes and more time both make demand MORE elastic.","Getting the revenue test backwards \u2014 elastic means a price increase costs you revenue."]},
+
+{t:"GDP, inflation, and unemployment",s:"economics",k:["gdp","gross domestic product","inflation","unemployment","cpi","real gdp","nominal gdp","recession"],
+ d:"The three headline macro numbers. GDP measures total output. Inflation measures how fast the general price level is rising. The unemployment rate measures the share of people who want work and cannot find it. Every macro policy debate is about trading these against each other.",
+ f:"GDP = C + I + G + (X \u2212 M)  \u2014 consumption, investment, government spending, net exports.\nNOMINAL GDP uses current prices; REAL GDP adjusts for inflation. Compare years using REAL.\nInflation is usually tracked with the CPI (Consumer Price Index).\nUnemployment rate = unemployed \u00f7 LABOR FORCE (not \u00f7 total population) \u00d7 100.\nRecession: commonly two consecutive quarters of falling real GDP.",
+ e:"If nominal GDP rises 5% while prices rise 5%, real GDP did not grow at all \u2014 the economy produced the same amount, everything just cost more.",
+ m:["Comparing nominal GDP across years and calling it growth.","Putting people who stopped looking for work in the unemployment rate \u2014 they leave the labor force entirely, which can make the rate look better.","Treating GDP as a measure of wellbeing. It excludes unpaid work and ignores distribution.","Confusing inflation (prices rising) with deflation (prices falling) and disinflation (prices still rising, just slower)."]},
 
 /* ================= GEOGRAPHY / EARTH ================= */
 {t:"Plate tectonics",s:"geography",k:["plate tectonics","tectonic plate","earthquake","volcano","subduction","continental drift","fault"],
@@ -844,7 +949,239 @@ const lin = (m,k)=>{
 };
 const sq = d => d===0 ? "x\u00b2" : (d<0 ? `x\u00b2 \u2212 ${-d}` : `x\u00b2 + ${d}`);
 
+const term = (v,unit)=>{
+  if(v===0) return "";
+  const a=Math.abs(v);
+  const coef=(unit && a===1)?"":String(a);
+  return ` ${v<0?"−":"+"} ${coef}${unit}`;
+};
+const quadStr = (a,b,c)=> (a===1?"":a===-1?"−":String(a))+"x²"+term(b,"x")+term(c,"");
+const facStr  = v => v===0 ? "x" : `x${term(v,"")}`;
+
 const GENERATORS = {
+
+psychExperiment:{label:"Experimental design (IV / DV / confound)", subject:"psychology", topic:"Experimental design: IV, DV, control, confounds",
+ make(){
+  const cases=[
+   {sc:"A researcher tests whether friendliness from wait staff affects tips. For one month, baseline tip data is collected at several randomly selected restaurants. For the next month, every waiter draws a smiley face on each check. Tips are compared across the two months.",
+    iv:"whether a smiley face was drawn on the check", ivA:["smileyface","smiley","drawingasmileyface","friendliness","thesmileyface"],
+    dv:"the amount of the tip", dvA:["tipamount","tips","amountoftips","thetip","sizeofthetip"],
+    cg:"None \u2014 the same staff serve as their own baseline", cgA:["none","nocontrolgroup","therewasnone","baselinemonth","firstmonth"],
+    cf:"time of year \u2014 the two months differ in more than the smiley face", cfA:["timeofyear","season","month","weather","holidays","differentmonths"]},
+   {sc:"Four identical wallets are dropped around a city, each containing a different photo: an elderly couple, a young couple, a puppy, and a baby. Researchers record how many of each are returned.",
+    iv:"the type of photo inside the wallet", ivA:["photo","typeofphoto","phototype","pictureinthewallet","thephoto","imageinwallet"],
+    dv:"the return rate of the wallets", dvA:["returnrate","rateofreturn","howmanywerereturned","numberreturned","wallets returned","whetheritwasreturned"],
+    cg:"None \u2014 there is no photo-free wallet condition", cgA:["none","nocontrolgroup","therewasnone","nophoto"],
+    cf:"where each wallet was dropped", cfA:["droplocation","location","wherewalletsweredropped","neighborhood","placedropped","whofoundit"]},
+   {sc:"Fourth-graders who did poorly through third grade are randomly split into three groups. One teacher is told her students are gifted, one is told nothing, and one is told her students are slow learners. End-of-year test scores are compared.",
+    iv:"what the teacher was told about the students", ivA:["whattheteacherwastold","teacherexpectation","teacherexpectations","informationgiventoteacher","whattheteacherbelieved","expectation"],
+    dv:"end-of-year test scores", dvA:["testscores","endofyeartestscores","scores","academicperformance","performance","grades"],
+    cg:"the group whose teacher was told nothing", cgA:["toldnothing","thegrouptoldnothing","nothing","middlegroup","noinformationgroup","secondgroup"],
+    cf:"differences between the individual teachers", cfA:["theteachers","teacherdifferences","teachingability","differentteachers","teacherquality","teacherskill"]},
+   {sc:"To test whether background music affects studying, students are randomly assigned to study a word list in silence or with instrumental music playing. All students then take the same recall test.",
+    iv:"whether background music was playing", ivA:["music","backgroundmusic","presenceofmusic","musicornot","whethermusicplayed"],
+    dv:"score on the recall test", dvA:["recallscore","testscore","score","wordsrecalled","numberofwordsremembered","memory"],
+    cg:"the group that studied in silence", cgA:["silence","silentgroup","thesilencegroup","nomusicgroup","nomusic","studiedinsilence"],
+    cf:"how much sleep each student had the night before", cfA:["sleep","priorknowledge","studyhabits","noiselevel","timeofday","individualdifferences","intelligence","motivation"]},
+   {sc:"A company tests a new sleep supplement. Half the volunteers receive the supplement and half receive an identical-looking sugar pill. Neither the volunteers nor the staff handing out the pills know who got which. Hours slept are recorded for two weeks.",
+    iv:"whether the participant received the supplement or the placebo", ivA:["supplement","thesupplement","supplementorplacebo","whethertheygotthesupplement","pilltype","typeofpill"],
+    dv:"hours of sleep", dvA:["hoursslept","hoursofsleep","sleep","amountofsleep","sleepduration"],
+    cg:"the group given the sugar pill", cgA:["sugarpill","placebo","placebogroup","thesugarpillgroup","thoseonplacebo"],
+    cf:"differences in participants' daily caffeine intake", cfA:["caffeine","stress","screentime","preexistingsleepproblems","dailyroutine","individualdifferences","diet","exercise"]}
+  ];
+  const c = pick(cases);
+  const asks = [
+   {q:"Identify the INDEPENDENT variable.", ans:c.iv, acc:c.ivA,
+    st:["The independent variable is what the researcher deliberately manipulates \u2014 the presumed cause.","Ask: what did the researcher change or assign between conditions?",`Answer: ${c.iv}`]},
+   {q:"Identify the DEPENDENT variable.", ans:c.dv, acc:c.dvA,
+    st:["The dependent variable is what gets measured \u2014 the data recorded at the end.","Ask: what numbers did they write down?",`Answer: ${c.dv}`]},
+   {q:"Identify the CONTROL GROUP, if there is one.", ans:c.cg, acc:c.cgA,
+    st:["The control group is the one that does NOT receive the treatment.","Not every design has one \u2014 before/after studies often use a baseline instead.",`Answer: ${c.cg}`]},
+   {q:"Identify one possible CONFOUNDING variable.", ans:c.cf, acc:c.cfA,
+    st:["A confound is an uncontrolled difference that offers a rival explanation for the results.","Ask: what else differed between the conditions besides the IV?",`One good answer: ${c.cf}  (other reasonable confounds also count \u2014 grade yourself)`]}
+  ];
+  const a = pick(asks);
+  return { q:`${c.sc}\n\n${a.q}`, ans:a.ans, accept:a.acc, steps:a.st };
+ }},
+
+psychVocab:{label:"Psych Unit 0 vocabulary", subject:"psychology", topic:"Research methods in psychology",
+ make(){
+  const bank=[
+   ["Operational definition","the exact, measurable way a study defines a variable \u2014 e.g. defining 'stress' as score on a named questionnaire",["operationaldefinition","operationaldefinitions"]],
+   ["Random assignment","sorting participants into conditions by chance, which is what allows a cause-and-effect claim",["randomassignment","randomlyassigning"]],
+   ["Random sampling","choosing participants from the population by chance, which is what allows results to generalize",["randomsampling","randomsample","randomselection"]],
+   ["Confounding variable","an uncontrolled factor that differs between groups and offers a rival explanation for the results",["confoundingvariable","confound","confounds","confoundingvariables","extraneousvariable"]],
+   ["Placebo effect","improvement caused purely by a participant's expectation rather than by the treatment itself",["placeboeffect","placebo"]],
+   ["Double-blind procedure","neither the participants nor the researchers interacting with them know who is in which condition",["doubleblind","doubleblindprocedure","doubleblindstudy"]],
+   ["Demand characteristics","cues that let participants guess the hypothesis, so they adjust their behavior to match it",["demandcharacteristics","demandcharacteristic"]],
+   ["Social desirability bias","the tendency to answer self-report questions in whatever way makes you look better",["socialdesirability","socialdesirabilitybias"]],
+   ["Naturalistic observation","recording behavior in its real-world setting without intervening in it",["naturalisticobservation","naturalobservation"]],
+   ["Case study","an in-depth investigation of a single person or small group, rich in detail but hard to generalize",["casestudy","casestudies"]],
+   ["Correlation coefficient","a number from \u22121 to +1 giving the direction and strength of a linear relationship",["correlationcoefficient","r","correlation"]],
+   ["Third-variable problem","when an unmeasured factor causes both correlated variables, so neither causes the other",["thirdvariableproblem","thirdvariable","confoundingthirdvariable"]],
+   ["Informed consent","telling participants enough about a study beforehand that they can freely choose to take part",["informedconsent","consent"]],
+   ["Debriefing","fully explaining a study to participants afterward, required whenever deception was used",["debriefing","debrief"]],
+   ["Hypothesis","a testable prediction, usually stated as the expected relationship between two variables",["hypothesis","ahypothesis"]],
+   ["Population","the entire group a researcher wants to draw conclusions about",["population","thepopulation"]],
+   ["Experimental group","the participants who receive the treatment being tested",["experimentalgroup","treatmentgroup"]],
+   ["Illusory correlation","perceiving a relationship between two things where none actually exists",["illusorycorrelation","illusorycorrelations"]]
+  ];
+  const [term, def, acc] = pick(bank);
+  return {
+   q:`Which term does this define?\n\n   "${def}"`,
+   ans:term, accept:acc.concat([term.toLowerCase().replace(/[^a-z]/g,"")]),
+   steps:[`Definition: ${def}`, `Term: ${term}`]};
+ }},
+
+findK:{label:"Find k to make it continuous", subject:"math", topic:"Making a piecewise function continuous (solve for k)",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  let c=R(-4,4), d=R(-8,8);
+  while(c===0) c=R(-4,4);
+  while(d===0) d=R(-8,8);
+  /* left piece: x\u00b2 + d   |   right piece: k*x  -> k*c = c\u00b2 + d */
+  const target = c*c + d;
+  const g = gcd(target, c);
+  let n = target/g, den = c/g;
+  if(den<0){ n=-n; den=-den; }
+  const ansStr = den===1 ? String(n) : `${n}/${den}`;
+  return {
+   q:`f(x) = { x\u00b2 ${sgn(d)}   for x < ${c}\n         { kx          for x \u2265 ${c}\n\nFind the value of k that makes f continuous at x = ${c}.`,
+   ans:ansStr, accept:[ansStr, String(target/c), (target/c).toFixed(4)], num:target/c,
+   steps:[
+     `Continuity means the two pieces must meet at x = ${c}.`,
+     `Left piece at ${c}:  (${c})\u00b2 ${sgn(d)} = ${target}`,
+     `Right piece at ${c}:  k(${c}) = ${c}k`,
+     `Set them equal: ${c}k = ${target}`,
+     `k = ${target}/${c} = ${ansStr}`
+   ]};
+ }},
+
+continuityTest:{label:"Is it continuous? (3-part test)", subject:"math", topic:"Continuity",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  let c=R(-3,4); const m=R(2,5), k=R(-6,6);
+  const left = m*c + k;
+  const mode = R(1,3);
+  let d, fc, ans, why;
+  if(mode===1){ d = left - c*c; fc = left;  ans="Yes";
+    why="All three conditions hold, so f is continuous at x = "+c+"."; }
+  else if(mode===2){ d = left - c*c; fc = left + pick([-3,-2,2,3]); ans="No";
+    why="Conditions 1 and 2 pass, but the limit ("+left+") does not equal f("+c+") = "+fc+" \u2014 a removable discontinuity."; }
+  else { d = left - c*c + pick([-4,-3,3,4]); fc = c*c + d; ans="No";
+    why="The left limit ("+left+") and right limit ("+(c*c+d)+") disagree, so the limit does not exist \u2014 a jump."; }
+  const right = c*c + d;
+  return {
+   q:`f(x) = { ${lin(m,k)}   for x < ${c}\n         { ${fc}            for x = ${c}\n         { ${sq(d)}       for x > ${c}\n\nIs f continuous at x = ${c}?  (Yes or No)`,
+   ans:ans, accept: ans==="Yes" ? ["yes","y","continuous","true"] : ["no","n","notcontinuous","discontinuous","false"],
+   steps:[
+     `Condition 1 \u2014 is f(${c}) defined?  Yes, f(${c}) = ${fc}.`,
+     `Condition 2 \u2014 does the limit exist?  Left: ${left}.  Right: ${right}.  ${left===right?"Equal, so the limit is "+left+".":"They disagree, so the limit does not exist."}`,
+     left===right ? `Condition 3 \u2014 does the limit equal f(${c})?  ${left} vs ${fc}: ${left===fc?"equal \u2713":"NOT equal \u2717"}` : `Condition 2 already failed, so stop.`,
+     why,
+     `Answer: ${ans}`
+   ]};
+ }},
+
+limitAtInfinity:{label:"Limits at infinity", subject:"math", topic:"Limits at infinity (horizontal asymptotes)",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  const a=R(2,9), b=R(2,9), p=R(2,9), q=R(2,9);
+  const kind = R(1,3);
+  const sup = n => n===1 ? "" : (n===2 ? "\u00b2" : "\u00b3");
+
+  if(kind===1){
+    /* equal degrees -> ratio of leading coefficients */
+    const deg = R(1,3);
+    const g = gcd(a,b); const n=a/g, d=b/g;
+    const ansStr = d===1 ? String(n) : `${n}/${d}`;
+    return {
+     q:`Evaluate:   lim(x\u2192\u221e)  ( ${a}x${sup(deg)} ${sgn(p)}${deg>1?"x"+sup(deg-1):""} ) / ( ${b}x${sup(deg)} ${sgn(-q)}${deg>1?"x":""} )`,
+     ans:ansStr, accept:[ansStr, `${a}/${b}`, (a/b).toFixed(4)], num:a/b,
+     steps:[
+       `Compare degrees: the top is degree ${deg}, the bottom is degree ${deg}.`,
+       `The degrees are EQUAL, so the limit is the ratio of the leading coefficients.`,
+       `Leading coefficients: ${a} on top, ${b} on the bottom.`,
+       `Answer: ${a}/${b}${g>1?` = ${ansStr}`:""}   (horizontal asymptote y = ${ansStr})`
+     ]};
+  }
+  if(kind===2){
+    /* bottom-heavy -> 0 */
+    const dTop=R(1,2), dBot=dTop+R(1,2);
+    return {
+     q:`Evaluate:   lim(x\u2192\u221e)  ( ${a}x${sup(dTop)} ${sgn(p)} ) / ( ${b}x${sup(dBot)} ${sgn(-q)}x )`,
+     ans:"0", accept:["0"], num:0,
+     steps:[
+       `Top degree ${dTop}, bottom degree ${dBot}.`,
+       `The bottom grows faster, so the fraction is squeezed toward zero.`,
+       `Answer: 0   (horizontal asymptote y = 0)`
+     ]};
+  }
+  /* top-heavy -> infinite */
+  const dTop=R(2,3), dBot=dTop-1;
+  return {
+   q:`Evaluate:   lim(x\u2192\u221e)  ( ${a}x${sup(dTop)} ${sgn(p)}x ) / ( ${b}x${sup(dBot)} ${sgn(q)} )`,
+   ans:"DNE", accept:["dne","infinity","\u221e","+\u221e","infinite","doesnotexist","does not exist"],
+   steps:[
+     `Top degree ${dTop}, bottom degree ${dBot}.`,
+     `The top grows faster, so the fraction grows without bound.`,
+     `There is NO horizontal asymptote here.`,
+     `Answer: \u221e  (the limit does not exist as a number \u2014 either \u221e or DNE is accepted)`
+   ]};
+ }},
+
+infiniteLimit:{label:"Infinite limits (vertical asymptotes)", subject:"math", topic:"Infinite limits (vertical asymptotes)",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  let c=R(-5,5); const k=pick([1,2,3,5,-1,-2,-4]);
+  const xs = facStr(-c);
+  const power = pick([1,1,2]);
+  const side = pick(["+","-","both"]);
+  const kPos = k>0;
+
+  if(power===2){
+    const ansStr = kPos ? "\u221e" : "\u2212\u221e";
+    return {
+     q:`Evaluate:   lim(x\u2192${c}${side==="both"?"":(side==="+"?"\u207a":"\u207b")})  ${k} / (${xs})\u00b2`,
+     ans:ansStr,
+     accept: kPos ? ["infinity","\u221e","+\u221e","inf","positiveinfinity"] : ["-infinity","\u2212\u221e","-\u221e","negativeinfinity","-inf"],
+     steps:[
+       `Substituting ${c} gives ${k}/0 \u2014 a vertical asymptote at x = ${c}.`,
+       `The denominator is SQUARED, so it is positive on both sides of ${c}.`,
+       `The numerator is ${k}, which is ${kPos?"positive":"negative"}.`,
+       `${kPos?"Positive":"Negative"} over a tiny positive \u2192 ${ansStr}.`,
+       `Answer: ${ansStr}`
+     ]};
+  }
+
+  if(side==="both"){
+    return {
+     q:`Evaluate:   lim(x\u2192${c})  ${k} / (${xs})`,
+     ans:"DNE", accept:["dne","doesnotexist","does not exist"],
+     steps:[
+       `Substituting ${c} gives ${k}/0 \u2014 a vertical asymptote at x = ${c}.`,
+       `Just to the RIGHT of ${c}, (${xs}) is a tiny POSITIVE \u2192 ${kPos?"+\u221e":"\u2212\u221e"}.`,
+       `Just to the LEFT of ${c}, (${xs}) is a tiny NEGATIVE \u2192 ${kPos?"\u2212\u221e":"+\u221e"}.`,
+       `The two sides disagree, so the two-sided limit does not exist.`,
+       `Answer: DNE`
+     ]};
+  }
+
+  const fromRight = side==="+";
+  const positive = fromRight ? kPos : !kPos;
+  const ansStr = positive ? "\u221e" : "\u2212\u221e";
+  return {
+   q:`Evaluate:   lim(x\u2192${c}${fromRight?"\u207a":"\u207b"})  ${k} / (${xs})`,
+   ans:ansStr,
+   accept: positive ? ["infinity","\u221e","+\u221e","inf","positiveinfinity"] : ["-infinity","\u2212\u221e","-\u221e","negativeinfinity","-inf"],
+   steps:[
+     `Substituting ${c} gives ${k}/0 \u2014 a vertical asymptote at x = ${c}.`,
+     `Coming from the ${fromRight?"RIGHT":"LEFT"}, (${xs}) is a tiny ${fromRight?"POSITIVE":"NEGATIVE"} number.`,
+     `The numerator ${k} is ${kPos?"positive":"negative"}.`,
+     `${kPos?"Positive":"Negative"} over a tiny ${fromRight?"positive":"negative"} \u2192 ${ansStr}.`,
+     `Answer: ${ansStr}`
+   ]};
+ }},
 
 rationalLimit:{label:"Limits of rational functions", subject:"math", topic:"Limits of rational functions",
  make(){
@@ -1047,13 +1384,13 @@ limitFactor:{label:"Limits by factoring (0/0)", subject:"math", topic:"Limits \u
   const s=v=>v<0?`\u2212 ${-v}`:`+ ${v}`;
   const val=c-r;
   return {
-   q:`Evaluate the limit:   lim(x\u2192${c})  ( x\u00b2 ${s(b)}x ${s(cc)} ) / ( x ${s(-c)} )`,
+   q:`Evaluate the limit:   lim(x\u2192${c})  ( ${quadStr(1,b,cc)} ) / ( ${facStr(-c)} )`,
    ans:String(val), accept:[String(val)], num:val,
    steps:[
      `Direct substitution gives 0/0 \u2014 indeterminate, so factor.`,
-     `x\u00b2 ${s(b)}x ${s(cc)} = (x ${s(-c)})(x ${s(-r)})`,
-     `The (x ${s(-c)}) cancels top and bottom, leaving x ${s(-r)}.`,
-     `Now substitute: ${c} ${s(-r)} = ${val}`,
+     `${quadStr(1,b,cc)} = (${facStr(-c)})(${facStr(-r)})`,
+     `The (${facStr(-c)}) cancels top and bottom, leaving ${facStr(-r)}.`,
+     `Now substitute x = ${c} into ${facStr(-r)}:  ${val}`,
      `Answer: ${val}`]};
  }},
 
@@ -1130,7 +1467,7 @@ diffSquares:{label:"Difference of squares", subject:"math", topic:"Difference of
     accept:[`(${ax}-${b})(${ax}+${b})`,`(${ax}+${b})(${ax}-${b})`],
     steps:[
       `Recognize the shape a² − b² — a subtraction of two perfect squares.`,
-      `√(${a*a}x²) = ${ax}   and   √${b*b} = ${b}`,
+      `√(${a===1?"":a*a}x²) = ${ax}   and   √${b*b} = ${b}`,
       `a² − b² = (a − b)(a + b)`,
       `Answer: (${ax} − ${b})(${ax} + ${b})`
     ]};
@@ -1163,7 +1500,7 @@ quadratic:{label:"Solve with the quadratic formula", subject:"math", topic:"Quad
   const s=v=>v<0?`− ${-v}`:`+ ${v}`;
   const disc=b*b-4*a*c;
   return {
-    q:`Solve for x:   ${a===1?"":a}x² ${s(b)}x ${s(c)} = 0`,
+    q:`Solve for x:   ${quadStr(a,b,c)} = 0`,
     ans: lo===hi ? `x = ${lo}` : `x = ${lo} and x = ${hi}`,
     accept:[`x=${lo},x=${hi}`,`${lo},${hi}`,`x=${lo}andx=${hi}`,`${lo}and${hi}`,`x=${hi},x=${lo}`,`${hi},${lo}`],
     steps:[
@@ -1370,17 +1707,28 @@ let state = { items:[], own:[] };
 /* First run: open in a working state seeded with the current unit, rather than an empty shell.
    Anything the user adds or deletes replaces this immediately. */
 const SEED = [
-  "!Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
-  "Express 3/sqrt(3) in simplest form with a rational denominator",
-  "!Fully simplify (1 - x^2/25) / (x/5 + 1)",
-  "Limits of piecewise functions - one sided",
-  "Types of discontinuities",
-  "Reading discontinuities off a graph",
+  /* Calculus AB — Unit 1 Limits */
+  "!Types of discontinuities",
   "Limits of rational functions - hole or asymptote",
-  "Limit properties when one limit does not exist",
-  "What is photosynthesis?",
-  "Causes of World War 1 #history",
-  "How do you write a thesis statement"
+  "Limits of piecewise functions - one sided",
+  "Continuity - the three part test",
+  "!Making a piecewise function continuous - find k",
+  "Limits at infinity and horizontal asymptotes",
+  "Infinite limits and vertical asymptotes",
+  "Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
+  /* AP Psychology — Unit 0 */
+  "!Experimental design - independent and dependent variable",
+  "Random sampling vs random assignment",
+  "Correlation does not equal causation",
+  "Ethics in psychological research",
+  /* AP English Lit */
+  "!The Story of an Hour by Kate Chopin",
+  "Critical lenses for reading literature",
+  "Writing a literary analysis paragraph",
+  /* Micro and Macro */
+  "Microeconomics vs macroeconomics",
+  "Elasticity of demand",
+  "GDP inflation and unemployment"
 ];
 
 /* ---------- storage ---------- */
@@ -1567,7 +1915,10 @@ function itemHTML(i){
 /* ---------- test maker ---------- */
 let currentTest = null;
 
-const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties","limitFactor","rationalLimit","rationalize","simplifyRadical","complexFraction"];
+const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties",
+  "limitFactor","rationalLimit","limitAtInfinity","infiniteLimit","continuityTest","findK",
+  "rationalize","simplifyRadical","complexFraction"];
+const PSYCH_KEYS = ["psychExperiment","psychVocab"];
 
 function buildPicker(){
   const el = $("#genPicker");
@@ -1875,6 +2226,7 @@ function init(){
   $("#btnPickAll").addEventListener("click", ()=>setPicked(Object.keys(GENERATORS)));
   $("#btnPickNone").addEventListener("click", ()=>setPicked([]));
   $("#btnPickCalc").addEventListener("click", ()=>setPicked(CALC_KEYS));
+  $("#btnPickPsych").addEventListener("click", ()=>setPicked(PSYCH_KEYS));
   $("#btnMakeTest").addEventListener("click", makeGeneratedTest);
   $("#btnMakeMine").addEventListener("click", makeMineTest);
 

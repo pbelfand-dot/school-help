@@ -13,17 +13,28 @@ let state = { items:[], own:[] };
 /* First run: open in a working state seeded with the current unit, rather than an empty shell.
    Anything the user adds or deletes replaces this immediately. */
 const SEED = [
-  "!Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
-  "Express 3/sqrt(3) in simplest form with a rational denominator",
-  "!Fully simplify (1 - x^2/25) / (x/5 + 1)",
-  "Limits of piecewise functions - one sided",
-  "Types of discontinuities",
-  "Reading discontinuities off a graph",
+  /* Calculus AB — Unit 1 Limits */
+  "!Types of discontinuities",
   "Limits of rational functions - hole or asymptote",
-  "Limit properties when one limit does not exist",
-  "What is photosynthesis?",
-  "Causes of World War 1 #history",
-  "How do you write a thesis statement"
+  "Limits of piecewise functions - one sided",
+  "Continuity - the three part test",
+  "!Making a piecewise function continuous - find k",
+  "Limits at infinity and horizontal asymptotes",
+  "Infinite limits and vertical asymptotes",
+  "Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
+  /* AP Psychology — Unit 0 */
+  "!Experimental design - independent and dependent variable",
+  "Random sampling vs random assignment",
+  "Correlation does not equal causation",
+  "Ethics in psychological research",
+  /* AP English Lit */
+  "!The Story of an Hour by Kate Chopin",
+  "Critical lenses for reading literature",
+  "Writing a literary analysis paragraph",
+  /* Micro and Macro */
+  "Microeconomics vs macroeconomics",
+  "Elasticity of demand",
+  "GDP inflation and unemployment"
 ];
 
 /* ---------- storage ---------- */
@@ -210,7 +221,10 @@ function itemHTML(i){
 /* ---------- test maker ---------- */
 let currentTest = null;
 
-const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties","limitFactor","rationalLimit","rationalize","simplifyRadical","complexFraction"];
+const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties",
+  "limitFactor","rationalLimit","limitAtInfinity","infiniteLimit","continuityTest","findK",
+  "rationalize","simplifyRadical","complexFraction"];
+const PSYCH_KEYS = ["psychExperiment","psychVocab"];
 
 function buildPicker(){
   const el = $("#genPicker");
@@ -518,6 +532,7 @@ function init(){
   $("#btnPickAll").addEventListener("click", ()=>setPicked(Object.keys(GENERATORS)));
   $("#btnPickNone").addEventListener("click", ()=>setPicked([]));
   $("#btnPickCalc").addEventListener("click", ()=>setPicked(CALC_KEYS));
+  $("#btnPickPsych").addEventListener("click", ()=>setPicked(PSYCH_KEYS));
   $("#btnMakeTest").addEventListener("click", makeGeneratedTest);
   $("#btnMakeMine").addEventListener("click", makeMineTest);
 

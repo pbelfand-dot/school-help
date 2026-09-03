@@ -32,7 +32,239 @@ const lin = (m,k)=>{
 };
 const sq = d => d===0 ? "x\u00b2" : (d<0 ? `x\u00b2 \u2212 ${-d}` : `x\u00b2 + ${d}`);
 
+const term = (v,unit)=>{
+  if(v===0) return "";
+  const a=Math.abs(v);
+  const coef=(unit && a===1)?"":String(a);
+  return ` ${v<0?"−":"+"} ${coef}${unit}`;
+};
+const quadStr = (a,b,c)=> (a===1?"":a===-1?"−":String(a))+"x²"+term(b,"x")+term(c,"");
+const facStr  = v => v===0 ? "x" : `x${term(v,"")}`;
+
 const GENERATORS = {
+
+psychExperiment:{label:"Experimental design (IV / DV / confound)", subject:"psychology", topic:"Experimental design: IV, DV, control, confounds",
+ make(){
+  const cases=[
+   {sc:"A researcher tests whether friendliness from wait staff affects tips. For one month, baseline tip data is collected at several randomly selected restaurants. For the next month, every waiter draws a smiley face on each check. Tips are compared across the two months.",
+    iv:"whether a smiley face was drawn on the check", ivA:["smileyface","smiley","drawingasmileyface","friendliness","thesmileyface"],
+    dv:"the amount of the tip", dvA:["tipamount","tips","amountoftips","thetip","sizeofthetip"],
+    cg:"None \u2014 the same staff serve as their own baseline", cgA:["none","nocontrolgroup","therewasnone","baselinemonth","firstmonth"],
+    cf:"time of year \u2014 the two months differ in more than the smiley face", cfA:["timeofyear","season","month","weather","holidays","differentmonths"]},
+   {sc:"Four identical wallets are dropped around a city, each containing a different photo: an elderly couple, a young couple, a puppy, and a baby. Researchers record how many of each are returned.",
+    iv:"the type of photo inside the wallet", ivA:["photo","typeofphoto","phototype","pictureinthewallet","thephoto","imageinwallet"],
+    dv:"the return rate of the wallets", dvA:["returnrate","rateofreturn","howmanywerereturned","numberreturned","wallets returned","whetheritwasreturned"],
+    cg:"None \u2014 there is no photo-free wallet condition", cgA:["none","nocontrolgroup","therewasnone","nophoto"],
+    cf:"where each wallet was dropped", cfA:["droplocation","location","wherewalletsweredropped","neighborhood","placedropped","whofoundit"]},
+   {sc:"Fourth-graders who did poorly through third grade are randomly split into three groups. One teacher is told her students are gifted, one is told nothing, and one is told her students are slow learners. End-of-year test scores are compared.",
+    iv:"what the teacher was told about the students", ivA:["whattheteacherwastold","teacherexpectation","teacherexpectations","informationgiventoteacher","whattheteacherbelieved","expectation"],
+    dv:"end-of-year test scores", dvA:["testscores","endofyeartestscores","scores","academicperformance","performance","grades"],
+    cg:"the group whose teacher was told nothing", cgA:["toldnothing","thegrouptoldnothing","nothing","middlegroup","noinformationgroup","secondgroup"],
+    cf:"differences between the individual teachers", cfA:["theteachers","teacherdifferences","teachingability","differentteachers","teacherquality","teacherskill"]},
+   {sc:"To test whether background music affects studying, students are randomly assigned to study a word list in silence or with instrumental music playing. All students then take the same recall test.",
+    iv:"whether background music was playing", ivA:["music","backgroundmusic","presenceofmusic","musicornot","whethermusicplayed"],
+    dv:"score on the recall test", dvA:["recallscore","testscore","score","wordsrecalled","numberofwordsremembered","memory"],
+    cg:"the group that studied in silence", cgA:["silence","silentgroup","thesilencegroup","nomusicgroup","nomusic","studiedinsilence"],
+    cf:"how much sleep each student had the night before", cfA:["sleep","priorknowledge","studyhabits","noiselevel","timeofday","individualdifferences","intelligence","motivation"]},
+   {sc:"A company tests a new sleep supplement. Half the volunteers receive the supplement and half receive an identical-looking sugar pill. Neither the volunteers nor the staff handing out the pills know who got which. Hours slept are recorded for two weeks.",
+    iv:"whether the participant received the supplement or the placebo", ivA:["supplement","thesupplement","supplementorplacebo","whethertheygotthesupplement","pilltype","typeofpill"],
+    dv:"hours of sleep", dvA:["hoursslept","hoursofsleep","sleep","amountofsleep","sleepduration"],
+    cg:"the group given the sugar pill", cgA:["sugarpill","placebo","placebogroup","thesugarpillgroup","thoseonplacebo"],
+    cf:"differences in participants' daily caffeine intake", cfA:["caffeine","stress","screentime","preexistingsleepproblems","dailyroutine","individualdifferences","diet","exercise"]}
+  ];
+  const c = pick(cases);
+  const asks = [
+   {q:"Identify the INDEPENDENT variable.", ans:c.iv, acc:c.ivA,
+    st:["The independent variable is what the researcher deliberately manipulates \u2014 the presumed cause.","Ask: what did the researcher change or assign between conditions?",`Answer: ${c.iv}`]},
+   {q:"Identify the DEPENDENT variable.", ans:c.dv, acc:c.dvA,
+    st:["The dependent variable is what gets measured \u2014 the data recorded at the end.","Ask: what numbers did they write down?",`Answer: ${c.dv}`]},
+   {q:"Identify the CONTROL GROUP, if there is one.", ans:c.cg, acc:c.cgA,
+    st:["The control group is the one that does NOT receive the treatment.","Not every design has one \u2014 before/after studies often use a baseline instead.",`Answer: ${c.cg}`]},
+   {q:"Identify one possible CONFOUNDING variable.", ans:c.cf, acc:c.cfA,
+    st:["A confound is an uncontrolled difference that offers a rival explanation for the results.","Ask: what else differed between the conditions besides the IV?",`One good answer: ${c.cf}  (other reasonable confounds also count \u2014 grade yourself)`]}
+  ];
+  const a = pick(asks);
+  return { q:`${c.sc}\n\n${a.q}`, ans:a.ans, accept:a.acc, steps:a.st };
+ }},
+
+psychVocab:{label:"Psych Unit 0 vocabulary", subject:"psychology", topic:"Research methods in psychology",
+ make(){
+  const bank=[
+   ["Operational definition","the exact, measurable way a study defines a variable \u2014 e.g. defining 'stress' as score on a named questionnaire",["operationaldefinition","operationaldefinitions"]],
+   ["Random assignment","sorting participants into conditions by chance, which is what allows a cause-and-effect claim",["randomassignment","randomlyassigning"]],
+   ["Random sampling","choosing participants from the population by chance, which is what allows results to generalize",["randomsampling","randomsample","randomselection"]],
+   ["Confounding variable","an uncontrolled factor that differs between groups and offers a rival explanation for the results",["confoundingvariable","confound","confounds","confoundingvariables","extraneousvariable"]],
+   ["Placebo effect","improvement caused purely by a participant's expectation rather than by the treatment itself",["placeboeffect","placebo"]],
+   ["Double-blind procedure","neither the participants nor the researchers interacting with them know who is in which condition",["doubleblind","doubleblindprocedure","doubleblindstudy"]],
+   ["Demand characteristics","cues that let participants guess the hypothesis, so they adjust their behavior to match it",["demandcharacteristics","demandcharacteristic"]],
+   ["Social desirability bias","the tendency to answer self-report questions in whatever way makes you look better",["socialdesirability","socialdesirabilitybias"]],
+   ["Naturalistic observation","recording behavior in its real-world setting without intervening in it",["naturalisticobservation","naturalobservation"]],
+   ["Case study","an in-depth investigation of a single person or small group, rich in detail but hard to generalize",["casestudy","casestudies"]],
+   ["Correlation coefficient","a number from \u22121 to +1 giving the direction and strength of a linear relationship",["correlationcoefficient","r","correlation"]],
+   ["Third-variable problem","when an unmeasured factor causes both correlated variables, so neither causes the other",["thirdvariableproblem","thirdvariable","confoundingthirdvariable"]],
+   ["Informed consent","telling participants enough about a study beforehand that they can freely choose to take part",["informedconsent","consent"]],
+   ["Debriefing","fully explaining a study to participants afterward, required whenever deception was used",["debriefing","debrief"]],
+   ["Hypothesis","a testable prediction, usually stated as the expected relationship between two variables",["hypothesis","ahypothesis"]],
+   ["Population","the entire group a researcher wants to draw conclusions about",["population","thepopulation"]],
+   ["Experimental group","the participants who receive the treatment being tested",["experimentalgroup","treatmentgroup"]],
+   ["Illusory correlation","perceiving a relationship between two things where none actually exists",["illusorycorrelation","illusorycorrelations"]]
+  ];
+  const [term, def, acc] = pick(bank);
+  return {
+   q:`Which term does this define?\n\n   "${def}"`,
+   ans:term, accept:acc.concat([term.toLowerCase().replace(/[^a-z]/g,"")]),
+   steps:[`Definition: ${def}`, `Term: ${term}`]};
+ }},
+
+findK:{label:"Find k to make it continuous", subject:"math", topic:"Making a piecewise function continuous (solve for k)",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  let c=R(-4,4), d=R(-8,8);
+  while(c===0) c=R(-4,4);
+  while(d===0) d=R(-8,8);
+  /* left piece: x\u00b2 + d   |   right piece: k*x  -> k*c = c\u00b2 + d */
+  const target = c*c + d;
+  const g = gcd(target, c);
+  let n = target/g, den = c/g;
+  if(den<0){ n=-n; den=-den; }
+  const ansStr = den===1 ? String(n) : `${n}/${den}`;
+  return {
+   q:`f(x) = { x\u00b2 ${sgn(d)}   for x < ${c}\n         { kx          for x \u2265 ${c}\n\nFind the value of k that makes f continuous at x = ${c}.`,
+   ans:ansStr, accept:[ansStr, String(target/c), (target/c).toFixed(4)], num:target/c,
+   steps:[
+     `Continuity means the two pieces must meet at x = ${c}.`,
+     `Left piece at ${c}:  (${c})\u00b2 ${sgn(d)} = ${target}`,
+     `Right piece at ${c}:  k(${c}) = ${c}k`,
+     `Set them equal: ${c}k = ${target}`,
+     `k = ${target}/${c} = ${ansStr}`
+   ]};
+ }},
+
+continuityTest:{label:"Is it continuous? (3-part test)", subject:"math", topic:"Continuity",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  let c=R(-3,4); const m=R(2,5), k=R(-6,6);
+  const left = m*c + k;
+  const mode = R(1,3);
+  let d, fc, ans, why;
+  if(mode===1){ d = left - c*c; fc = left;  ans="Yes";
+    why="All three conditions hold, so f is continuous at x = "+c+"."; }
+  else if(mode===2){ d = left - c*c; fc = left + pick([-3,-2,2,3]); ans="No";
+    why="Conditions 1 and 2 pass, but the limit ("+left+") does not equal f("+c+") = "+fc+" \u2014 a removable discontinuity."; }
+  else { d = left - c*c + pick([-4,-3,3,4]); fc = c*c + d; ans="No";
+    why="The left limit ("+left+") and right limit ("+(c*c+d)+") disagree, so the limit does not exist \u2014 a jump."; }
+  const right = c*c + d;
+  return {
+   q:`f(x) = { ${lin(m,k)}   for x < ${c}\n         { ${fc}            for x = ${c}\n         { ${sq(d)}       for x > ${c}\n\nIs f continuous at x = ${c}?  (Yes or No)`,
+   ans:ans, accept: ans==="Yes" ? ["yes","y","continuous","true"] : ["no","n","notcontinuous","discontinuous","false"],
+   steps:[
+     `Condition 1 \u2014 is f(${c}) defined?  Yes, f(${c}) = ${fc}.`,
+     `Condition 2 \u2014 does the limit exist?  Left: ${left}.  Right: ${right}.  ${left===right?"Equal, so the limit is "+left+".":"They disagree, so the limit does not exist."}`,
+     left===right ? `Condition 3 \u2014 does the limit equal f(${c})?  ${left} vs ${fc}: ${left===fc?"equal \u2713":"NOT equal \u2717"}` : `Condition 2 already failed, so stop.`,
+     why,
+     `Answer: ${ans}`
+   ]};
+ }},
+
+limitAtInfinity:{label:"Limits at infinity", subject:"math", topic:"Limits at infinity (horizontal asymptotes)",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  const a=R(2,9), b=R(2,9), p=R(2,9), q=R(2,9);
+  const kind = R(1,3);
+  const sup = n => n===1 ? "" : (n===2 ? "\u00b2" : "\u00b3");
+
+  if(kind===1){
+    /* equal degrees -> ratio of leading coefficients */
+    const deg = R(1,3);
+    const g = gcd(a,b); const n=a/g, d=b/g;
+    const ansStr = d===1 ? String(n) : `${n}/${d}`;
+    return {
+     q:`Evaluate:   lim(x\u2192\u221e)  ( ${a}x${sup(deg)} ${sgn(p)}${deg>1?"x"+sup(deg-1):""} ) / ( ${b}x${sup(deg)} ${sgn(-q)}${deg>1?"x":""} )`,
+     ans:ansStr, accept:[ansStr, `${a}/${b}`, (a/b).toFixed(4)], num:a/b,
+     steps:[
+       `Compare degrees: the top is degree ${deg}, the bottom is degree ${deg}.`,
+       `The degrees are EQUAL, so the limit is the ratio of the leading coefficients.`,
+       `Leading coefficients: ${a} on top, ${b} on the bottom.`,
+       `Answer: ${a}/${b}${g>1?` = ${ansStr}`:""}   (horizontal asymptote y = ${ansStr})`
+     ]};
+  }
+  if(kind===2){
+    /* bottom-heavy -> 0 */
+    const dTop=R(1,2), dBot=dTop+R(1,2);
+    return {
+     q:`Evaluate:   lim(x\u2192\u221e)  ( ${a}x${sup(dTop)} ${sgn(p)} ) / ( ${b}x${sup(dBot)} ${sgn(-q)}x )`,
+     ans:"0", accept:["0"], num:0,
+     steps:[
+       `Top degree ${dTop}, bottom degree ${dBot}.`,
+       `The bottom grows faster, so the fraction is squeezed toward zero.`,
+       `Answer: 0   (horizontal asymptote y = 0)`
+     ]};
+  }
+  /* top-heavy -> infinite */
+  const dTop=R(2,3), dBot=dTop-1;
+  return {
+   q:`Evaluate:   lim(x\u2192\u221e)  ( ${a}x${sup(dTop)} ${sgn(p)}x ) / ( ${b}x${sup(dBot)} ${sgn(q)} )`,
+   ans:"DNE", accept:["dne","infinity","\u221e","+\u221e","infinite","doesnotexist","does not exist"],
+   steps:[
+     `Top degree ${dTop}, bottom degree ${dBot}.`,
+     `The top grows faster, so the fraction grows without bound.`,
+     `There is NO horizontal asymptote here.`,
+     `Answer: \u221e  (the limit does not exist as a number \u2014 either \u221e or DNE is accepted)`
+   ]};
+ }},
+
+infiniteLimit:{label:"Infinite limits (vertical asymptotes)", subject:"math", topic:"Infinite limits (vertical asymptotes)",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  let c=R(-5,5); const k=pick([1,2,3,5,-1,-2,-4]);
+  const xs = facStr(-c);
+  const power = pick([1,1,2]);
+  const side = pick(["+","-","both"]);
+  const kPos = k>0;
+
+  if(power===2){
+    const ansStr = kPos ? "\u221e" : "\u2212\u221e";
+    return {
+     q:`Evaluate:   lim(x\u2192${c}${side==="both"?"":(side==="+"?"\u207a":"\u207b")})  ${k} / (${xs})\u00b2`,
+     ans:ansStr,
+     accept: kPos ? ["infinity","\u221e","+\u221e","inf","positiveinfinity"] : ["-infinity","\u2212\u221e","-\u221e","negativeinfinity","-inf"],
+     steps:[
+       `Substituting ${c} gives ${k}/0 \u2014 a vertical asymptote at x = ${c}.`,
+       `The denominator is SQUARED, so it is positive on both sides of ${c}.`,
+       `The numerator is ${k}, which is ${kPos?"positive":"negative"}.`,
+       `${kPos?"Positive":"Negative"} over a tiny positive \u2192 ${ansStr}.`,
+       `Answer: ${ansStr}`
+     ]};
+  }
+
+  if(side==="both"){
+    return {
+     q:`Evaluate:   lim(x\u2192${c})  ${k} / (${xs})`,
+     ans:"DNE", accept:["dne","doesnotexist","does not exist"],
+     steps:[
+       `Substituting ${c} gives ${k}/0 \u2014 a vertical asymptote at x = ${c}.`,
+       `Just to the RIGHT of ${c}, (${xs}) is a tiny POSITIVE \u2192 ${kPos?"+\u221e":"\u2212\u221e"}.`,
+       `Just to the LEFT of ${c}, (${xs}) is a tiny NEGATIVE \u2192 ${kPos?"\u2212\u221e":"+\u221e"}.`,
+       `The two sides disagree, so the two-sided limit does not exist.`,
+       `Answer: DNE`
+     ]};
+  }
+
+  const fromRight = side==="+";
+  const positive = fromRight ? kPos : !kPos;
+  const ansStr = positive ? "\u221e" : "\u2212\u221e";
+  return {
+   q:`Evaluate:   lim(x\u2192${c}${fromRight?"\u207a":"\u207b"})  ${k} / (${xs})`,
+   ans:ansStr,
+   accept: positive ? ["infinity","\u221e","+\u221e","inf","positiveinfinity"] : ["-infinity","\u2212\u221e","-\u221e","negativeinfinity","-inf"],
+   steps:[
+     `Substituting ${c} gives ${k}/0 \u2014 a vertical asymptote at x = ${c}.`,
+     `Coming from the ${fromRight?"RIGHT":"LEFT"}, (${xs}) is a tiny ${fromRight?"POSITIVE":"NEGATIVE"} number.`,
+     `The numerator ${k} is ${kPos?"positive":"negative"}.`,
+     `${kPos?"Positive":"Negative"} over a tiny ${fromRight?"positive":"negative"} \u2192 ${ansStr}.`,
+     `Answer: ${ansStr}`
+   ]};
+ }},
 
 rationalLimit:{label:"Limits of rational functions", subject:"math", topic:"Limits of rational functions",
  make(){
@@ -235,13 +467,13 @@ limitFactor:{label:"Limits by factoring (0/0)", subject:"math", topic:"Limits \u
   const s=v=>v<0?`\u2212 ${-v}`:`+ ${v}`;
   const val=c-r;
   return {
-   q:`Evaluate the limit:   lim(x\u2192${c})  ( x\u00b2 ${s(b)}x ${s(cc)} ) / ( x ${s(-c)} )`,
+   q:`Evaluate the limit:   lim(x\u2192${c})  ( ${quadStr(1,b,cc)} ) / ( ${facStr(-c)} )`,
    ans:String(val), accept:[String(val)], num:val,
    steps:[
      `Direct substitution gives 0/0 \u2014 indeterminate, so factor.`,
-     `x\u00b2 ${s(b)}x ${s(cc)} = (x ${s(-c)})(x ${s(-r)})`,
-     `The (x ${s(-c)}) cancels top and bottom, leaving x ${s(-r)}.`,
-     `Now substitute: ${c} ${s(-r)} = ${val}`,
+     `${quadStr(1,b,cc)} = (${facStr(-c)})(${facStr(-r)})`,
+     `The (${facStr(-c)}) cancels top and bottom, leaving ${facStr(-r)}.`,
+     `Now substitute x = ${c} into ${facStr(-r)}:  ${val}`,
      `Answer: ${val}`]};
  }},
 
@@ -318,7 +550,7 @@ diffSquares:{label:"Difference of squares", subject:"math", topic:"Difference of
     accept:[`(${ax}-${b})(${ax}+${b})`,`(${ax}+${b})(${ax}-${b})`],
     steps:[
       `Recognize the shape a² − b² — a subtraction of two perfect squares.`,
-      `√(${a*a}x²) = ${ax}   and   √${b*b} = ${b}`,
+      `√(${a===1?"":a*a}x²) = ${ax}   and   √${b*b} = ${b}`,
       `a² − b² = (a − b)(a + b)`,
       `Answer: (${ax} − ${b})(${ax} + ${b})`
     ]};
@@ -351,7 +583,7 @@ quadratic:{label:"Solve with the quadratic formula", subject:"math", topic:"Quad
   const s=v=>v<0?`− ${-v}`:`+ ${v}`;
   const disc=b*b-4*a*c;
   return {
-    q:`Solve for x:   ${a===1?"":a}x² ${s(b)}x ${s(c)} = 0`,
+    q:`Solve for x:   ${quadStr(a,b,c)} = 0`,
     ans: lo===hi ? `x = ${lo}` : `x = ${lo} and x = ${hi}`,
     accept:[`x=${lo},x=${hi}`,`${lo},${hi}`,`x=${lo}andx=${hi}`,`${lo}and${hi}`,`x=${hi},x=${lo}`,`${hi},${lo}`],
     steps:[
