@@ -25,6 +25,13 @@ function radAccept(num,rad,den){
   return forms;
 }
 
+const lin = (m,k)=>{
+  const mx = m===1 ? "x" : `${m}x`;
+  if(k===0) return mx;
+  return k<0 ? `${mx} \u2212 ${-k}` : `${mx} + ${k}`;
+};
+const sq = d => d===0 ? "x\u00b2" : (d<0 ? `x\u00b2 \u2212 ${-d}` : `x\u00b2 + ${d}`);
+
 const GENERATORS = {
 
 trigLimit:{label:"Trig limits", subject:"math", topic:"Trig limits",
@@ -75,16 +82,14 @@ oneSidedLimit:{label:"One-sided limits (piecewise)", subject:"math", topic:"Limi
   const c=R(-4,4), m=R(2,6), k=R(-8,8), d=R(-9,9);
   const left = m*c + k, right = c*c + d;
   const fromRight = Math.random()<0.5;
-  const ds = d<0 ? `\u2212 ${-d}` : `+ ${d}`;
-  const ks = k<0 ? `\u2212 ${-k}` : `+ ${k}`;
   const want = fromRight ? right : left;
   return {
-   q:`f(x) = { ${m}x ${ks}    for x < ${c}\n         { x\u00b2 ${ds}       for x > ${c}\n\nFind  lim(x\u2192${c}${fromRight?"\u207a":"\u207b"}) f(x).`,
+   q:`f(x) = { ${lin(m,k)}    for x < ${c}\n         { ${sq(d)}       for x > ${c}\n\nFind  lim(x\u2192${c}${fromRight?"\u207a":"\u207b"}) f(x).`,
    ans:String(want), accept:[String(want)], num:want,
    steps:[
      `The ${fromRight?"\u207a (plus)":"\u207b (minus)"} superscript means approach from the ${fromRight?"RIGHT":"LEFT"} only.`,
-     `From the ${fromRight?"right you use the piece for x > "+c+", which is x\u00b2 "+ds:"left you use the piece for x < "+c+", which is "+m+"x "+ks}.`,
-     fromRight ? `Substitute: (${c})\u00b2 ${ds} = ${right}` : `Substitute: ${m}(${c}) ${ks} = ${left}`,
+     `From the ${fromRight?"right you use the piece for x > "+c+", which is "+sq(d) : "left you use the piece for x < "+c+", which is "+lin(m,k)}.`,
+     fromRight ? `Substitute (${c}) into ${sq(d)}: ${right}` : `Substitute (${c}) into ${lin(m,k)}: ${left}`,
      `The other piece is irrelevant \u2014 a one-sided limit never needs both sides to agree, so it is almost never DNE here.`,
      `Answer: ${want}`
    ]};
@@ -97,15 +102,14 @@ piecewiseLimit:{label:"Limits of piecewise functions", subject:"math", topic:"Li
   const matches = Math.random()<0.5;
   const d = matches ? left - c*c : left - c*c + pick([-4,-3,-2,2,3,4]);
   const right = c*c + d;
-  const ds = d<0 ? `\u2212 ${-d}` : `+ ${d}`;
   return {
-   q:`f(x) = { ${m}x ${k<0?"\u2212 "+(-k):"+ "+k}   for x < ${c}\n         { x\u00b2 ${ds}          for x \u2265 ${c}\n\nFind lim(x\u2192${c}) f(x).  (Write DNE if it does not exist.)`,
+   q:`f(x) = { ${lin(m,k)}   for x < ${c}\n         { ${sq(d)}          for x \u2265 ${c}\n\nFind lim(x\u2192${c}) f(x).  (Write DNE if it does not exist.)`,
    ans: matches ? String(left) : "DNE",
    accept: matches ? [String(left)] : ["dne","doesnotexist","does not exist","undefined"],
    num: matches ? left : undefined,
    steps:[
-     `Coming from the LEFT (x < ${c}) use ${m}x ${k<0?"\u2212 "+(-k):"+ "+k}:  ${m}(${c}) ${k<0?"\u2212 "+(-k):"+ "+k} = ${left}`,
-     `Coming from the RIGHT (x \u2265 ${c}) use x\u00b2 ${ds}:  (${c})\u00b2 ${ds} = ${right}`,
+     `Coming from the LEFT (x < ${c}) use ${lin(m,k)}:  substitute ${c} \u2192 ${left}`,
+     `Coming from the RIGHT (x \u2265 ${c}) use ${sq(d)}:  substitute ${c} \u2192 ${right}`,
      matches ? `Both sides give ${left}, so the two-sided limit exists.`
              : `Left gives ${left}, right gives ${right}. They disagree \u2014 this is a jump.`,
      matches ? `Answer: ${left}` : `Answer: DNE (does not exist)`

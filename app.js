@@ -9,6 +9,22 @@ const KEY = "studySorter.v1";
 
 let state = { items:[], own:[] };
 
+
+/* First run: open in a working state seeded with the current unit, rather than an empty shell.
+   Anything the user adds or deletes replaces this immediately. */
+const SEED = [
+  "!Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
+  "Express 3/sqrt(3) in simplest form with a rational denominator",
+  "!Fully simplify (1 - x^2/25) / (x/5 + 1)",
+  "Limits of piecewise functions - one sided",
+  "Types of discontinuities",
+  "Reading discontinuities off a graph",
+  "Limit properties when one limit does not exist",
+  "What is photosynthesis?",
+  "Causes of World War 1 #history",
+  "How do you write a thesis statement"
+];
+
 /* ---------- storage ---------- */
 function load(){
   try{
@@ -316,12 +332,45 @@ function submitTest(){
 }
 
 /* ---------- exports ---------- */
-function download(name, text, mime){
-  const b = new Blob([text], {type:mime||"text/plain;charset=utf-8"});
-  const u = URL.createObjectURL(b);
-  const a = document.createElement("a");
-  a.href = u; a.download = name; document.body.appendChild(a); a.click();
-  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(u); }, 0);
+/* Saving a file works two different ways depending on where the page is running.
+   Opened as a local file or on a normal web host, an anchor download works.
+   Inside the claude.ai artifact viewer, anchors are inert and the page has to
+   ask the host to save through the downloads capability. Try that first, and
+   fall back to the anchor. Returns a status string so the caller can be honest
+   about what actually happened. */
+let dlNamespace;
+async function getDownloads(){
+  if(dlNamespace !== undefined) return dlNamespace;
+  dlNamespace = null;
+  try{
+    if(window.claude && typeof window.claude.use === "function"){
+      dlNamespace = await window.claude.use("downloads");
+    }
+  }catch(e){ dlNamespace = null; }
+  return dlNamespace;
+}
+
+async function download(name, text, mime){
+  const ns = await getDownloads();
+  if(ns){
+    try{
+      await ns.save({ filename:name, data:text });
+      return "saved";
+    }catch(err){
+      const code = err && err.code;
+      if(code === "declined") return "declined";
+      if(code === "rate_limited") return "busy";
+      /* anything else: fall through and try the ordinary anchor */
+    }
+  }
+  try{
+    const b = new Blob([text], {type:mime||"text/plain;charset=utf-8"});
+    const u = URL.createObjectURL(b);
+    const a = document.createElement("a");
+    a.href = u; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(u); }, 0);
+    return "saved";
+  }catch(e){ return "failed"; }
 }
 
 function toMarkdown(){
@@ -365,6 +414,8 @@ function refresh(){
 
 function init(){
   load();
+  const firstRun = !state.items.length && !state.own.length;
+  if(firstRun) addLines(SEED.join("\n"));
   buildPicker();
 
   /* tabs */
@@ -488,13 +539,21 @@ function init(){
   });
 
   /* data */
-  $("#btnExportJson").addEventListener("click", ()=>{
-    download("study-sorter-backup.json", JSON.stringify(state,null,2), "application/json");
-    msg("#dataMsg","Backup downloaded. Keep it somewhere safe.");
+  $("#btnExportJson").addEventListener("click", async ()=>{
+    msg("#dataMsg","Saving backup\u2026");
+    const r = await download("study-sorter-backup.json", JSON.stringify(state,null,2), "application/json");
+    if(r==="saved") msg("#dataMsg","Backup saved. Keep it somewhere you'll find it again.");
+    else if(r==="declined") msg("#dataMsg","Save cancelled \u2014 nothing was written.", true);
+    else if(r==="busy") msg("#dataMsg","Another save is already open. Finish that one, then try again.", true);
+    else msg("#dataMsg","Couldn't save the file here. Use Print / Save as PDF instead.", true);
   });
-  $("#btnExportMd").addEventListener("click", ()=>{
-    download("study-sheet.md", toMarkdown(), "text/markdown");
-    msg("#dataMsg","Study sheet downloaded.");
+  $("#btnExportMd").addEventListener("click", async ()=>{
+    msg("#dataMsg","Saving study sheet\u2026");
+    const r = await download("study-sheet.md", toMarkdown(), "text/markdown");
+    if(r==="saved") msg("#dataMsg","Study sheet saved.");
+    else if(r==="declined") msg("#dataMsg","Save cancelled \u2014 nothing was written.", true);
+    else if(r==="busy") msg("#dataMsg","Another save is already open. Finish that one, then try again.", true);
+    else msg("#dataMsg","Couldn't save the file here. Use Print / Save as PDF instead.", true);
   });
   $("#btnPrint").addEventListener("click", ()=>window.print());
   $("#importFile").addEventListener("change", e=>{
@@ -530,6 +589,7 @@ function init(){
   }
 
   refresh();
+  if(firstRun) makeGeneratedTest();
 }
 
 document.addEventListener("DOMContentLoaded", init);

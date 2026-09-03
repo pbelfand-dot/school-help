@@ -1,0 +1,1888 @@
+<title>Study Sorter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#f2f5f8; --surface:#ffffff; --surface-2:#f7f9fc;
+  --ink:#16202e; --ink-2:#4a586c; --ink-3:#7c8798;
+  --line:#dde4ed; --line-2:#c8d3e0;
+  --accent:#2f5fd0; --accent-ink:#ffffff; --accent-soft:#e8eefc;
+  --ok:#11674a; --ok-soft:#e2f2ea; --ok-line:#8fc9b1;
+  --warn:#8a5d00; --warn-soft:#fbf1dc; --warn-line:#dfc186;
+  --alert:#ab2f24; --alert-soft:#fceceb; --alert-line:#e3a9a4;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(22,32,46,.05);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --sans:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0e151f; --surface:#161f2c; --surface-2:#1b2634;
+    --ink:#e4eaf3; --ink-2:#a4b1c3; --ink-3:#76839a;
+    --line:#26313f; --line-2:#33404f;
+    --accent:#7fa2f5; --accent-ink:#0e151f; --accent-soft:#1d2a44;
+    --ok:#6fd3a8; --ok-soft:#132a22; --ok-line:#2b5c48;
+    --warn:#e5b55e; --warn-soft:#2c2416; --warn-line:#5e4c25;
+    --alert:#f2938a; --alert-soft:#2e1a18; --alert-line:#63332e;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0e151f; --surface:#161f2c; --surface-2:#1b2634;
+  --ink:#e4eaf3; --ink-2:#a4b1c3; --ink-3:#76839a;
+  --line:#26313f; --line-2:#33404f;
+  --accent:#7fa2f5; --accent-ink:#0e151f; --accent-soft:#1d2a44;
+  --ok:#6fd3a8; --ok-soft:#132a22; --ok-line:#2b5c48;
+  --warn:#e5b55e; --warn-soft:#2c2416; --warn-line:#5e4c25;
+  --alert:#f2938a; --alert-soft:#2e1a18; --alert-line:#63332e;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+.topbar{
+  background:var(--surface); border-bottom:1px solid var(--line);
+  position:sticky; top:0; z-index:20;
+}
+.brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:20px 0 2px}
+h1{
+  font-family:var(--serif); font-size:27px; font-weight:600;
+  letter-spacing:-.015em; margin:0; text-wrap:balance;
+}
+.tag{color:var(--ink-2);font-size:14px;margin:0}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;padding-top:12px}
+.tab{
+  appearance:none; background:none; border:0;
+  border-bottom:2px solid transparent; padding:9px 13px;
+  font:inherit; font-size:14px; font-weight:500; color:var(--ink-2);
+  cursor:pointer; border-radius:6px 6px 0 0;
+}
+.tab:hover{background:var(--surface-2);color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.count{
+  display:inline-block;min-width:19px;padding:0 6px;margin-left:5px;
+  border-radius:20px;background:var(--accent-soft);color:var(--accent);
+  font-size:11px;font-weight:700;vertical-align:1px;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- structure ---------- */
+main{padding:22px 0 48px}
+.view{display:none}
+.view.active{display:block}
+.card{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:20px; margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.card h2{
+  font-family:var(--serif); font-size:19px; font-weight:600;
+  letter-spacing:-.01em; margin:0 0 6px; text-wrap:balance;
+}
+.hint{color:var(--ink-2);font-size:13.5px;margin:0 0 14px;max-width:62ch}
+code{
+  font-family:var(--mono); font-size:12.5px;
+  background:var(--surface-2); border:1px solid var(--line);
+  padding:1px 5px; border-radius:5px;
+}
+
+/* ---------- controls ---------- */
+textarea,input[type=text],input[type=search],select{
+  width:100%; font-family:var(--sans); font-size:14.5px; color:var(--ink);
+  padding:9px 12px; border:1px solid var(--line-2); border-radius:var(--r);
+  background:var(--surface); margin-bottom:10px;
+}
+textarea{font-family:var(--mono);font-size:13.5px;line-height:1.7;resize:vertical}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,.filebtn:focus-within{
+  outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);
+}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+button{
+  font:inherit; font-size:14px; font-weight:500;
+  padding:8px 15px; border-radius:var(--r);
+  border:1px solid var(--line-2); background:var(--surface); color:var(--ink);
+  cursor:pointer;
+}
+button:hover{background:var(--surface-2);border-color:var(--ink-3)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button.primary:hover{filter:brightness(1.1);border-color:var(--accent)}
+button.danger{color:var(--alert);border-color:var(--alert-line)}
+button.danger:hover{background:var(--alert-soft)}
+.filebtn{
+  display:inline-block;padding:8px 15px;border:1px solid var(--line-2);
+  border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:14px;font-weight:500;
+}
+.filebtn:hover{background:var(--surface-2)}
+.filebtn input{display:none}
+.lbl{font-size:13.5px;color:var(--ink-2);display:flex;gap:7px;align-items:center;white-space:nowrap}
+.lbl select{width:auto;margin:0}
+
+.result{
+  margin-top:12px;padding:9px 13px;border-radius:var(--r);
+  background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok-line);font-size:13.5px;
+}
+.result.warn{background:var(--warn-soft);color:var(--warn);border-color:var(--warn-line)}
+
+.toolbar{display:grid;grid-template-columns:1fr 150px 165px 165px auto;gap:8px;align-items:start;padding:14px}
+.toolbar input,.toolbar select{margin:0}
+@media(max-width:780px){.toolbar{grid-template-columns:1fr 1fr}}
+
+.plain{margin:0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+.plain li{margin-bottom:6px}
+.plain b{color:var(--ink);font-weight:600}
+
+/* ---------- sorted items: the rail encodes state ---------- */
+.group{margin-bottom:22px}
+.group>h3{
+  margin:0 0 9px; font-size:11.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.09em; color:var(--ink-3);
+}
+.item{
+  background:var(--surface); border:1px solid var(--line);
+  border-left:3px solid var(--line-2); border-radius:var(--r);
+  padding:12px 15px; margin-bottom:7px;
+}
+.item.has{border-left-color:var(--ok)}
+.item.pri{border-left-color:var(--alert)}
+.item.done{opacity:.5}
+.item .txt{font-weight:500;font-size:14.5px}
+.item.done .txt{text-decoration:line-through}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:9px}
+.chip{
+  font-size:11.5px;padding:2px 9px;border-radius:20px;font-weight:600;
+  background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
+}
+.chip.g{background:var(--ok-soft);color:var(--ok);border-color:var(--ok-line)}
+.chip.a{background:var(--warn-soft);color:var(--warn);border-color:var(--warn-line)}
+.chip.r{background:var(--alert-soft);color:var(--alert);border-color:var(--alert-line)}
+.acts{margin-left:auto;display:flex;gap:6px}
+.acts button{padding:3px 10px;font-size:12.5px}
+
+/* ---------- explanations ---------- */
+.exp{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.exp h4{
+  margin:16px 0 5px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);
+}
+.exp h4:first-child{margin-top:0}
+.exp p{margin:0 0 9px;max-width:64ch}
+.exp ul{margin:0 0 9px;padding-left:19px;max-width:64ch}
+.exp li{margin-bottom:5px}
+.fx{
+  display:block;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r);padding:10px 13px;margin:6px 0;
+  font-family:var(--mono);font-size:13px;line-height:1.75;overflow-x:auto;
+}
+.suggest{display:flex;gap:6px;flex-wrap:wrap}
+.suggest button,.libindex button{padding:4px 12px;font-size:12.5px;border-radius:20px}
+.libindex{display:flex;gap:6px;flex-wrap:wrap}
+.libindex button{background:var(--surface-2)}
+
+/* numbered steps encode a real sequence — the order you do the work in */
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{
+  counter-increment:s;position:relative;
+  padding:0 0 11px 32px;margin:0;max-width:64ch;
+}
+.steps li:last-child{padding-bottom:0}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:2px;
+  width:21px;height:21px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);
+  font-size:11.5px;font-weight:700;display:grid;place-items:center;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- test maker ---------- */
+.modeRow{margin-bottom:16px}
+.modebtn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:6px;margin-bottom:13px}
+.picker label{
+  display:flex;gap:9px;align-items:center;padding:8px 11px;
+  border:1px solid var(--line);border-radius:var(--r);
+  font-size:13.5px;cursor:pointer;background:var(--surface);
+}
+.picker label:hover{background:var(--surface-2)}
+.picker label.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:500}
+.picker input{width:auto;margin:0;accent-color:var(--accent)}
+
+.q{
+  background:var(--surface);border:1px solid var(--line);
+  border-left:3px solid var(--line-2);border-radius:var(--r);
+  padding:15px 17px;margin-bottom:9px;
+}
+.q.right{border-left-color:var(--ok)}
+.q.wrong{border-left-color:var(--alert)}
+.qhead{display:flex;gap:11px;align-items:baseline;margin-bottom:9px}
+.qnum{
+  font-family:var(--mono);font-weight:500;color:var(--ink-3);
+  font-size:13px;min-width:24px;font-variant-numeric:tabular-nums;
+}
+/* math is set in serif, the way it appears in a textbook */
+.qtext{
+  font-family:var(--serif);font-size:17px;line-height:1.65;
+  white-space:pre-wrap;flex:1;min-width:0;
+}
+.qtype{font-size:11.5px;color:var(--ink-3);margin-left:auto;white-space:nowrap;padding-top:3px}
+.ansrow{display:flex;gap:8px;align-items:center;margin-top:11px}
+.ansrow input{margin:0;max-width:320px;font-family:var(--mono);font-size:14px}
+.verdict{font-weight:700;font-size:13.5px;margin-top:9px}
+.verdict.ok{color:var(--ok)}
+.verdict.no{color:var(--alert)}
+.work{
+  margin-top:11px;padding:14px 16px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:var(--r);
+}
+.work h5{
+  margin:0 0 10px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);
+}
+.work p{margin:0 0 8px;max-width:64ch}
+.scorebox{text-align:center;padding:26px}
+.scorebox .big{
+  font-family:var(--serif);font-size:46px;font-weight:600;
+  letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;
+}
+.scorebox .pct{color:var(--ink-2);margin:8px 0 16px;font-size:14px}
+.selfgrade{display:flex;gap:7px;align-items:center;margin-top:11px;font-size:13px;color:var(--ink-2)}
+.selfgrade button{font-size:12.5px;padding:4px 12px}
+.selfgrade button.sel{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+.empty{text-align:center;color:var(--ink-2);padding:34px 20px}
+.foot{color:var(--ink-3);font-size:12.5px;text-align:center;padding:0 0 30px}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .topbar,.toolbar,.acts,.foot,button,.picker,.modeRow,.ansrow{display:none!important}
+  .view{display:block!important}
+  .card,.item,.q{break-inside:avoid;box-shadow:none;border:1px solid #ccc}
+  body{background:#fff}
+}
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <h1>Study Sorter</h1>
+    <p class="tag">Paste your notes and questions. It sorts them, then explains the topics.</p>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-view="add">Add</button>
+      <button class="tab" data-view="sorted">Sorted <span class="count" id="countSorted">0</span></button>
+      <button class="tab" data-view="explain">Explain</button>
+      <button class="tab" data-view="test">Test Maker</button>
+      <button class="tab" data-view="data">Save / Load</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ADD -->
+  <section id="view-add" class="view active">
+    <div class="card">
+      <h2>Dump everything here</h2>
+      <p class="hint">One item per line. Works with questions, definitions, formulas, or plain notes.
+      Add <code>#subject</code> anywhere on a line to force a subject (e.g. <code>#bio</code>), and
+      <code>!</code> at the start to mark it high priority.</p>
+      <textarea id="bulk" rows="12" placeholder="What is photosynthesis?
+!Quadratic formula
+mitochondria are the site of cellular respiration
+Causes of World War 1 #history
+derivative of x^2"></textarea>
+      <div class="row">
+        <button id="btnSort" class="primary">Sort it</button>
+        <button id="btnSample" class="ghost">Load example</button>
+        <button id="btnClearBox" class="ghost">Clear box</button>
+      </div>
+      <div id="addResult" class="result" hidden></div>
+    </div>
+
+    <div class="card">
+      <h2>How it decides</h2>
+      <ul class="plain">
+        <li><b>Subject</b> — matches keywords against a built-in dictionary (math, biology, chemistry, physics, history, English, computer science, economics, geography).</li>
+        <li><b>Type</b> — question, formula, definition, date/event, or note.</li>
+        <li><b>Priority</b> — lines starting with <code>!</code>, or things it can already explain in depth, get pushed up.</li>
+        <li><b>Explained?</b> — green if the built-in library has a full explanation, amber if it doesn't yet.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SORTED -->
+  <section id="view-sorted" class="view">
+    <div class="card toolbar">
+      <input id="search" type="search" placeholder="Search your items…">
+      <select id="filterSubject"><option value="">All subjects</option></select>
+      <select id="filterStatus">
+        <option value="">All items</option>
+        <option value="explained">Has explanation</option>
+        <option value="unexplained">Needs explanation</option>
+        <option value="priority">High priority</option>
+        <option value="done">Marked done</option>
+        <option value="notdone">Not done</option>
+      </select>
+      <select id="sortBy">
+        <option value="subject">Group by subject</option>
+        <option value="priority">Priority first</option>
+        <option value="added">Newest first</option>
+        <option value="alpha">A → Z</option>
+      </select>
+      <button id="btnClearAll" class="danger">Delete all</button>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <!-- EXPLAIN -->
+  <section id="view-explain" class="view">
+    <div class="card">
+      <h2>Look up any topic</h2>
+      <input id="lookup" type="search" placeholder="Type a topic — photosynthesis, mitosis, quadratic formula, Newton's laws…" autocomplete="off">
+      <div id="suggest" class="suggest"></div>
+    </div>
+    <div id="explainOut"></div>
+    <div class="card">
+      <h2>Everything in the library <span class="count" id="libCount">0</span></h2>
+      <div id="libIndex" class="libindex"></div>
+    </div>
+  </section>
+
+  <!-- TEST MAKER -->
+  <section id="view-test" class="view">
+    <div class="card">
+      <h2>Build a test</h2>
+      <div class="row modeRow">
+        <button class="modebtn active" data-mode="gen">New problems (I generate them)</button>
+        <button class="modebtn" data-mode="mine">From my saved questions</button>
+      </div>
+
+      <div id="modeGen">
+        <p class="hint">Pick the problem types. Every test is freshly randomized, so you can run the same topics over and over and never repeat the same numbers.</p>
+        <div id="genPicker" class="picker"></div>
+        <div class="row">
+          <button id="btnPickAll" class="ghost">Select all</button>
+          <button id="btnPickNone" class="ghost">Clear</button>
+          <button id="btnPickCalc" class="ghost">Just my Calc AB units</button>
+        </div>
+        <div class="row">
+          <label class="lbl">Questions: <select id="genCount">
+            <option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option>
+          </select></label>
+          <button id="btnMakeTest" class="primary">Make the test</button>
+        </div>
+      </div>
+
+      <div id="modeMine" hidden>
+        <p class="hint">Turns the questions you pasted into the Add tab into a self-graded test. You grade yourself against the explanation.</p>
+        <div class="row">
+          <select id="mineSubject"><option value="">All subjects</option></select>
+          <label class="lbl">Questions: <select id="mineCount">
+            <option>5</option><option selected>10</option><option>15</option><option>20</option>
+          </select></label>
+          <button id="btnMakeMine" class="primary">Make the test</button>
+        </div>
+        <div id="mineWarn" class="result warn" hidden></div>
+      </div>
+    </div>
+
+    <div id="testArea"></div>
+  </section>
+
+  <!-- DATA -->
+  <section id="view-data" class="view">
+    <div class="card">
+      <h2>Don't lose your work</h2>
+      <p class="hint">Everything saves in this browser automatically. Export a backup before finals week — clearing your browser wipes it.</p>
+      <div class="row">
+        <button id="btnExportJson" class="primary">Export backup (.json)</button>
+        <button id="btnExportMd" class="ghost">Export study sheet (.md)</button>
+        <button id="btnPrint" class="ghost">Print / Save as PDF</button>
+      </div>
+      <div class="row">
+        <label class="filebtn">Import backup<input id="importFile" type="file" accept="application/json"></label>
+      </div>
+      <div id="dataMsg" class="result" hidden></div>
+    </div>
+    <div class="card">
+      <h2>Add your own explanation</h2>
+      <p class="hint">If the library doesn't cover something, write it once here and it's yours forever.</p>
+      <input id="ownTitle" placeholder="Topic name (e.g. Treaty of Versailles)">
+      <select id="ownSubject"></select>
+      <textarea id="ownBody" rows="6" placeholder="Explain it in your own words. Blank line = new paragraph."></textarea>
+      <button id="btnSaveOwn" class="primary">Save to my library</button>
+      <div id="ownMsg" class="result" hidden></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  <p>Runs entirely in your browser. No account, no internet needed after the first load.</p>
+</footer>
+
+<script>
+/* Study Sorter — built-in explanation library.
+   Each entry: t=title, s=subject, k=search keywords, d=plain explanation,
+   f=key formula/fact, e=worked example, steps=method walkthrough, m=common mistakes. */
+
+const SUBJECTS = {
+  math:"Math", biology:"Biology", chemistry:"Chemistry", physics:"Physics",
+  history:"History", english:"English", cs:"Computer Science",
+  economics:"Economics", geography:"Geography", general:"Unsorted"
+};
+
+/* Words that route an item to a subject when no #tag is given. */
+const SUBJECT_HINTS = {
+  math:["math","algebra","geometry","calculus","equation","solve","simplify","factor","fraction","polynomial","quadratic","slope","graph","derivative","integral","trig","sine","cosine","tangent","logarithm","exponent","probability","statistics","mean","median","angle","triangle","theorem","inequality","matrix","vector","sequence","function","domain","range","radical","square root","numerator","denominator","x^","y=","limit","lim(","approaches","discontinuity","discontinuities","continuity","continuous","piecewise","asymptote","removable","rationalize","conjugate","cos(","sin(","tan(","one sided","left hand","right hand","indeterminate","factor completely","evaluate the limit"],
+  biology:["biology","bio","cell","dna","rna","gene","genetic","organism","photosynthesis","respiration","mitosis","meiosis","enzyme","protein","evolution","natural selection","ecosystem","chromosome","mitochondria","nucleus","bacteria","virus","tissue","organ","species","punnett","allele","homeostasis","immune","osmosis","diffusion","chloroplast","atp"],
+  chemistry:["chemistry","chem","atom","molecule","element","compound","reaction","bond","ionic","covalent","mole","stoichiometry","acid","base","ph","periodic","electron","proton","neutron","isotope","solution","solute","catalyst","oxidation","valence","molar","balancing"],
+  physics:["physics","force","motion","velocity","acceleration","newton","energy","momentum","gravity","friction","wave","frequency","wavelength","voltage","current","resistance","circuit","ohm","joule","watt","kinetic","potential","mass times","projectile","inertia"],
+  history:["history","war","revolution","treaty","empire","president","constitution","amendment","civil","ancient","medieval","century","colonial","independence","dynasty","cold war","depression","holocaust","slavery","suffrage","reconstruction","industrial revolution","renaissance","1776","1861","1914","1939"],
+  english:["english","essay","thesis","paragraph","author","novel","poem","poetry","character","plot","theme","metaphor","simile","symbolism","irony","tone","mood","narrator","imagery","rhetorical","ethos","pathos","logos","citation","grammar","comma","clause","literary","protagonist","foreshadow","alliteration","allusion"],
+  cs:["code","coding","program","programming","python","javascript","java","variable","loop","function call","array","algorithm","boolean","compile","debug","binary","recursion","big o","syntax","string","integer"],
+  economics:["economics","economy","supply","demand","inflation","gdp","market","tariff","tax","scarcity","opportunity cost","monopoly","interest rate","recession","fiscal","monetary"],
+  geography:["geography","climate","continent","latitude","longitude","erosion","tectonic","volcano","earthquake","biome","population density","map","hemisphere","water cycle","atmosphere"]
+};
+
+const LIB = [
+
+/* ================= MATH ================= */
+{t:"Complex fractions",s:"math",k:["complex fraction","fraction inside fraction","stacked fraction","simplify fraction"],
+ d:"A complex fraction is a fraction that has fractions inside its numerator, denominator, or both. You never divide them as-is. You turn the top into one single fraction, turn the bottom into one single fraction, then divide — and dividing by a fraction means multiplying by its reciprocal (flip it).",
+ f:"(a/b) ÷ (c/d) = (a/b) × (d/c)",
+ steps:["Combine the top into ONE fraction over a common denominator.","Combine the bottom into ONE fraction over a common denominator.","Rewrite the stack as top ÷ bottom.","Flip the bottom fraction and multiply.","Factor everything you can and cancel matching factors.","State restrictions: any x that made an original denominator zero is excluded."],
+ e:"Simplify (1 − x²/25) ÷ (x/5 + 1).\nTop: 1 − x²/25 = (25 − x²)/25 = (5−x)(5+x)/25\nBottom: x/5 + 1 = (x+5)/5\nDivide → (5−x)(5+x)/25 × 5/(x+5)\nCancel (5+x) and one 5 → (5 − x)/5, with x ≠ −5.",
+ m:["Cancelling terms instead of factors — you can only cancel things multiplied, never things added.","Forgetting to flip the bottom fraction before multiplying.","Forgetting the restriction (the x-value that breaks the original denominator)."]},
+
+{t:"Difference of squares",s:"math",k:["difference of squares","a2 - b2","factor squares"],
+ d:"Any expression shaped 'something squared minus something else squared' factors instantly into two matching binomials — one with a plus, one with a minus. It only works for SUBTRACTION. A sum of squares (a² + b²) does not factor over real numbers.",
+ f:"a² − b² = (a − b)(a + b)",
+ e:"25 − x² = (5 − x)(5 + x)\n9y² − 49 = (3y − 7)(3y + 7)\nx⁴ − 16 = (x² − 4)(x² + 4) = (x−2)(x+2)(x²+4)",
+ m:["Trying to factor a² + b² — it doesn't factor with real numbers.","Missing that a coefficient is a perfect square (49x² is (7x)²).","Stopping after one round when the result can factor again."]},
+
+{t:"Quadratic formula",s:"math",k:["quadratic formula","quadratic","ax2+bx+c","discriminant","roots"],
+ d:"Solves ANY equation shaped ax² + bx + c = 0, even when factoring fails. The part under the square root (the discriminant, b² − 4ac) tells you what kind of answers you'll get before you finish.",
+ f:"x = [ −b ± √(b² − 4ac) ] / (2a)",
+ steps:["Get the equation into ax² + bx + c = 0 form — everything on one side, zero on the other.","Write down a, b, c with their signs.","Compute the discriminant b² − 4ac.","Plug into the formula and simplify the radical.","Split into the + answer and the − answer."],
+ e:"2x² + 5x − 3 = 0 → a=2, b=5, c=−3\nDiscriminant: 25 − 4(2)(−3) = 25 + 24 = 49\nx = (−5 ± 7)/4 → x = 1/2 or x = −3",
+ m:["Forgetting the equation must equal zero first.","Losing the sign on a negative c — −4ac with c negative becomes ADDITION.","Dividing only part of the numerator by 2a — the whole top gets divided.","Discriminant > 0: two real roots. = 0: one repeated root. < 0: no real roots (two complex)."]},
+
+{t:"Factoring trinomials",s:"math",k:["factoring","factor trinomial","x2+bx+c","foil backwards"],
+ d:"Factoring is FOIL run backwards: you're looking for two binomials that multiply back to the trinomial. When the leading coefficient is 1, you just need two numbers that multiply to c and add to b.",
+ f:"x² + bx + c = (x + p)(x + q) where p·q = c and p + q = b",
+ steps:["Always pull out a greatest common factor first.","List factor pairs of c.","Find the pair that adds to b.","Write the two binomials.","FOIL it back out to check."],
+ e:"x² + 7x + 12 → pairs of 12: (1,12)(2,6)(3,4). 3+4 = 7 ✓ → (x+3)(x+4)\nx² − 5x − 24 → need product −24, sum −5 → (−8)(3) → (x−8)(x+3)",
+ m:["Skipping the GCF step, which makes the numbers much uglier.","Getting signs backwards: if c is negative, the two numbers have OPPOSITE signs.","Forgetting that when a ≠ 1 you need grouping or the AC method."]},
+
+{t:"Slope and linear equations",s:"math",k:["slope","y=mx+b","linear equation","rise over run","point slope"],
+ d:"Slope is how steep a line is: how much y changes for each step of x. Positive slope goes up left-to-right, negative goes down, zero is flat, and undefined is a vertical line.",
+ f:"m = (y₂ − y₁)/(x₂ − x₁)   •   Slope-intercept: y = mx + b   •   Point-slope: y − y₁ = m(x − x₁)",
+ e:"Through (2, 3) and (6, 11): m = (11−3)/(6−2) = 8/4 = 2.\nUse point-slope: y − 3 = 2(x − 2) → y = 2x − 1.",
+ m:["Subtracting the coordinates in a different order on top and bottom — that flips the sign.","Mixing up which number is the slope and which is the y-intercept in y = mx + b.","Parallel lines share a slope; perpendicular slopes are negative reciprocals (2 and −1/2)."]},
+
+{t:"Systems of equations",s:"math",k:["system of equations","substitution","elimination","two equations"],
+ d:"Two equations, two unknowns. The solution is the point where the two lines cross. Substitution is best when one variable is already alone; elimination is best when coefficients line up.",
+ f:"Substitution: solve one equation for a variable, plug it into the other. Elimination: add or subtract the equations so one variable cancels.",
+ e:"2x + y = 7 and x − y = 2.\nAdd them: 3x = 9 → x = 3. Back-substitute: 3 − y = 2 → y = 1. Solution (3, 1).",
+ m:["Only solving for one variable and stopping — you need both.","Forgetting to distribute the negative when subtracting equations.","No solution = parallel lines. Infinitely many = the same line twice."]},
+
+{t:"Exponent rules",s:"math",k:["exponent","power rule","negative exponent","zero exponent"],
+ d:"Exponents are repeated multiplication, and every rule comes from that. Multiplying like bases adds exponents because you're just counting factors.",
+ f:"xᵃ·xᵇ = xᵃ⁺ᵇ  •  xᵃ/xᵇ = xᵃ⁻ᵇ  •  (xᵃ)ᵇ = xᵃᵇ  •  x⁰ = 1  •  x⁻ᵃ = 1/xᵃ  •  x^(1/n) = ⁿ√x",
+ e:"(3x²)³ = 27x⁶   •   x⁵/x⁸ = x⁻³ = 1/x³   •   16^(3/4) = (⁴√16)³ = 2³ = 8",
+ m:["Adding exponents when the bases are different — the rule needs the SAME base.","Thinking a negative exponent makes the answer negative; it makes it a reciprocal.","Forgetting the outside exponent hits the coefficient too: (3x)² = 9x², not 3x²."]},
+
+{t:"Logarithms",s:"math",k:["logarithm","log","ln","natural log"],
+ d:"A logarithm answers 'what exponent do I need?' log_b(x) = y means b^y = x. Logs and exponentials are inverse operations, which is why logs are the tool for pulling a variable out of an exponent.",
+ f:"log_b(xy)=log_b x + log_b y  •  log_b(x/y)=log_b x − log_b y  •  log_b(xⁿ)=n·log_b x  •  change of base: log_b x = ln x / ln b",
+ e:"Solve 2^x = 40 → x = log₂40 = ln40/ln2 ≈ 5.32",
+ m:["Writing log(x+y) = log x + log y — false. The sum rule applies to a PRODUCT inside.","Taking the log of a negative number or zero (undefined for real logs).","Forgetting log without a base written means base 10, and ln means base e."]},
+
+{t:"Pythagorean theorem",s:"math",k:["pythagorean","right triangle","hypotenuse","a2+b2=c2"],
+ d:"In a RIGHT triangle only, the two short sides squared and added equal the longest side squared. c is always the hypotenuse — the side across from the 90° angle.",
+ f:"a² + b² = c²",
+ e:"Legs 6 and 8: 36 + 64 = 100 → c = 10.\nHypotenuse 13, one leg 5: 25 + b² = 169 → b = 12.",
+ m:["Putting the hypotenuse in the a or b slot.","Using it on a triangle that isn't right-angled.","Forgetting the final square root."]},
+
+{t:"Trig ratios (SOHCAHTOA)",s:"math",k:["sohcahtoa","sine","cosine","tangent","trig ratio","trigonometry"],
+ d:"In a right triangle, each trig function is a ratio of two sides relative to the angle you picked. Opposite and adjacent change depending on which angle you're standing at; the hypotenuse never changes.",
+ f:"sin θ = Opposite/Hypotenuse • cos θ = Adjacent/Hypotenuse • tan θ = Opposite/Adjacent",
+ e:"Angle 30°, hypotenuse 10, find the opposite side: sin30 = x/10 → x = 10(0.5) = 5.",
+ m:["Labelling opposite/adjacent from the wrong angle.","Calculator in radians when the problem is in degrees (or vice versa).","Using sin⁻¹ when you want sin — the inverse gives you the ANGLE back."]},
+
+{t:"Derivatives",s:"math",k:["derivative","differentiate","calculus","rate of change","dy/dx"],
+ d:"A derivative measures instantaneous rate of change — the slope of the curve at one exact point. Physically: position differentiates to velocity, velocity to acceleration.",
+ f:"Power rule: d/dx[xⁿ] = n·xⁿ⁻¹  •  Product: (fg)' = f'g + fg'  •  Quotient: (f/g)' = (f'g − fg')/g²  •  Chain: d/dx f(g(x)) = f'(g(x))·g'(x)",
+ e:"d/dx[x²] = 2x   •   d/dx[5x³ − 4x + 7] = 15x² − 4   •   d/dx[(3x+1)⁴] = 4(3x+1)³·3 = 12(3x+1)³",
+ m:["Forgetting the chain rule's inner derivative.","Thinking the derivative of a constant is the constant — it's 0.","Using the power rule on an exponential: d/dx[2^x] is not x·2^(x−1)."]},
+
+{t:"Mean, median, mode, range",s:"math",k:["mean","median","mode","range","average","central tendency"],
+ d:"Four ways to describe a data set. Mean is the balance point but gets dragged by outliers; median is the middle value and ignores outliers, which is why house prices and incomes are reported as medians.",
+ f:"Mean = sum ÷ count • Median = middle value of the SORTED list • Mode = most frequent • Range = max − min",
+ e:"Data: 3, 7, 7, 2, 11 → sorted 2,3,7,7,11. Mean = 30/5 = 6. Median = 7. Mode = 7. Range = 9.",
+ m:["Finding the median without sorting first.","With an even count, the median is the average of the two middle numbers.","A set can have no mode, or more than one."]},
+
+{t:"Probability basics",s:"math",k:["probability","chance","odds","independent events"],
+ d:"Probability is favorable outcomes over total outcomes, always between 0 and 1. 'And' usually means multiply, 'or' usually means add — then subtract the overlap so you don't count it twice.",
+ f:"P(A) = favorable/total • P(A and B) = P(A)·P(B) if independent • P(A or B) = P(A) + P(B) − P(A and B) • P(not A) = 1 − P(A)",
+ e:"Two fair coins both heads: (1/2)(1/2) = 1/4.\nRolling a 2 OR an even number on a die: 1/6 + 3/6 − 1/6 = 3/6 = 1/2.",
+ m:["Adding when events happen together instead of multiplying.","Treating dependent events as independent — drawing cards WITHOUT replacement changes the second denominator.","The gambler's fallacy: past coin flips don't change the next one."]},
+{t:"Rationalizing the denominator",s:"math",k:["rationalize","rational denominator","radical in denominator","simplest radical form","conjugate"],
+ d:"Standard form doesn't allow a square root sitting in the denominator. To clear it you multiply the top and bottom by the same thing — which is really multiplying by 1, so the value never changes, only how it looks. For a single-term (monomial) denominator, multiply by that radical. For a two-term denominator, multiply by its conjugate.",
+ f:"Monomial: a/\u221ab = a\u221ab/b, then reduce.  \u2022  Binomial: a/(b + \u221ac) \u00d7 (b \u2212 \u221ac)/(b \u2212 \u221ac), because (b+\u221ac)(b\u2212\u221ac) = b\u00b2 \u2212 c.",
+ steps:["Look at the denominator: one term or two?","One term \u2192 multiply top and bottom by that square root.","Two terms \u2192 multiply top and bottom by the conjugate (same terms, flipped sign).","Multiply out. In the denominator \u221ab \u00d7 \u221ab = b, so the radical disappears.","Reduce the fraction by any common factor.","Simplify the radical itself if it hides a perfect square."],
+ e:"3/\u221a3 \u2192 multiply by \u221a3/\u221a3 \u2192 3\u221a3/3 \u2192 \u221a3\n5/\u221a2 \u2192 5\u221a2/2 (already reduced)\n6/\u221a3 \u2192 6\u221a3/3 \u2192 2\u221a3\n4/(1+\u221a2) \u2192 \u00d7(1\u2212\u221a2)/(1\u2212\u221a2) \u2192 4(1\u2212\u221a2)/(1\u22122) = \u22124(1\u2212\u221a2) = 4\u221a2 \u2212 4",
+ m:["Multiplying only the denominator by the radical \u2014 that changes the value. Top and bottom, always.","Forgetting to reduce afterwards: 3\u221a3/3 is not simplest, \u221a3 is.","Using the same sign instead of the conjugate on a two-term denominator \u2014 the radical won't cancel.","Not simplifying the radical first: \u221a12 = 2\u221a3."]},
+
+{t:"Simplifying radicals",s:"math",k:["simplify radical","square root","surd","perfect square","radical form"],
+ d:"To simplify a square root, pull out the largest perfect-square factor. \u221a(a\u00b7b) = \u221aa \u00b7 \u221ab, so any perfect square inside can walk out as a whole number.",
+ f:"\u221a(a\u00b7b) = \u221aa\u00b7\u221ab  \u2022  \u221a(a/b) = \u221aa/\u221ab  \u2022  \u221a(x\u00b2) = |x|",
+ e:"\u221a72 = \u221a(36\u00b72) = 6\u221a2\n\u221a50 = \u221a(25\u00b72) = 5\u221a2\n\u221a(48x\u00b3) = \u221a(16x\u00b2 \u00b7 3x) = 4x\u221a(3x)",
+ m:["Pulling out a factor that isn't a perfect square.","Using a small perfect square and stopping early: \u221a72 = 2\u221a18 is not finished.","Writing \u221a(a+b) = \u221aa + \u221ab \u2014 completely false. The rule works for multiplication only."]},
+
+{t:"Limits — the idea",s:"math",k:["limit","limits","approaches","lim","calculus limit"],
+ d:"A limit asks: as x gets arbitrarily close to some value c, what does f(x) get close to? It does NOT ask what f(c) equals. The function can have a hole, a jump, or be undefined at c and the limit can still exist — the limit only cares about the neighborhood around c, never the point itself.",
+ f:"lim(x\u2192c) f(x) = L exists only if the left-hand limit and the right-hand limit both exist AND are equal.\nlim(x\u2192c\u207b) f(x) = lim(x\u2192c\u207a) f(x) = L",
+ steps:["Try direct substitution first \u2014 plug in c.","If you get a real number, that's the limit. Done.","If you get 0/0, it's indeterminate: factor and cancel, rationalize, or use a known trig limit.","If you get (nonzero)/0, the limit is infinite \u2014 a vertical asymptote; check each side's sign.","Always confirm the left and right sides agree, or the limit does not exist."],
+ e:"lim(x\u21923) (x\u00b2\u22129)/(x\u22123): substitution gives 0/0. Factor \u2192 (x\u22123)(x+3)/(x\u22123) \u2192 cancel \u2192 x+3 \u2192 6.\nNote f(3) is undefined, but the limit is still 6.",
+ m:["Thinking the limit equals f(c). It usually does for continuous functions, but that's a consequence, not the definition.","Stopping at 0/0 and writing 'does not exist' \u2014 0/0 means do more work.","Forgetting to check both sides at a piecewise boundary or an asymptote."]},
+
+{t:"Trig limits",s:"math",k:["trig limit","sin x over x","limit sin","trigonometric limit","special limit","cos(x)","tan(x)","sin(x)","cosx","tanx","sinx","sin(","cos(","tan("],
+ d:"Direct substitution on most trig limits at 0 gives 0/0. Two special limits rescue you, and everything else is algebra to force the expression into one of those shapes. The key move is rewriting tan as sin/cos and matching the argument inside the trig function to the denominator.",
+ f:"lim(x\u21920) sin(x)/x = 1   \u2022   lim(x\u21920) (1 \u2212 cos x)/x = 0   \u2022   lim(x\u21920) tan(x)/x = 1\nGeneral: lim(x\u21920) sin(ax)/(bx) = a/b",
+ steps:["Substitute 0. If you get 0/0, continue.","Rewrite tan(x) as sin(x)/cos(x) and cancel anything you can.","Make the inside of the sine match the denominator \u2014 multiply top and bottom by whatever it takes.","Replace the matched piece with 1 and simplify the leftover constants."],
+ e:"lim(x\u21920) [5cos(x)tan(x)]/(7x)\n= lim 5cos(x)\u00b7[sin(x)/cos(x)]/(7x)   \u2190 the cos(x) cancels\n= lim 5sin(x)/(7x) = (5/7)\u00b7lim sin(x)/x = (5/7)(1) = 5/7\n\nlim(x\u21920) sin(4x)/(9x) = 4/9\nlim(x\u21920) (1\u2212cos x)/(3x) = 0",
+ m:["Using sin(x)/x = 1 when the arguments don't match \u2014 sin(3x)/x is 3, not 1.","Forgetting (1\u2212cos x)/x goes to 0, not 1.","Trying L'H\u00f4pital before checking it's actually 0/0 or \u221e/\u221e.","Cancelling cos(x) when it isn't a common factor."]},
+
+{t:"Limits of piecewise functions",s:"math",k:["piecewise","piecewise limit","one sided limit","left hand limit","right hand limit"],
+ d:"At a boundary between pieces, you must evaluate each side with its OWN rule. Approach from the left using the piece defined for x < c; approach from the right using the piece for x > c. The two-sided limit exists only if those two answers match \u2014 and the value the function is actually assigned at c is irrelevant to the limit.",
+ f:"lim(x\u2192c\u207b) uses the rule for x < c.  lim(x\u2192c\u207a) uses the rule for x > c.\nIf they are equal \u2192 limit exists and equals that value. If not \u2192 limit DNE (jump).",
+ steps:["Identify the boundary value c the problem asks about.","Find the piece that applies just BELOW c; plug c into it \u2192 left-hand limit.","Find the piece that applies just ABOVE c; plug c into it \u2192 right-hand limit.","Compare. Equal = the limit. Different = does not exist.","Separately, f(c) is whichever piece explicitly includes the equals sign \u2014 needed for continuity, not for the limit."],
+ e:"f(x) = { x + 3 for x < 2 ;  x\u00b2 for x \u2265 2 }\nLeft: 2 + 3 = 5.  Right: 2\u00b2 = 4.  5 \u2260 4, so lim(x\u21922) f(x) does not exist \u2014 a jump.",
+ m:["Plugging c into only one piece.","Using the piece that contains the \u2265 sign for BOTH sides.","Saying the limit exists because f(c) is defined \u2014 unrelated.","Away from a boundary, just use whichever single piece applies; no one-sided work needed."]},
+
+{t:"Types of discontinuities",s:"math",k:["discontinuity","removable","jump discontinuity","infinite discontinuity","hole","continuous","continuity"],
+ d:"A function is continuous at c when three things all hold: f(c) is defined, the limit exists, and they're equal. Each way that can fail names a different discontinuity.",
+ f:"Continuity test at c: (1) f(c) exists, (2) lim(x\u2192c) f(x) exists, (3) lim(x\u2192c) f(x) = f(c).\n\u2022 REMOVABLE (hole): the limit exists but f(c) is missing or set to the wrong value.\n\u2022 JUMP: left and right limits both exist but are different.\n\u2022 INFINITE: one or both sides run to \u00b1\u221e (vertical asymptote).\n\u2022 OSCILLATING: the values never settle, e.g. sin(1/x) at 0.",
+ e:"(x\u00b2\u22124)/(x\u22122) at x=2 \u2192 removable hole at (2,4).\nA step function jumping from 1 to 3 \u2192 jump.\n1/(x\u22125)\u00b2 at x=5 \u2192 infinite.",
+ m:["Calling a hole a jump \u2014 a hole has a limit, a jump doesn't.","Thinking a vertical asymptote is removable; you can't patch it with one point.","Forgetting the third condition: the limit can exist and f(c) can exist but still differ, which is still removable."]},
+
+{t:"Reading discontinuities off a graph",s:"math",k:["graphically","graph discontinuity","open circle","closed dot","filled dot","jump from graph","hole on graph","read the graph"],
+ d:"Graph questions give you the answer visually if you know what the dots mean. A CLOSED (filled) dot means that point is included \u2014 it is f(c). An OPEN circle means the curve approaches that height but the point is excluded. At every break, ignore the dots for a second and ask only: what height does the curve come up to from the left, and what height does it leave from on the right? Those two numbers decide the type.",
+ f:"At x = c, read the LEFT branch's ending height and the RIGHT branch's starting height.\n\u2022 Both finite and EQUAL, but a dot is missing or misplaced \u2192 REMOVABLE (hole).\n\u2022 Both finite and DIFFERENT \u2192 JUMP.\n\u2022 Either one runs off to \u00b1\u221e \u2192 INFINITE (vertical asymptote).\nA closed dot = f(c). An open circle = a height approached but not attained.",
+ steps:["Find every x where the curve breaks, has a circle, or has an asymptote.","At each one, trace the curve in from the LEFT and note the height it ends at.","Trace the curve out to the RIGHT and note the height it starts at.","Equal heights \u2192 removable. Different finite heights \u2192 jump. Infinite \u2192 infinite.","Only now look at the filled dot \u2014 it tells you f(c), which affects continuity but never the limit."],
+ e:"A curve rises to a closed dot at (\u22126, 5), and the next branch begins at an open circle at (\u22126, 0).\nLeft height 5, right height 0 \u2014 both finite, not equal \u2192 JUMP at x = \u22126.\n\nA curve runs smoothly through an open circle at (2, 3) with a closed dot floating at (2, 5).\nLeft height 3, right height 3 \u2014 equal \u2192 REMOVABLE at x = 2, even though f(2) = 5.",
+ m:["The classic trap: an open circle and a closed dot stacked at the same x. That is only removable if the curve reaches the SAME height from both sides \u2014 otherwise it is a jump.","Deciding the type from the dots instead of from the two one-sided heights.","Including endpoints of the whole graph. If the interval is open, like \u22129 < x < 9, the ends are not in it.","Forgetting that a removable discontinuity still counts as discontinuous \u2014 'removable' means patchable, not continuous."]},
+
+{t:"Limit properties",s:"math",k:["limit properties","limit laws","sum of limits","limit rules","graphically"],
+ d:"Limits distribute over the ordinary operations, as long as each individual limit exists. That's what lets you break a messy expression into pieces, read each piece off a graph or table, and recombine.",
+ f:"lim(f + g) = lim f + lim g   \u2022   lim(f \u2212 g) = lim f \u2212 lim g\nlim(k\u00b7f) = k\u00b7lim f   \u2022   lim(f\u00b7g) = (lim f)(lim g)\nlim(f/g) = (lim f)/(lim g), provided lim g \u2260 0\nlim[f(x)]\u207f = (lim f)\u207f",
+ e:"Given lim f = 3 and lim g = \u22122:\nlim(2f + g) = 2(3) + (\u22122) = 4\nlim(f\u00b7g) = (3)(\u22122) = \u22126\nlim(f/g) = 3/(\u22122) = \u22123/2",
+ m:["Applying the quotient rule when the bottom limit is 0 \u2014 that's indeterminate or infinite, so the rule doesn't apply.","Using a two-sided limit off a graph where the left and right values differ; that limit DNE, so no property applies.","Combining limits when one of them does not exist \u2014 the laws require every piece to exist first."]},
+
+/* ================= BIOLOGY ================= */
+{t:"Photosynthesis",s:"biology",k:["photosynthesis","chloroplast","chlorophyll","calvin cycle","light reactions"],
+ d:"Plants convert light energy into chemical energy stored in glucose. It happens in the chloroplast in two stages: light-dependent reactions in the thylakoid membranes capture light and make ATP and NADPH (splitting water and releasing O₂), then the Calvin cycle in the stroma uses that ATP and NADPH to build sugar from CO₂.",
+ f:"6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂",
+ e:"The oxygen you breathe came from splitting WATER molecules in the light reactions, not from the carbon dioxide.",
+ m:["Saying plants 'breathe in CO₂ and breathe out O₂' — plants also do cellular respiration, all the time.","Thinking the Calvin cycle needs darkness. It doesn't need light directly, but it runs during the day off the ATP the light reactions make.","Mixing up where each stage happens: thylakoid = light reactions, stroma = Calvin cycle."]},
+
+{t:"Cellular respiration",s:"biology",k:["cellular respiration","mitochondria","krebs","glycolysis","atp","electron transport"],
+ d:"Cells break glucose down to release energy as ATP. Three stages: glycolysis in the cytoplasm splits glucose into two pyruvate; the Krebs (citric acid) cycle in the mitochondrial matrix strips off electrons; the electron transport chain on the inner mitochondrial membrane uses those electrons to pump protons and drive ATP synthase. Oxygen is the final electron acceptor.",
+ f:"C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP (about 30–32 ATP per glucose)",
+ e:"Without oxygen, cells fall back on fermentation — far less ATP, and in your muscles it produces lactic acid.",
+ m:["Saying it makes exactly 38 ATP — modern estimates are ~30–32.","Thinking glycolysis happens in the mitochondria; it's in the cytoplasm and needs no oxygen.","Forgetting that it is essentially photosynthesis reversed."]},
+
+{t:"Mitosis vs meiosis",s:"biology",k:["mitosis","meiosis","cell division","chromosome","prophase","metaphase","anaphase"],
+ d:"Mitosis makes two identical diploid body cells for growth and repair. Meiosis makes four genetically different haploid gametes (sperm/egg) for reproduction. Meiosis runs the division twice and adds crossing over, which is where genetic variety comes from.",
+ f:"Mitosis: 1 cell → 2 identical diploid cells. Meiosis: 1 cell → 4 unique haploid cells. Phases in order: Prophase, Metaphase, Anaphase, Telophase (PMAT).",
+ e:"A skin cell healing a cut uses mitosis. Making sperm or eggs uses meiosis.",
+ m:["Forgetting meiosis has TWO divisions (meiosis I and II).","Thinking mitosis creates variation — it makes clones.","Metaphase = middle (chromosomes line up), Anaphase = apart (they separate)."]},
+
+{t:"DNA structure and replication",s:"biology",k:["dna","double helix","base pairing","replication","nucleotide","helicase"],
+ d:"DNA is a double helix of two antiparallel strands. Each nucleotide has a sugar, a phosphate, and one of four bases. The strands are held together by hydrogen bonds between complementary bases. Replication is semi-conservative: the helix unzips and each old strand templates a new one, so every new DNA molecule is half old, half new.",
+ f:"Base pairing: A–T (2 hydrogen bonds), C–G (3 hydrogen bonds). In RNA, uracil (U) replaces thymine (T).",
+ e:"Template strand ATGCCG → new strand TACGGC.",
+ m:["Pairing A with G — purines pair with pyrimidines, A–T and C–G only.","Forgetting RNA uses U instead of T.","Saying replication is 'conservative' — it's semi-conservative."]},
+
+{t:"Transcription and translation",s:"biology",k:["transcription","translation","protein synthesis","mrna","trna","ribosome","codon"],
+ d:"The central dogma: DNA → RNA → protein. Transcription happens in the nucleus, where RNA polymerase copies a gene into mRNA. Translation happens at the ribosome, where tRNA reads mRNA three bases at a time (a codon) and adds the matching amino acid to a growing protein chain.",
+ f:"3 mRNA bases = 1 codon = 1 amino acid. Start codon AUG (methionine). Stop codons UAA, UAG, UGA.",
+ e:"DNA TAC → mRNA AUG → tRNA anticodon UAC → amino acid methionine, which starts every protein.",
+ m:["Swapping the locations: transcription is in the nucleus, translation at the ribosome.","Forgetting to convert T to U when writing the mRNA.","Reading codons in the wrong frame — always start from AUG."]},
+
+{t:"Natural selection and evolution",s:"biology",k:["natural selection","evolution","darwin","adaptation","fitness","survival of the fittest"],
+ d:"Populations contain natural variation. Organisms produce more offspring than can survive. Individuals with traits better suited to the environment survive and reproduce more, passing those traits on. Over many generations the population's traits shift. Selection acts on POPULATIONS over time, not on individuals during their lifetime.",
+ f:"Variation + Inheritance + Selection + Time = Evolution. 'Fitness' means reproductive success, not strength.",
+ e:"Antibiotic resistance: a few bacteria already carry a resistance mutation, the antibiotic kills the rest, and the survivors repopulate.",
+ m:["Saying an organism 'evolved a trait because it needed it' — mutations happen randomly first, then get selected.","Thinking individuals evolve. They don't; populations do.","Assuming evolution has a goal or a direction toward 'better'."]},
+
+{t:"Punnett squares and Mendelian genetics",s:"biology",k:["punnett","genetics","allele","dominant","recessive","genotype","phenotype","heterozygous"],
+ d:"Each parent passes one allele per gene. A Punnett square charts every possible combination. Dominant alleles (capital letter) mask recessive ones (lowercase), so a recessive trait only shows when both alleles are recessive.",
+ f:"Genotype = the letters (BB, Bb, bb). Phenotype = what you see. Homozygous = matching alleles, heterozygous = mixed. Bb × Bb → 1 BB : 2 Bb : 1 bb (75% dominant phenotype).",
+ e:"Two brown-eyed heterozygous parents (Bb × Bb) have a 25% chance of a blue-eyed (bb) child.",
+ m:["Confusing genotype ratio (1:2:1) with phenotype ratio (3:1).","Thinking dominant means 'more common in the population' — it means it masks the other allele.","Each pregnancy is independent; three brown-eyed kids don't make the fourth more likely to be blue."]},
+
+{t:"Osmosis and diffusion",s:"biology",k:["osmosis","diffusion","hypertonic","hypotonic","isotonic","concentration gradient","passive transport"],
+ d:"Diffusion is any particle spreading from high to low concentration. Osmosis is specifically WATER moving across a semipermeable membrane. Both are passive — no ATP needed. Water always moves toward the saltier/more concentrated side.",
+ f:"Hypertonic solution = more solute outside → cell shrinks. Hypotonic = less solute outside → water enters, cell swells. Isotonic = no net movement.",
+ e:"A red blood cell in pure water bursts (hypotonic). In salt water it shrivels (hypertonic).",
+ m:["Thinking osmosis moves solute — it moves water.","Reversing hypo and hyper. Hypo = 'under' = less solute outside.","Assuming diffusion needs energy; active transport does, diffusion doesn't."]},
+
+{t:"Enzymes",s:"biology",k:["enzyme","catalyst","substrate","active site","denature","activation energy"],
+ d:"Enzymes are protein catalysts. They lower the activation energy of a reaction so it happens fast enough for life, and they come out unchanged, so one enzyme works over and over. Each enzyme's active site fits one specific substrate shape.",
+ f:"Enzyme + substrate → enzyme-substrate complex → enzyme + product. Enzyme is reusable.",
+ e:"Amylase in saliva breaks starch into sugar — which is why bread starts tasting sweet if you hold it in your mouth.",
+ m:["Saying enzymes get used up — they don't.","Thinking heat always speeds enzymes up. Past the optimum they DENATURE (shape is destroyed) and stop working.","Denaturing is about shape, not about the enzyme being 'killed' — enzymes were never alive."]},
+
+/* ================= CHEMISTRY ================= */
+{t:"Ionic vs covalent bonds",s:"chemistry",k:["ionic bond","covalent bond","chemical bond","electronegativity","metallic bond"],
+ d:"Ionic bonds TRANSFER electrons — usually a metal gives electrons to a nonmetal, creating charged ions that attract. Covalent bonds SHARE electrons between two nonmetals. Big electronegativity difference means ionic; small difference means covalent.",
+ f:"Ionic: metal + nonmetal, transfers electrons, high melting point, conducts when dissolved. Covalent: nonmetal + nonmetal, shares electrons, lower melting point, usually doesn't conduct.",
+ e:"NaCl is ionic (sodium hands its electron to chlorine). H₂O is covalent (oxygen and hydrogen share).",
+ m:["Thinking ionic compounds conduct electricity as solids — they need to be melted or dissolved so the ions can move.","Forgetting polar covalent bonds exist in between the two extremes.","Calling a covalent compound a 'molecule of salt' — ionic compounds form lattices, not molecules."]},
+
+{t:"Balancing chemical equations",s:"chemistry",k:["balancing equations","chemical equation","coefficient","conservation of mass"],
+ d:"Matter can't be created or destroyed, so every element must have the same number of atoms on both sides. You fix this by changing COEFFICIENTS (the big numbers in front), never subscripts — changing a subscript changes the substance itself.",
+ f:"Balance in this order: metals, then nonmetals, then hydrogen, then oxygen last.",
+ steps:["Write the unbalanced equation with correct formulas.","Count each element on both sides.","Add coefficients to even things out, saving H and O for last.","Recount everything.","Reduce the coefficients if they share a common factor."],
+ e:"__CH₄ + __O₂ → __CO₂ + __H₂O\nCarbon balances at 1. Hydrogen: 4 on left needs 2 H₂O. Now oxygen on the right is 2+2=4, so use 2 O₂.\nCH₄ + 2O₂ → CO₂ + 2H₂O",
+ m:["Changing a subscript to balance — H₂O and H₂O₂ are completely different substances.","Forgetting a coefficient multiplies EVERY atom in that formula.","Leaving fractional coefficients when the question wants whole numbers."]},
+
+{t:"Moles and stoichiometry",s:"chemistry",k:["mole","stoichiometry","molar mass","avogadro","grams to moles","limiting reactant"],
+ d:"A mole is just a counting unit — 6.022×10²³ particles — that lets you connect the mass you can weigh to the number of particles that actually react. Stoichiometry uses the balanced equation's coefficients as a mole ratio between substances.",
+ f:"1 mole = 6.022×10²³ particles. Moles = mass(g) ÷ molar mass(g/mol). Path: grams → moles → (mole ratio) → moles → grams.",
+ e:"How many grams of H₂O from 32 g of O₂ in 2H₂ + O₂ → 2H₂O?\n32 g ÷ 32 g/mol = 1 mol O₂ → ratio 1 O₂ : 2 H₂O → 2 mol H₂O × 18 g/mol = 36 g.",
+ m:["Using an unbalanced equation — the mole ratio comes from the coefficients.","Converting grams straight to grams without going through moles.","Forgetting to check which reactant runs out first (the limiting reactant)."]},
+
+{t:"Acids, bases, and pH",s:"chemistry",k:["acid","base","ph","neutralization","hydrogen ion","alkaline"],
+ d:"Acids donate H⁺ ions; bases accept them (or donate OH⁻). pH measures H⁺ concentration on a logarithmic scale from 0 to 14, so each step is a factor of TEN. Below 7 is acidic, 7 is neutral, above 7 is basic.",
+ f:"pH = −log[H⁺]. Acid + base → salt + water (neutralization).",
+ e:"pH 3 is ten times more acidic than pH 4 and a hundred times more acidic than pH 5. Stomach acid ≈ 2, pure water = 7, bleach ≈ 13.",
+ m:["Treating the scale as linear — it's logarithmic.","Thinking 'strong acid' means concentrated. Strong means it fully dissociates; concentration is a separate thing.","Forgetting that pH below 0 and above 14 is possible in extreme solutions."]},
+
+{t:"Periodic table trends",s:"chemistry",k:["periodic table","periodic trend","atomic radius","ionization energy","electronegativity","group","period"],
+ d:"Columns (groups) share valence electrons and therefore chemical behavior. Rows (periods) fill the same electron shell. Trends come from two competing pulls: more protons pull electrons in tighter, more shells push them out.",
+ f:"Left→right across a period: atomic radius DECREASES, electronegativity and ionization energy INCREASE. Top→bottom down a group: radius INCREASES, electronegativity and ionization energy DECREASE.",
+ e:"Fluorine (top right, excluding noble gases) is the most electronegative element. Francium (bottom left) is the least.",
+ m:["Expecting atoms to get bigger left-to-right — they get smaller because nuclear charge rises while the shell stays the same.","Applying electronegativity to noble gases, which mostly don't bond.","Confusing groups (vertical) with periods (horizontal)."]},
+
+/* ================= PHYSICS ================= */
+{t:"Newton's three laws",s:"physics",k:["newton","laws of motion","inertia","f=ma","action reaction","force"],
+ d:"First law (inertia): an object keeps doing what it's doing unless an unbalanced force acts on it. Second law: force causes acceleration in proportion to mass. Third law: forces always come in equal-and-opposite pairs acting on DIFFERENT objects.",
+ f:"1st: no net force → constant velocity. 2nd: F = ma. 3rd: F(A on B) = −F(B on A).",
+ e:"Rocket: it pushes exhaust gas down, the gas pushes the rocket up (3rd law). Same push on a heavier rocket gives less acceleration (2nd law).",
+ m:["Thinking motion requires continuous force — at constant velocity the net force is ZERO.","Saying action-reaction pairs cancel out. They act on different objects, so they never cancel each other.","Mixing up mass (amount of matter) with weight (mass × gravity)."]},
+
+{t:"Kinematics equations",s:"physics",k:["kinematics","velocity","acceleration","projectile","displacement","suvat"],
+ d:"Four equations describing motion under CONSTANT acceleration. Pick the one that contains the three things you know plus the one you want. Sign convention matters: pick a positive direction and stick with it.",
+ f:"v = v₀ + at  •  x = x₀ + v₀t + ½at²  •  v² = v₀² + 2a(x − x₀)  •  x = x₀ + ½(v₀ + v)t",
+ e:"Dropped from rest, how fast after 3 s? v = 0 + (9.8)(3) = 29.4 m/s down.",
+ m:["Using these when acceleration isn't constant — they break.","Forgetting gravity is −9.8 m/s² if you called up positive.","In projectile motion, horizontal and vertical are SEPARATE: horizontal acceleration is zero, and the two share only the time."]},
+
+{t:"Work, energy, and power",s:"physics",k:["work","energy","kinetic energy","potential energy","power","joule","conservation of energy"],
+ d:"Work is force applied through a distance — no distance, no work. Energy is the capacity to do work and is conserved: it changes form but the total stays the same. Power is how FAST work gets done.",
+ f:"W = F·d·cosθ  •  KE = ½mv²  •  PE(gravity) = mgh  •  P = W/t  •  Total energy before = total energy after",
+ e:"A 2 kg ball dropped from 5 m: PE = 2(9.8)(5) = 98 J at the top, all converted to KE at the bottom → ½(2)v² = 98 → v ≈ 9.9 m/s.",
+ m:["Thinking holding something heavy is work — no displacement means zero work in physics.","Forgetting KE depends on velocity SQUARED, so doubling speed quadruples energy.","Only counting the force component along the motion — a perpendicular force does no work."]},
+
+{t:"Ohm's law and circuits",s:"physics",k:["ohm","voltage","current","resistance","circuit","series","parallel","amps"],
+ d:"Voltage is the push, current is the flow, resistance is the opposition. In a SERIES circuit there is one path so current is the same everywhere and resistances add. In a PARALLEL circuit there are multiple paths, so voltage is the same across each branch and total resistance drops below the smallest resistor.",
+ f:"V = IR  •  P = IV  •  Series: R_total = R₁ + R₂ + …  •  Parallel: 1/R_total = 1/R₁ + 1/R₂ + …",
+ e:"12 V across a 4 Ω resistor: I = 12/4 = 3 A, and P = (3)(12) = 36 W.",
+ m:["Adding parallel resistances directly — you add their reciprocals.","Thinking current gets 'used up' as it flows; in series it's identical at every point.","Confusing which quantity is constant: series = same current, parallel = same voltage."]},
+
+/* ================= HISTORY ================= */
+{t:"Causes of World War I",s:"history",k:["world war 1","wwi","ww1","great war","franz ferdinand","alliances","1914"],
+ d:"Long-term pressures had been building for decades — Militarism (arms races, especially naval), Alliances (two rival blocs), Imperialism (competition for colonies), and Nationalism (ethnic tensions in the Balkans). The assassination of Archduke Franz Ferdinand in Sarajevo on 28 June 1914 was the spark; the alliance system turned a regional dispute into a continental war within weeks.",
+ f:"M.A.I.N. — Militarism, Alliances, Imperialism, Nationalism. Spark: Franz Ferdinand assassinated by Gavrilo Princip, 28 June 1914. Triple Alliance (Germany, Austria-Hungary, Italy) vs Triple Entente (France, Russia, Britain).",
+ e:"Austria-Hungary declared war on Serbia → Russia mobilized to defend Serbia → Germany declared war on Russia and France → Germany invaded Belgium → Britain entered. One assassination, five weeks, a world war.",
+ m:["Saying the assassination CAUSED the war — it triggered it; the causes were structural.","Italy was in the Triple Alliance but entered the war in 1915 on the Allied side instead.","The US did not enter until April 1917."]},
+
+{t:"Causes of World War II",s:"history",k:["world war 2","wwii","ww2","hitler","appeasement","treaty of versailles","1939"],
+ d:"The Treaty of Versailles left Germany humiliated and economically crippled. The Great Depression made extremist parties attractive, bringing Hitler to power in 1933. The League of Nations proved powerless, and Britain and France responded to aggression with appeasement. War began when Germany invaded Poland on 1 September 1939.",
+ f:"Key causes: harsh Treaty of Versailles (1919), Great Depression, rise of fascism, failure of the League of Nations, appeasement (Munich Agreement 1938). Trigger: invasion of Poland, 1 Sept 1939.",
+ e:"At Munich in 1938 Britain and France let Hitler take the Sudetenland to avoid war. He took the rest of Czechoslovakia months later — appeasement bought time, not peace.",
+ m:["Thinking the US entered in 1939 — it entered after Pearl Harbor, 7 December 1941.","Forgetting the Nazi-Soviet Pact (Aug 1939) let Germany invade Poland without a two-front war.","Treating the war in Asia as a separate story; Japan had been at war in China since 1937."]},
+
+{t:"The US Constitution and separation of powers",s:"history",k:["constitution","branches of government","checks and balances","legislative","executive","judicial","bill of rights"],
+ d:"The Constitution splits federal power into three branches so no one branch dominates. Legislative (Congress) writes laws, Executive (President) enforces them, Judicial (courts) interprets them. Checks and balances let each branch limit the others.",
+ f:"Legislative = Congress (House + Senate). Executive = President. Judicial = Supreme Court. First 10 amendments = Bill of Rights. Amending requires 2/3 of both houses plus 3/4 of the states.",
+ e:"Congress passes a bill → the President can veto it → Congress can override with a 2/3 vote in both houses → the Supreme Court can still rule it unconstitutional.",
+ m:["Thinking the Supreme Court's power to strike down laws is written in the Constitution — judicial review was established by Marbury v. Madison (1803).","Confusing the Declaration of Independence (1776) with the Constitution (written 1787, ratified 1788).","Forgetting the Articles of Confederation came first and failed because the federal government was too weak."]},
+
+{t:"The Cold War",s:"history",k:["cold war","soviet union","ussr","containment","nato","berlin wall","cuban missile crisis"],
+ d:"A roughly 45-year standoff between the capitalist US and the communist USSR after WWII. It was 'cold' because the two never fought each other directly — instead they competed through proxy wars, an arms race, a space race, and economic pressure, under the shadow of nuclear weapons.",
+ f:"c.1947–1991. US policy: containment (Truman Doctrine, Marshall Plan). Alliances: NATO (1949) vs Warsaw Pact (1955). Flashpoints: Berlin Blockade, Korean War, Cuban Missile Crisis (1962), Vietnam. Ends: Berlin Wall falls 1989, USSR dissolves 1991.",
+ e:"The Cuban Missile Crisis (Oct 1962) came closest to nuclear war; it ended with the USSR removing missiles from Cuba and the US quietly removing missiles from Turkey.",
+ m:["Thinking no fighting happened — proxy wars killed millions.","Assuming the Berlin Wall and the USSR ended at the same moment; the Wall fell in 1989, the USSR dissolved in December 1991.","Treating containment and rollback as the same policy."]},
+
+{t:"The Industrial Revolution",s:"history",k:["industrial revolution","factory","urbanization","steam engine","child labor"],
+ d:"Beginning in Britain around 1760, production shifted from hand tools and home workshops to machines and factories. Steam power, coal, iron, and the textile industry drove it. It produced enormous wealth alongside brutal working conditions, child labor, crowded cities, and pollution — and eventually labor unions and reform laws.",
+ f:"Started in Britain c.1760–1840, spread to Europe and the US. Key drivers: steam engine, coal, iron/steel, textile machinery, railroads.",
+ e:"Britain had coal, iron ore, colonies for raw materials and markets, a stable government, and available capital — which is why it went first.",
+ m:["Thinking it happened everywhere at once; it spread unevenly over a century.","Only presenting the benefits or only the harms — exams want both.","Forgetting that the agricultural revolution came first and freed up the labor force."]},
+
+/* ================= ENGLISH ================= */
+{t:"Writing a thesis statement",s:"english",k:["thesis","thesis statement","argument","essay introduction","claim"],
+ d:"A thesis is one arguable sentence stating your specific claim and, ideally, why it holds. It must be something a reasonable person could disagree with. A fact is not a thesis; a topic is not a thesis.",
+ f:"Formula: [Specific claim] because [reason], as shown by [evidence type]. Usually the last sentence of the introduction.",
+ e:"Weak: 'This essay is about symbolism in The Great Gatsby.'\nStrong: 'Fitzgerald uses the green light to show that Gatsby's dream was already dead before the novel begins, because he pursues a version of Daisy that no longer exists.'",
+ m:["Announcing instead of arguing ('I will discuss…').","Being so broad that nothing could disprove it.","Writing a thesis you never actually defend in the body paragraphs."]},
+
+{t:"Ethos, pathos, logos",s:"english",k:["ethos","pathos","logos","rhetorical appeals","persuasion","rhetoric","aristotle"],
+ d:"Aristotle's three persuasive appeals. Ethos builds trust in the speaker's credibility. Pathos moves the audience's emotions. Logos uses logic, facts, and reasoning. Strong arguments usually blend all three.",
+ f:"Ethos = character/credibility. Pathos = emotion. Logos = logic. (Kairos = timing, sometimes taught as a fourth.)",
+ e:"'As a doctor of 20 years' = ethos. 'Imagine your own child in that hospital bed' = pathos. 'Studies show a 40% reduction' = logos.",
+ m:["Naming the appeal without explaining its EFFECT on the audience — analysis questions want the effect.","Assuming pathos is manipulative and logos is honest; both can be either.","Missing that one sentence can carry more than one appeal."]},
+
+{t:"Types of irony",s:"english",k:["irony","verbal irony","situational irony","dramatic irony","sarcasm"],
+ d:"Irony is a gap between what's expected and what actually is. Verbal irony: someone says the opposite of what they mean. Situational irony: the outcome is the opposite of what was expected. Dramatic irony: the audience knows something a character doesn't.",
+ f:"Verbal = says vs means. Situational = expected vs happens. Dramatic = audience knows vs character doesn't.",
+ e:"Verbal: 'Lovely weather' in a downpour. Situational: a fire station burns down. Dramatic: the audience knows Juliet is only asleep while Romeo believes she's dead.",
+ m:["Calling any coincidence or unfortunate event 'ironic'.","Confusing sarcasm with verbal irony — sarcasm is a mocking subtype of it.","Mixing up dramatic and situational irony; dramatic irony is defined by the AUDIENCE's knowledge."]},
+
+{t:"Theme vs main idea vs plot",s:"english",k:["theme","main idea","plot","message","central idea","moral"],
+ d:"Plot is what happens. Main idea is what the text is about. Theme is the universal message about life the work conveys — it should be stated as a full sentence, not one word, and it shouldn't name the characters.",
+ f:"Plot = events. Main idea = topic + what's said about it. Theme = a complete statement about human life, applicable beyond the story.",
+ e:"Romeo and Juliet — Plot: two teens from feuding families fall in love and die. Topic: love and conflict. Theme: 'Hatred inherited from previous generations destroys the innocent.'",
+ m:["Giving one word ('love') as a theme — that's a topic, not a theme.","Writing a theme that names characters, which makes it plot summary.","Confusing theme with the author's purpose."]},
+
+{t:"Common literary devices",s:"english",k:["literary device","metaphor","simile","personification","symbolism","imagery","alliteration","foreshadowing","hyperbole"],
+ d:"Devices are the tools authors use to create meaning. On tests, naming the device earns almost no credit — explaining what EFFECT it creates does.",
+ f:"Simile: comparison using like/as. Metaphor: direct comparison without like/as. Personification: human traits for non-human things. Imagery: sensory description. Symbolism: an object standing for an idea. Alliteration: repeated initial consonant sounds. Hyperbole: deliberate exaggeration. Foreshadowing: hints at what's coming.",
+ e:"'The wind screamed through the trees' — personification; it makes the storm feel deliberately hostile, raising tension before the disaster.",
+ m:["Identifying the device and stopping there.","Calling every comparison a metaphor when 'like' or 'as' makes it a simile.","Claiming symbolism without textual evidence that the author built the pattern."]},
+
+/* ================= COMPUTER SCIENCE ================= */
+{t:"Variables, loops, and conditionals",s:"cs",k:["variable","loop","for loop","while loop","conditional","if statement","boolean"],
+ d:"Variables store values under a name. Conditionals (if/else) let a program choose a path based on a true/false test. Loops repeat code — a for loop when you know how many times, a while loop when you repeat until a condition changes.",
+ f:"if (condition) { … } else { … }  •  for (i = 0; i < n; i++)  •  while (condition) { … }",
+ e:"for (let i = 1; i <= 5; i++) { console.log(i); }  → prints 1 2 3 4 5",
+ m:["Off-by-one errors: using <= when you meant <, which runs one extra time.","Infinite loops from forgetting to update the loop variable.","Using = (assignment) where you meant == or === (comparison)."]},
+
+{t:"Big O notation",s:"cs",k:["big o","time complexity","efficiency","algorithm analysis"],
+ d:"Big O describes how an algorithm's work grows as the input grows. It ignores constants and small terms because it's about the trend at large sizes, not exact timing.",
+ f:"O(1) constant • O(log n) logarithmic • O(n) linear • O(n log n) • O(n²) quadratic • O(2ⁿ) exponential — listed fastest to slowest growth.",
+ e:"Looking up an array index is O(1). Scanning a list once is O(n). A nested loop over the same list is O(n²). Binary search is O(log n).",
+ m:["Thinking Big O gives runtime in seconds — it describes growth, not speed.","Keeping constants: O(2n) is just O(n).","Assuming lower Big O always wins; for small inputs a 'worse' algorithm can be faster."]},
+
+/* ================= ECONOMICS ================= */
+{t:"Supply and demand",s:"economics",k:["supply","demand","equilibrium","price","market","shortage","surplus"],
+ d:"Demand slopes down: as price rises, buyers want less. Supply slopes up: as price rises, sellers offer more. Where the curves cross is equilibrium — the price where quantity supplied equals quantity demanded. Above it you get a surplus, below it a shortage.",
+ f:"Price above equilibrium → surplus → price falls. Price below equilibrium → shortage → price rises. A price CHANGE moves along the curve; anything else SHIFTS the whole curve.",
+ e:"A frost destroys the orange crop → supply shifts left → equilibrium price rises and quantity falls.",
+ m:["Confusing a movement along the curve with a shift of the curve — only price causes movement along it.","Forgetting that income, tastes, substitutes, and expectations shift demand.","Mixing up which direction a curve shifts: more supply shifts RIGHT."]},
+
+{t:"Opportunity cost and scarcity",s:"economics",k:["opportunity cost","scarcity","trade-off","choice"],
+ d:"Resources are limited but wants are unlimited — that's scarcity, and it forces choices. The opportunity cost of a choice is the value of the NEXT BEST alternative you gave up, not the total of everything you gave up.",
+ f:"Opportunity cost = value of the single best forgone alternative.",
+ e:"You have one free evening. Options: study (grade boost), work a shift ($60), or see friends. If you study, your opportunity cost is whichever one of the other two you valued most — not both combined.",
+ m:["Adding up every option you didn't choose.","Ignoring non-money costs like time.","Confusing opportunity cost with sunk cost — sunk costs are already spent and should not affect the decision."]},
+
+/* ================= GEOGRAPHY / EARTH ================= */
+{t:"Plate tectonics",s:"geography",k:["plate tectonics","tectonic plate","earthquake","volcano","subduction","continental drift","fault"],
+ d:"Earth's rigid outer shell is broken into plates that slowly move on the hotter, flowing mantle beneath. Nearly all earthquakes, volcanoes, and mountain ranges occur at plate boundaries.",
+ f:"Convergent: plates collide → subduction, volcanoes, mountains. Divergent: plates separate → new crust, mid-ocean ridges. Transform: plates slide past → earthquakes (e.g. San Andreas Fault).",
+ e:"The Himalayas are still rising because the Indian plate is colliding with the Eurasian plate.",
+ m:["Saying continents 'float on liquid magma' — the mantle is solid rock that flows very slowly.","Thinking all volcanoes sit on convergent boundaries; hotspots like Hawaii form mid-plate.","Confusing the crust with the lithosphere (crust + rigid upper mantle)."]},
+
+{t:"The water cycle",s:"geography",k:["water cycle","evaporation","condensation","precipitation","transpiration","runoff"],
+ d:"Water continuously cycles between the surface and the atmosphere, driven by solar energy and gravity. The total amount of water on Earth stays essentially constant — it just changes state and location.",
+ f:"Evaporation → Transpiration (from plants) → Condensation (clouds) → Precipitation → Collection/Runoff → Infiltration into groundwater → repeat.",
+ e:"Ocean water evaporates, forms clouds, falls as rain over land, flows through rivers back to the ocean.",
+ m:["Forgetting transpiration from plants, which is a large share of atmospheric moisture.","Thinking clouds are water vapor — they're condensed liquid droplets or ice crystals.","Leaving out groundwater and infiltration."]}
+
+];
+
+/* Study Sorter — practice problem generators.
+   Every generator returns: {type,label,q,ans,accept[],steps[],num?}
+   `accept` holds normalized strings that count as correct.
+   `num` (optional) enables numeric tolerance grading. */
+
+const R = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick = a => a[R(0,a.length-1)];
+const gcd = (a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const sign = n => n<0 ? "− "+Math.abs(n) : "+ "+n;
+const coef = (n,v)=> n===1? v : n===-1? "−"+v : n+v;
+
+/* radical string helpers */
+function radStr(num,rad,den){
+  let top = num===1 ? "√"+rad : num+"√"+rad;
+  return den===1 ? top : top+"/"+den;
+}
+function radAccept(num,rad,den){
+  const n = num===1?"":String(num);
+  const forms=[];
+  const tops=[n+"√"+rad, n+"sqrt"+rad, n+"sqrt("+rad+")", n+"rad"+rad];
+  tops.forEach(t=>{
+    if(den===1){forms.push(t);}
+    else{forms.push(t+"/"+den, "("+t+")/"+den);}
+  });
+  return forms;
+}
+
+const lin = (m,k)=>{
+  const mx = m===1 ? "x" : `${m}x`;
+  if(k===0) return mx;
+  return k<0 ? `${mx} \u2212 ${-k}` : `${mx} + ${k}`;
+};
+const sq = d => d===0 ? "x\u00b2" : (d<0 ? `x\u00b2 \u2212 ${-d}` : `x\u00b2 + ${d}`);
+
+const GENERATORS = {
+
+trigLimit:{label:"Trig limits", subject:"math", topic:"Trig limits",
+ make(){
+  const a=R(2,9); let b=R(2,9);
+  const g=gcd(a,b), n=a/g, d=b/g;
+  const frac = d===1? String(n) : `${n}/${d}`;
+  const forms=[
+   {q:`Evaluate the limit:   lim(x\u21920)  [ ${a}\u00b7cos(x)\u00b7tan(x) ] / (${b}x)`,
+    ans:frac, accept:[frac,`${a}/${b}`,(a/b).toFixed(4)], num:a/b,
+    steps:[`Substitution gives 0/0, so rewrite tan(x) = sin(x)/cos(x).`,
+      `${a}cos(x)\u00b7[sin(x)/cos(x)] / (${b}x) \u2014 the cos(x) cancels.`,
+      `= (${a}/${b}) \u00b7 sin(x)/x`,
+      `lim(x\u21920) sin(x)/x = 1`,
+      `Answer: ${a}/${b}${g>1?` = ${frac}`:""}`]},
+   {q:`Evaluate the limit:   lim(x\u21920)  sin(${a}x) / (${b}x)`,
+    ans:frac, accept:[frac,`${a}/${b}`,(a/b).toFixed(4)], num:a/b,
+    steps:[`Substitution gives 0/0.`,
+      `The inside of the sine is ${a}x but the bottom is ${b}x \u2014 make them match.`,
+      `Multiply top and bottom by ${a}/${a}: (${a}/${b}) \u00b7 sin(${a}x)/(${a}x)`,
+      `lim sin(${a}x)/(${a}x) = 1`,
+      `Answer: ${a}/${b}${g>1?` = ${frac}`:""}`]},
+   {q:`Evaluate the limit:   lim(x\u21920)  tan(${a}x) / (${b}x)`,
+    ans:frac, accept:[frac,`${a}/${b}`,(a/b).toFixed(4)], num:a/b,
+    steps:[`tan(${a}x)/(${b}x) = sin(${a}x) / [${b}x\u00b7cos(${a}x)]`,
+      `As x\u21920, cos(${a}x) \u2192 1, so it drops out.`,
+      `Left with (${a}/${b})\u00b7sin(${a}x)/(${a}x) \u2192 (${a}/${b})(1)`,
+      `Answer: ${a}/${b}${g>1?` = ${frac}`:""}`]},
+   {q:`Evaluate the limit:   lim(x\u21920)  ( ${a} \u2212 ${a*2}cos(x) ) / (${b}x \u2212 ${b+2})`,
+    ans:`${a/gcd(a,b+2)}/${(b+2)/gcd(a,b+2)}`, accept:[`${a}/${b+2}`,(a/(b+2)).toFixed(4),`${a/gcd(a,b+2)}/${(b+2)/gcd(a,b+2)}`], num:a/(b+2),
+    steps:[`Try direct substitution FIRST \u2014 this only looks like a special trig limit.`,
+      `Top at x=0: ${a} \u2212 ${a*2}cos(0) = ${a} \u2212 ${a*2}(1) = ${-a}`,
+      `Bottom at x=0: ${b}(0) \u2212 ${b+2} = ${-(b+2)}`,
+      `Not 0/0 \u2014 the denominator isn't zero, so no special limit is needed.`,
+      `Answer: ${-a}/${-(b+2)} = ${a}/${b+2}`]},
+   {q:`Evaluate the limit:   lim(x\u21920)  [ ${a}(1 \u2212 cos(x)) ] / (${b}x)`,
+    ans:"0", accept:["0"], num:0,
+    steps:[`This is the OTHER special trig limit, and it is not 1.`,
+      `lim(x\u21920) (1 \u2212 cos x)/x = 0`,
+      `So (${a}/${b}) \u00b7 0 = 0`,
+      `Answer: 0`]}
+  ];
+  return pick(forms);
+ }},
+
+oneSidedLimit:{label:"One-sided limits (piecewise)", subject:"math", topic:"Limits of piecewise functions",
+ make(){
+  const c=R(-4,4), m=R(2,6), k=R(-8,8), d=R(-9,9);
+  const left = m*c + k, right = c*c + d;
+  const fromRight = Math.random()<0.5;
+  const want = fromRight ? right : left;
+  return {
+   q:`f(x) = { ${lin(m,k)}    for x < ${c}\n         { ${sq(d)}       for x > ${c}\n\nFind  lim(x\u2192${c}${fromRight?"\u207a":"\u207b"}) f(x).`,
+   ans:String(want), accept:[String(want)], num:want,
+   steps:[
+     `The ${fromRight?"\u207a (plus)":"\u207b (minus)"} superscript means approach from the ${fromRight?"RIGHT":"LEFT"} only.`,
+     `From the ${fromRight?"right you use the piece for x > "+c+", which is "+sq(d) : "left you use the piece for x < "+c+", which is "+lin(m,k)}.`,
+     fromRight ? `Substitute (${c}) into ${sq(d)}: ${right}` : `Substitute (${c}) into ${lin(m,k)}: ${left}`,
+     `The other piece is irrelevant \u2014 a one-sided limit never needs both sides to agree, so it is almost never DNE here.`,
+     `Answer: ${want}`
+   ]};
+ }},
+
+piecewiseLimit:{label:"Limits of piecewise functions", subject:"math", topic:"Limits of piecewise functions",
+ make(){
+  const c=R(-3,4), m=R(1,5), k=R(-6,6);
+  const left = m*c + k;
+  const matches = Math.random()<0.5;
+  const d = matches ? left - c*c : left - c*c + pick([-4,-3,-2,2,3,4]);
+  const right = c*c + d;
+  return {
+   q:`f(x) = { ${lin(m,k)}   for x < ${c}\n         { ${sq(d)}          for x \u2265 ${c}\n\nFind lim(x\u2192${c}) f(x).  (Write DNE if it does not exist.)`,
+   ans: matches ? String(left) : "DNE",
+   accept: matches ? [String(left)] : ["dne","doesnotexist","does not exist","undefined"],
+   num: matches ? left : undefined,
+   steps:[
+     `Coming from the LEFT (x < ${c}) use ${lin(m,k)}:  substitute ${c} \u2192 ${left}`,
+     `Coming from the RIGHT (x \u2265 ${c}) use ${sq(d)}:  substitute ${c} \u2192 ${right}`,
+     matches ? `Both sides give ${left}, so the two-sided limit exists.`
+             : `Left gives ${left}, right gives ${right}. They disagree \u2014 this is a jump.`,
+     matches ? `Answer: ${left}` : `Answer: DNE (does not exist)`
+   ]};
+ }},
+
+discontinuity:{label:"Types of discontinuities", subject:"math", topic:"Types of discontinuities",
+ make(){
+  const k=R(2,8);
+  const cases=[
+   {q:`What type of discontinuity does f(x) = (x\u00b2 \u2212 ${k*k}) / (x \u2212 ${k}) have at x = ${k}?`,
+    ans:"Removable", accept:["removable","hole","removablediscontinuity","removable(hole)"],
+    steps:[`Factor the top: (x\u2212${k})(x+${k}) / (x\u2212${k})`,
+      `The (x\u2212${k}) cancels, leaving x + ${k}.`,
+      `The limit exists and equals ${2*k}, but f(${k}) is undefined \u2014 one missing point.`,
+      `Answer: REMOVABLE (a hole at (${k}, ${2*k}))`]},
+   {q:`What type of discontinuity does f(x) = 1 / (x \u2212 ${k})\u00b2 have at x = ${k}?`,
+    ans:"Infinite", accept:["infinite","infinitediscontinuity","asymptote","verticalasymptote","essential"],
+    steps:[`Substituting gives 1/0 \u2014 a nonzero number over zero.`,
+      `Nothing cancels, so it cannot be patched.`,
+      `As x \u2192 ${k} from either side the values blow up to +\u221e.`,
+      `Answer: INFINITE (vertical asymptote at x = ${k})`]},
+   {q:`f(x) = { x + ${k}  for x < ${k} ;  x\u00b2  for x \u2265 ${k} }.\nWhat type of discontinuity is at x = ${k}?`,
+    ans:"Jump", accept:["jump","jumpdiscontinuity"],
+    steps:[`Left-hand limit: ${k} + ${k} = ${2*k}`,
+      `Right-hand limit: ${k}\u00b2 = ${k*k}`,
+      `${2*k} \u2260 ${k*k}, so both one-sided limits exist but disagree.`,
+      `Answer: JUMP discontinuity`]}
+  ];
+  const c = pick(cases.filter(x=>!/Jump/.test(x.ans) || 2*k !== k*k));
+  return c;
+ }},
+
+limitProperties:{label:"Limit properties", subject:"math", topic:"Limit properties",
+ make(){
+  let A=R(-6,6), B=R(-6,6);
+  while(B===0) B=R(-6,6);
+  const k=R(2,5);
+  const forms=[
+   {expr:`lim [ ${k}f(x) + g(x) ]`, val:k*A+B,
+    st:[`Constant multiple rule: lim ${k}f = ${k}\u00b7${A} = ${k*A}`,`Sum rule: ${k*A} + (${B})`,`Answer: ${k*A+B}`]},
+   {expr:`lim [ f(x) \u00b7 g(x) ]`, val:A*B,
+    st:[`Product rule: lim(f\u00b7g) = (lim f)(lim g)`,`= (${A})(${B})`,`Answer: ${A*B}`]},
+   {expr:`lim [ f(x) \u2212 ${k}g(x) ]`, val:A-k*B,
+    st:[`Difference rule with a constant multiple.`,`= ${A} \u2212 ${k}(${B}) = ${A} \u2212 ${k*B}`,`Answer: ${A-k*B}`]},
+   {expr:`lim [ f(x) / g(x) ]`, val:+(A/B).toFixed(4),
+    st:[`Quotient rule works because lim g = ${B} \u2260 0.`,`= ${A}/${B}`,`Answer: ${A}/${B}${Number.isInteger(A/B)?" = "+(A/B):""}`]}
+  ];
+  const f=pick(forms);
+  const isFrac = f.expr.includes("/") && !Number.isInteger(A/B);
+  const g2=gcd(A,B); let nn=A/g2, dd=B/g2; if(dd<0){nn=-nn;dd=-dd;}
+  const shown = isFrac ? `${nn}/${dd}` : String(f.val);
+  return {
+   q:`Given  lim(x\u2192a) f(x) = ${A}  and  lim(x\u2192a) g(x) = ${B},  evaluate:\n\n   ${f.expr}`,
+   ans: shown, accept:[shown, String(f.val), String(A/B)], num:isFrac? A/B : f.val,
+   steps: f.st};
+ }},
+
+limitFactor:{label:"Limits by factoring (0/0)", subject:"math", topic:"Limits \u2014 the idea",
+ make(){
+  const c=R(-5,5); let r=R(-6,6); while(r===c) r=R(-6,6);
+  const b=-(c+r), cc=c*r;
+  const s=v=>v<0?`\u2212 ${-v}`:`+ ${v}`;
+  const val=c-r;
+  return {
+   q:`Evaluate the limit:   lim(x\u2192${c})  ( x\u00b2 ${s(b)}x ${s(cc)} ) / ( x ${s(-c)} )`,
+   ans:String(val), accept:[String(val)], num:val,
+   steps:[
+     `Direct substitution gives 0/0 \u2014 indeterminate, so factor.`,
+     `x\u00b2 ${s(b)}x ${s(cc)} = (x ${s(-c)})(x ${s(-r)})`,
+     `The (x ${s(-c)}) cancels top and bottom, leaving x ${s(-r)}.`,
+     `Now substitute: ${c} ${s(-r)} = ${val}`,
+     `Answer: ${val}`]};
+ }},
+
+rationalize:{label:"Rationalize a denominator", subject:"math", topic:"Rationalizing the denominator",
+ make(){
+  const b = pick([2,3,5,6,7,10,11,13,14,15]);
+  const a = R(2,12);
+  const g = gcd(a,b), num=a/g, den=b/g;
+  return {
+    q:`Express in simplest form with a rational denominator:   ${a} / √${b}`,
+    ans: radStr(num,b,den),
+    accept: radAccept(num,b,den),
+    steps:[
+      `Multiply the top and the bottom by √${b} (that's multiplying by 1, so the value doesn't change).`,
+      `${a}/√${b} × √${b}/√${b} = ${a}√${b} / ${b}   —  because √${b}·√${b} = ${b}.`,
+      g>1 ? `Reduce: ${a} and ${b} share a factor of ${g} → ${radStr(num,b,den)}.`
+          : `${a} and ${b} share no common factor, so it's already reduced.`,
+      `Answer: ${radStr(num,b,den)}`
+    ]};
+ }},
+
+simplifyRadical:{label:"Simplify a radical", subject:"math", topic:"Simplifying radicals",
+ make(){
+  const k = R(2,7), m = pick([2,3,5,6,7,10,11,13,14,15]);
+  const n = k*k*m;
+  return {
+    q:`Write in simplest radical form:   √${n}`,
+    ans:`${k}√${m}`,
+    accept:radAccept(k,m,1),
+    steps:[
+      `Find the largest perfect square that divides ${n}.  ${n} = ${k*k} × ${m}.`,
+      `√${n} = √${k*k} · √${m}`,
+      `√${k*k} = ${k}, and ${m} has no perfect-square factors left.`,
+      `Answer: ${k}√${m}`
+    ]};
+ }},
+
+complexFraction:{label:"Complex fractions", subject:"math", topic:"Complex fractions",
+ make(){
+  const n = R(2,9);
+  if(Math.random()<0.5){
+    return {
+      q:`Fully simplify:   ( 1 − x²/${n*n} ) ÷ ( x/${n} + 1 )`,
+      ans:`(${n} − x)/${n}`,
+      accept:[`(${n}-x)/${n}`,`${n}-x/${n}`,`1-x/${n}`,`(-x+${n})/${n}`,`-x/${n}+1`],
+      steps:[
+        `Top over one denominator: 1 − x²/${n*n} = (${n*n} − x²)/${n*n} = (${n}−x)(${n}+x)/${n*n}`,
+        `Bottom over one denominator: x/${n} + 1 = (x+${n})/${n}`,
+        `Dividing = multiply by the reciprocal: (${n}−x)(${n}+x)/${n*n} × ${n}/(x+${n})`,
+        `Cancel the (${n}+x) factors and one ${n} from ${n*n}.`,
+        `Answer: (${n} − x)/${n}   [same as 1 − x/${n}],  x ≠ −${n}`
+      ]};
+  }
+  return {
+    q:`Fully simplify:   ( x²/${n*n} − 1 ) ÷ ( x/${n} − 1 )`,
+    ans:`(x + ${n})/${n}`,
+    accept:[`(x+${n})/${n}`,`x+${n}/${n}`,`x/${n}+1`,`1+x/${n}`,`(${n}+x)/${n}`],
+    steps:[
+      `Top: x²/${n*n} − 1 = (x² − ${n*n})/${n*n} = (x−${n})(x+${n})/${n*n}`,
+      `Bottom: x/${n} − 1 = (x−${n})/${n}`,
+      `Flip and multiply: (x−${n})(x+${n})/${n*n} × ${n}/(x−${n})`,
+      `Cancel (x−${n}) and one ${n}.`,
+      `Answer: (x + ${n})/${n}   [same as x/${n} + 1],  x ≠ ${n}`
+    ]};
+ }},
+
+diffSquares:{label:"Difference of squares", subject:"math", topic:"Difference of squares",
+ make(){
+  const a=R(1,7), b=R(2,12);
+  const ax = a===1?"x":a+"x";
+  return {
+    q:`Factor completely:   ${a===1?"":a*a}x² − ${b*b}`,
+    ans:`(${ax} − ${b})(${ax} + ${b})`,
+    accept:[`(${ax}-${b})(${ax}+${b})`,`(${ax}+${b})(${ax}-${b})`],
+    steps:[
+      `Recognize the shape a² − b² — a subtraction of two perfect squares.`,
+      `√(${a*a}x²) = ${ax}   and   √${b*b} = ${b}`,
+      `a² − b² = (a − b)(a + b)`,
+      `Answer: (${ax} − ${b})(${ax} + ${b})`
+    ]};
+ }},
+
+factorTrinomial:{label:"Factor a trinomial", subject:"math", topic:"Factoring trinomials",
+ make(){
+  let p=0,q=0;
+  while(p===0||q===0||p+q===0){p=R(-9,9);q=R(-9,9);}
+  const b=p+q, c=p*q;
+  const lo=Math.min(p,q), hi=Math.max(p,q);
+  const s=v=>v<0?`− ${-v}`:`+ ${v}`;
+  return {
+    q:`Factor:   x² ${s(b)}x ${s(c)}`,
+    ans:`(x ${s(lo)})(x ${s(hi)})`,
+    accept:[`(x${lo<0?lo:'+'+lo})(x${hi<0?hi:'+'+hi})`,`(x${hi<0?hi:'+'+hi})(x${lo<0?lo:'+'+lo})`],
+    steps:[
+      `Need two numbers that MULTIPLY to ${c} and ADD to ${b}.`,
+      `${p} × ${q} = ${c} ✓   and   ${p} + ${q} = ${b} ✓`,
+      `Answer: (x ${s(lo)})(x ${s(hi)})`,
+      `Check by FOIL: x² ${s(b)}x ${s(c)} ✓`
+    ]};
+ }},
+
+quadratic:{label:"Solve with the quadratic formula", subject:"math", topic:"Quadratic formula",
+ make(){
+  const a=R(1,3); let r1=R(-6,6), r2=R(-6,6);
+  const b=-a*(r1+r2), c=a*r1*r2;
+  const lo=Math.min(r1,r2), hi=Math.max(r1,r2);
+  const s=v=>v<0?`− ${-v}`:`+ ${v}`;
+  const disc=b*b-4*a*c;
+  return {
+    q:`Solve for x:   ${a===1?"":a}x² ${s(b)}x ${s(c)} = 0`,
+    ans: lo===hi ? `x = ${lo}` : `x = ${lo} and x = ${hi}`,
+    accept:[`x=${lo},x=${hi}`,`${lo},${hi}`,`x=${lo}andx=${hi}`,`${lo}and${hi}`,`x=${hi},x=${lo}`,`${hi},${lo}`],
+    steps:[
+      `a = ${a}, b = ${b}, c = ${c}`,
+      `Discriminant: b² − 4ac = ${b*b} − 4(${a})(${c}) = ${disc}  →  √${disc} = ${Math.sqrt(disc)}`,
+      `x = ( ${-b} ± ${Math.sqrt(disc)} ) / ${2*a}`,
+      `x = ${(-b+Math.sqrt(disc))/(2*a)}   and   x = ${(-b-Math.sqrt(disc))/(2*a)}`,
+      lo===hi?`Answer: x = ${lo} (repeated root)`:`Answer: x = ${lo} and x = ${hi}`
+    ]};
+ }},
+
+slope:{label:"Slope from two points", subject:"math", topic:"Slope and linear equations",
+ make(){
+  let x1=R(-8,8),y1=R(-8,8),x2=R(-8,8),y2=R(-8,8);
+  while(x2===x1){x2=R(-8,8);}
+  const dy=y2-y1, dx=x2-x1, g=gcd(dy,dx);
+  let n=dy/g, d=dx/g; if(d<0){n=-n;d=-d;}
+  const ansStr = d===1? String(n) : `${n}/${d}`;
+  return {
+    q:`Find the slope of the line through (${x1}, ${y1}) and (${x2}, ${y2}).`,
+    ans:ansStr,
+    accept:[ansStr, d===1?`${n}/1`:ansStr, String((dy/dx).toFixed(4))],
+    num: dy/dx,
+    steps:[
+      `m = (y₂ − y₁)/(x₂ − x₁)`,
+      `m = (${y2} − ${y1}) / (${x2} − ${x1}) = ${dy}/${dx}`,
+      g>1?`Reduce by ${g}: ${ansStr}`:`Already in lowest terms.`,
+      `Answer: m = ${ansStr}`
+    ]};
+ }},
+
+pythagoras:{label:"Pythagorean theorem", subject:"math", topic:"Pythagorean theorem",
+ make(){
+  const t=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41]]);
+  const k=R(1,3), [a,b,c]=t.map(v=>v*k);
+  if(Math.random()<0.5){
+    return {q:`A right triangle has legs of ${a} and ${b}. Find the hypotenuse.`, ans:String(c), accept:[String(c)], num:c,
+     steps:[`a² + b² = c²`,`${a}² + ${b}² = ${a*a} + ${b*b} = ${c*c}`,`c = √${c*c} = ${c}`,`Answer: ${c}`]};
+  }
+  return {q:`A right triangle has a hypotenuse of ${c} and one leg of ${a}. Find the other leg.`, ans:String(b), accept:[String(b)], num:b,
+   steps:[`a² + b² = c²  →  b² = c² − a²`,`b² = ${c*c} − ${a*a} = ${b*b}`,`b = √${b*b} = ${b}`,`Answer: ${b}`]};
+ }},
+
+exponents:{label:"Exponent rules", subject:"math", topic:"Exponent rules",
+ make(){
+  const a=R(2,4), m=R(1,4), n=R(2,3);
+  return {
+    q:`Simplify:   (${a}x${m===1?"":"^"+m})^${n}`,
+    ans:`${Math.pow(a,n)}x^${m*n}`,
+    accept:[`${Math.pow(a,n)}x^${m*n}`,`${Math.pow(a,n)}x${m*n}`,`${Math.pow(a,n)}*x^${m*n}`],
+    steps:[
+      `The outside exponent hits EVERY factor inside — the ${a} too.`,
+      `(${a})^${n} = ${Math.pow(a,n)}`,
+      `(x^${m})^${n} = x^(${m}·${n}) = x^${m*n}`,
+      `Answer: ${Math.pow(a,n)}x^${m*n}`
+    ]};
+ }},
+
+system:{label:"System of equations", subject:"math", topic:"Systems of equations",
+ make(){
+  const x=R(-5,5), y=R(-5,5);
+  let a1=R(1,4),b1=R(1,4),a2=R(1,4),b2=R(1,4);
+  while(a1*b2-a2*b1===0){a2=R(1,4);b2=R(1,4);}
+  const c1=a1*x+b1*y, c2=a2*x+b2*y;
+  return {
+    q:`Solve the system:\n   ${a1}x + ${b1}y = ${c1}\n   ${a2}x + ${b2}y = ${c2}`,
+    ans:`x = ${x}, y = ${y}`,
+    accept:[`x=${x},y=${y}`,`(${x},${y})`,`${x},${y}`,`x=${x}y=${y}`],
+    steps:[
+      `Use elimination. Multiply eq1 by ${a2} and eq2 by ${a1} so the x terms match.`,
+      `${a1*a2}x + ${b1*a2}y = ${c1*a2}   and   ${a1*a2}x + ${b2*a1}y = ${c2*a1}`,
+      `Subtract: ${b1*a2-b2*a1}y = ${c1*a2-c2*a1}  →  y = ${y}`,
+      `Back-substitute into ${a1}x + ${b1}(${y}) = ${c1}  →  x = ${x}`,
+      `Answer: (${x}, ${y})`
+    ]};
+ }},
+
+meanMedian:{label:"Mean and median", subject:"math", topic:"Mean, median, mode, range",
+ make(){
+  const n=pick([5,7]);
+  const data=Array.from({length:n},()=>R(1,20));
+  const sorted=[...data].sort((p,q)=>p-q);
+  const sum=data.reduce((s,v)=>s+v,0);
+  const mean=+(sum/n).toFixed(2), median=sorted[(n-1)/2];
+  return {
+    q:`Find the MEDIAN of this data set:   ${data.join(", ")}`,
+    ans:String(median), accept:[String(median)], num:median,
+    steps:[
+      `Sort it first: ${sorted.join(", ")}`,
+      `${n} values, so the middle one is position ${(n+1)/2}.`,
+      `Answer: median = ${median}   (for reference, the mean is ${mean})`
+    ]};
+ }},
+
+probability:{label:"Probability", subject:"math", topic:"Probability basics",
+ make(){
+  const k=R(2,3);
+  const target=R(1,6);
+  const num=1, den=Math.pow(6,k);
+  const g=gcd(num,den);
+  return {
+    q:`You roll a fair six-sided die ${k} times. What is the probability you roll a ${target} every single time?`,
+    ans:`1/${den}`, accept:[`1/${den}`, (1/den).toFixed(4)], num:1/den,
+    steps:[
+      `Each roll is independent, so multiply the probabilities.`,
+      `P(one ${target}) = 1/6`,
+      `P(${k} in a row) = (1/6)${k===2?"²":"³"} = 1/${den}`,
+      `Answer: 1/${den} ≈ ${(100/den).toFixed(2)}%`
+    ]};
+ }},
+
+moles:{label:"Grams to moles", subject:"chemistry", topic:"Moles and stoichiometry",
+ make(){
+  const subs=[["H₂O",18.02],["CO₂",44.01],["NaCl",58.44],["O₂",32.00],["CH₄",16.04],["C₆H₁₂O₆",180.16],["N₂",28.02]];
+  const [name,mm]=pick(subs);
+  const moles=pick([0.5,1,1.5,2,2.5,3]);
+  const grams=+(moles*mm).toFixed(2);
+  return {
+    q:`How many moles are in ${grams} g of ${name}?  (molar mass = ${mm} g/mol)`,
+    ans:String(moles), accept:[String(moles), moles.toFixed(2)], num:moles,
+    steps:[
+      `moles = mass ÷ molar mass`,
+      `moles = ${grams} g ÷ ${mm} g/mol`,
+      `Answer: ${moles} mol`
+    ]};
+ }},
+
+newton:{label:"Newton's second law", subject:"physics", topic:"Newton's three laws",
+ make(){
+  const m=R(2,20), a=R(2,10);
+  const F=m*a;
+  if(Math.random()<0.5)
+    return {q:`A ${m} kg object accelerates at ${a} m/s². What net force acts on it?`, ans:`${F} N`,
+      accept:[`${F}n`,String(F)], num:F,
+      steps:[`F = ma`,`F = (${m} kg)(${a} m/s²)`,`Answer: ${F} N`]};
+  return {q:`A net force of ${F} N acts on a ${m} kg object. Find its acceleration.`, ans:`${a} m/s²`,
+    accept:[`${a}m/s²`,`${a}m/s2`,String(a)], num:a,
+    steps:[`F = ma  →  a = F/m`,`a = ${F} N ÷ ${m} kg`,`Answer: ${a} m/s²`]};
+ }},
+
+punnett:{label:"Punnett square ratios", subject:"biology", topic:"Punnett squares and Mendelian genetics",
+ make(){
+  const cases=[
+    {c:"Bb × Bb", ph:"3:1", gt:"1 BB : 2 Bb : 1 bb", pct:"75%",
+     st:["Grid the alleles: B,b across the top and B,b down the side.","Boxes: BB, Bb, Bb, bb.","Genotype ratio 1:2:1. Any box with a capital B shows the dominant trait.","Phenotype ratio 3:1 → 75% dominant, 25% recessive."]},
+    {c:"Bb × bb", ph:"1:1", gt:"2 Bb : 2 bb", pct:"50%",
+     st:["Alleles: B,b across the top; b,b down the side.","Boxes: Bb, bb, Bb, bb.","Genotype 2 Bb : 2 bb.","Phenotype ratio 1:1 → 50% dominant, 50% recessive."]},
+    {c:"BB × bb", ph:"all dominant", gt:"4 Bb", pct:"100%",
+     st:["Every box gets one B and one b.","All four offspring are Bb.","Every one shows the dominant phenotype → 100%."]}
+  ];
+  const k=pick(cases);
+  return {
+    q:`Cross ${k.c}. What percent of the offspring show the DOMINANT phenotype?`,
+    ans:k.pct, accept:[k.pct, k.pct.replace("%","")], num:parseFloat(k.pct),
+    steps:[...k.st, `Genotypes: ${k.gt}. Phenotype ratio: ${k.ph}. Answer: ${k.pct}`]};
+ }}
+
+};
+
+/* normalize a typed answer so formatting differences don't count as wrong */
+function normalizeAns(s){
+  return String(s||"")
+    .toLowerCase()
+    .replace(/\s+/g,"")
+    .replace(/[−–—]/g,"-")
+    .replace(/\*/g,"")
+    .replace(/×/g,"")
+    .replace(/√/g,"sqrt")
+    .replace(/²/g,"^2").replace(/³/g,"^3")
+    .replace(/\^\{(\d+)\}/g,"^$1")
+    .replace(/sqrt\((\d+)\)/g,"sqrt$1")
+    .replace(/^\+/,"")
+    .replace(/\.0+$/,"");
+}
+
+function gradeAnswer(problem, typed){
+  const t = normalizeAns(typed);
+  if(!t) return false;
+  const ok = (problem.accept||[]).concat([problem.ans]).some(a=>normalizeAns(a)===t);
+  if(ok) return true;
+  if(typeof problem.num === "number"){
+    const v = parseFloat(typed.replace(/[^0-9.\-\/]/g,""));
+    if(typed.includes("/")){
+      const [p,q]=typed.split("/").map(x=>parseFloat(x));
+      if(q) return Math.abs(p/q - problem.num) < 0.011;
+    }
+    if(!isNaN(v)) return Math.abs(v - problem.num) < 0.011;
+  }
+  return false;
+}
+
+/* Study Sorter — app logic */
+(function(){
+"use strict";
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KEY = "studySorter.v1";
+
+let state = { items:[], own:[] };
+
+
+/* First run: open in a working state seeded with the current unit, rather than an empty shell.
+   Anything the user adds or deletes replaces this immediately. */
+const SEED = [
+  "!Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
+  "Express 3/sqrt(3) in simplest form with a rational denominator",
+  "!Fully simplify (1 - x^2/25) / (x/5 + 1)",
+  "Limits of piecewise functions - one sided",
+  "Types of discontinuities",
+  "Reading discontinuities off a graph",
+  "Limit properties when one limit does not exist",
+  "What is photosynthesis?",
+  "Causes of World War 1 #history",
+  "How do you write a thesis statement"
+];
+
+/* ---------- storage ---------- */
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const p = JSON.parse(raw); state.items = p.items||[]; state.own = p.own||[]; }
+  }catch(e){ console.warn("Could not load saved work:", e); }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ console.warn("Could not save:", e); }
+}
+
+/* ---------- library search ---------- */
+function allEntries(){ return LIB.concat(state.own); }
+
+function findEntry(text){
+  const t = text.toLowerCase();
+  let best = null, bestScore = 0;
+  for(const en of allEntries()){
+    let score = 0;
+    if(t.includes(en.t.toLowerCase())) score += en.t.length * 3;
+    for(const k of en.k){
+      if(t.includes(k.toLowerCase())) score += k.length * 2;
+    }
+    const titleWords = en.t.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>3);
+    for(const w of titleWords){ if(t.includes(w)) score += w.length; }
+    if(score > bestScore){ bestScore = score; best = en; }
+  }
+  return bestScore >= 8 ? best : null;
+}
+
+function searchEntries(q){
+  const t = q.toLowerCase().trim();
+  if(!t) return [];
+  return allEntries()
+    .map(en=>{
+      let s = 0;
+      if(en.t.toLowerCase().startsWith(t)) s += 100;
+      if(en.t.toLowerCase().includes(t)) s += 50;
+      en.k.forEach(k=>{ if(k.toLowerCase().includes(t)) s += 20; });
+      if((en.d||"").toLowerCase().includes(t)) s += 5;
+      return {en,s};
+    })
+    .filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,8).map(x=>x.en);
+}
+
+/* ---------- sorting an incoming line ---------- */
+function detectSubject(text){
+  const t = text.toLowerCase();
+  const tag = t.match(/#([a-z]+)/);
+  if(tag){
+    const map = {bio:"biology",chem:"chemistry",phys:"physics",hist:"history",eng:"english",
+                 math:"math",cs:"cs",econ:"economics",geo:"geography",calc:"math",
+                 biology:"biology",chemistry:"chemistry",physics:"physics",history:"history",
+                 english:"english",economics:"economics",geography:"geography"};
+    if(map[tag[1]]) return map[tag[1]];
+  }
+  let best="general", bestN=0;
+  for(const [sub,words] of Object.entries(SUBJECT_HINTS)){
+    let n=0;
+    for(const w of words){ if(t.includes(w)) n += w.length; }
+    if(n>bestN){ bestN=n; best=sub; }
+  }
+  return bestN>0 ? best : "general";
+}
+
+function detectType(text){
+  const t=text.trim();
+  if(/\?$/.test(t) || /^(what|who|when|where|why|how|define|explain|describe|list|name|compare|evaluate|solve|find|simplify|factor)\b/i.test(t)) return "question";
+  if(/[=+\-×÷^√]|\d\s*\/\s*\d|lim\(/.test(t) && /\d/.test(t)) return "formula";
+  if(/\b(is|are|means|refers to|defined as)\b/i.test(t)) return "definition";
+  if(/\b(1[0-9]{3}|20[0-2][0-9])\b/.test(t)) return "date / event";
+  return "note";
+}
+
+function addLines(raw){
+  const lines = raw.split("\n").map(l=>l.trim()).filter(Boolean);
+  let added=0, dupes=0, matched=0;
+  for(let line of lines){
+    let priority = false;
+    if(line.startsWith("!")){ priority = true; line = line.slice(1).trim(); }
+    const clean = line.replace(/#[a-z]+/gi,"").trim();
+    if(!clean) continue;
+    if(state.items.some(i=>i.text.toLowerCase()===clean.toLowerCase())){ dupes++; continue; }
+    const entry = findEntry(line);
+    if(entry) matched++;
+    state.items.push({
+      id: Date.now()+"-"+Math.random().toString(36).slice(2,7),
+      text: clean,
+      subject: detectSubject(line),
+      type: detectType(clean),
+      priority,
+      topic: entry ? entry.t : null,
+      done: false,
+      added: Date.now()
+    });
+    added++;
+  }
+  save();
+  return {added,dupes,matched,total:lines.length};
+}
+
+/* ---------- rendering explanations ---------- */
+function explainHTML(en){
+  let h = `<div class="card"><h2>${esc(en.t)}</h2>`;
+  h += `<div class="meta"><span class="chip">${esc(SUBJECTS[en.s]||en.s)}</span>`;
+  if(en.own) h += `<span class="chip g">your note</span>`;
+  h += `</div><div class="exp">`;
+  h += `<h4>In plain English</h4><p>${esc(en.d).replace(/\n/g,"<br>")}</p>`;
+  if(en.f) h += `<h4>Key formula / facts</h4><span class="fx">${esc(en.f).replace(/\n/g,"<br>")}</span>`;
+  if(en.steps && en.steps.length){
+    h += `<h4>How to do it</h4><ol class="steps">` + en.steps.map(s=>`<li>${esc(s)}</li>`).join("") + `</ol>`;
+  }
+  if(en.e) h += `<h4>Example</h4><span class="fx">${esc(en.e).replace(/\n/g,"<br>")}</span>`;
+  if(en.m && en.m.length){
+    h += `<h4>Where people lose points</h4><ul>` + en.m.map(m=>`<li>${esc(m)}</li>`).join("") + `</ul>`;
+  }
+  h += `</div></div>`;
+  return h;
+}
+
+/* ---------- sorted list ---------- */
+function renderList(){
+  const q = $("#search").value.toLowerCase().trim();
+  const fs = $("#filterSubject").value;
+  const st = $("#filterStatus").value;
+  const by = $("#sortBy").value;
+
+  let items = state.items.filter(i=>{
+    if(q && !i.text.toLowerCase().includes(q) && !(i.topic||"").toLowerCase().includes(q)) return false;
+    if(fs && i.subject !== fs) return false;
+    if(st==="explained" && !i.topic) return false;
+    if(st==="unexplained" && i.topic) return false;
+    if(st==="priority" && !i.priority) return false;
+    if(st==="done" && !i.done) return false;
+    if(st==="notdone" && i.done) return false;
+    return true;
+  });
+
+  const el = $("#list");
+  if(!items.length){
+    el.innerHTML = `<div class="card empty">${state.items.length? "Nothing matches those filters." : "Nothing here yet — paste your notes into the <b>Add</b> tab."}</div>`;
+    return;
+  }
+
+  if(by==="priority") items.sort((a,b)=> (b.priority-a.priority) || (!!b.topic - !!a.topic) || a.text.localeCompare(b.text));
+  else if(by==="added") items.sort((a,b)=> b.added-a.added);
+  else if(by==="alpha") items.sort((a,b)=> a.text.localeCompare(b.text));
+
+  let html = "";
+  if(by==="subject"){
+    const groups = {};
+    items.forEach(i=>{ (groups[i.subject] = groups[i.subject]||[]).push(i); });
+    Object.keys(groups).sort((a,b)=>(SUBJECTS[a]||a).localeCompare(SUBJECTS[b]||b)).forEach(sub=>{
+      groups[sub].sort((a,b)=>(b.priority-a.priority)||a.text.localeCompare(b.text));
+      html += `<div class="group"><h3>${esc(SUBJECTS[sub]||sub)} · ${groups[sub].length}</h3>` +
+              groups[sub].map(itemHTML).join("") + `</div>`;
+    });
+  } else {
+    html = items.map(itemHTML).join("");
+  }
+  el.innerHTML = html;
+}
+
+function itemHTML(i){
+  const cls = "item" + (i.priority?" pri":"") + (i.topic?" has":"") + (i.done?" done":"");
+  let h = `<div class="${cls}" data-id="${i.id}">`;
+  h += `<div class="txt">${esc(i.text)}</div>`;
+  h += `<div class="meta">`;
+  h += `<span class="chip">${esc(SUBJECTS[i.subject]||i.subject)}</span>`;
+  h += `<span class="chip">${esc(i.type)}</span>`;
+  if(i.priority) h += `<span class="chip r">priority</span>`;
+  h += i.topic ? `<span class="chip g">${esc(i.topic)}</span>` : `<span class="chip a">no explanation yet</span>`;
+  h += `<span class="acts">`;
+  if(i.topic) h += `<button data-act="show">Explain</button>`;
+  h += `<button data-act="done">${i.done?"Undo":"Done"}</button>`;
+  h += `<button data-act="del">×</button></span></div>`;
+  h += `<div class="expSlot"></div></div>`;
+  return h;
+}
+
+/* ---------- test maker ---------- */
+let currentTest = null;
+
+const CALC_KEYS = ["trigLimit","piecewiseLimit","discontinuity","limitProperties","limitFactor","rationalize","simplifyRadical","complexFraction"];
+
+function buildPicker(){
+  const el = $("#genPicker");
+  el.innerHTML = Object.entries(GENERATORS).map(([k,g])=>
+    `<label data-k="${k}"><input type="checkbox" value="${k}"> <span>${esc(g.label)}</span></label>`
+  ).join("");
+  el.addEventListener("change", e=>{
+    const lab = e.target.closest("label");
+    if(lab) lab.classList.toggle("on", e.target.checked);
+  });
+  setPicked(CALC_KEYS);
+}
+function setPicked(keys){
+  $$("#genPicker input").forEach(cb=>{
+    cb.checked = keys.includes(cb.value);
+    cb.closest("label").classList.toggle("on", cb.checked);
+  });
+}
+function picked(){ return $$("#genPicker input:checked").map(cb=>cb.value); }
+
+function makeGeneratedTest(){
+  const keys = picked();
+  if(!keys.length){ $("#testArea").innerHTML = `<div class="card result warn">Pick at least one problem type first.</div>`; return; }
+  const n = parseInt($("#genCount").value,10);
+  const qs = [];
+  for(let i=0;i<n;i++){
+    const k = keys[i % keys.length];
+    let p, tries = 0;
+    do { p = GENERATORS[k].make(); tries++; }
+    while(tries<12 && qs.some(x=>x.q===p.q));
+    p.gen = k; p.label = GENERATORS[k].label; p.topic = GENERATORS[k].topic;
+    qs.push(p);
+  }
+  for(let i=qs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
+  currentTest = { mode:"gen", qs, submitted:false };
+  renderTest();
+}
+
+function makeMineTest(){
+  const sub = $("#mineSubject").value;
+  const n = parseInt($("#mineCount").value,10);
+  let pool = state.items.filter(i=> !sub || i.subject===sub);
+  if(!pool.length){
+    $("#mineWarn").hidden = false;
+    $("#mineWarn").textContent = "You have no saved questions" + (sub? " in that subject." : " yet. Add some in the Add tab first.");
+    return;
+  }
+  $("#mineWarn").hidden = true;
+  pool = pool.slice().sort(()=>Math.random()-0.5).slice(0,n);
+  const qs = pool.map(i=>{
+    const en = i.topic ? allEntries().find(e=>e.t===i.topic) : null;
+    return { q:i.text, topic:i.topic, label:SUBJECTS[i.subject]||i.subject, entry:en, self:null,
+             ans: en ? en.t : null,
+             steps: en ? [en.d].concat(en.f?["Key: "+en.f]:[]).concat(en.e?["Example: "+en.e]:[]) : ["No stored explanation for this one yet — add one in the Save / Load tab."] };
+  });
+  currentTest = { mode:"mine", qs, submitted:false };
+  renderTest();
+}
+
+function renderTest(){
+  const t = currentTest;
+  if(!t){ $("#testArea").innerHTML=""; return; }
+  let h = `<div class="card"><div class="row">
+    <b>${t.mode==="gen"?"Practice test":"Test from your notes"} — ${t.qs.length} question${t.qs.length>1?"s":""}</b>
+    <span class="acts" style="margin-left:auto">
+      <button id="btnNewSame" class="ghost">New test, same settings</button>
+      <button id="btnPrintTest" class="ghost">Print</button>
+    </span></div></div>`;
+
+  h += t.qs.map((p,idx)=>{
+    let c = "q" + (t.submitted ? (p.correct===true?" right":p.correct===false?" wrong":"") : "");
+    let s = `<div class="${c}" data-i="${idx}">
+      <div class="qhead"><span class="qnum">${idx+1}.</span>
+      <span class="qtext">${esc(p.q)}</span>
+      <span class="qtype">${esc(p.label||"")}</span></div>`;
+
+    if(t.mode==="gen"){
+      s += `<div class="ansrow"><input type="text" class="ansin" placeholder="Your answer" value="${esc(p.typed||"")}" ${t.submitted?"disabled":""}></div>`;
+      if(t.submitted){
+        s += `<div class="verdict ${p.correct?"ok":"no"}">${p.correct?"✓ Correct":"✗ Not quite — answer: "+esc(p.ans)}</div>`;
+        s += `<div class="work"><h5>How to get there</h5><ol class="steps">${p.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`;
+      }
+    } else {
+      if(t.submitted){
+        s += `<div class="work"><h5>${p.topic?esc(p.topic):"No explanation stored"}</h5>${
+          p.steps.map(x=>`<p>${esc(x).replace(/\n/g,"<br>")}</p>`).join("")}</div>`;
+        s += `<div class="selfgrade">Grade yourself:
+          <button data-self="1" class="${p.self===1?"sel":""}">Got it</button>
+          <button data-self="0" class="${p.self===0?"sel":""}">Missed it</button></div>`;
+      } else {
+        s += `<div class="ansrow"><input type="text" class="ansin" placeholder="Answer from memory, then reveal" value="${esc(p.typed||"")}"></div>`;
+      }
+    }
+    return s + `</div>`;
+  }).join("");
+
+  if(!t.submitted){
+    h += `<div class="card"><button id="btnSubmitTest" class="primary">${t.mode==="gen"?"Submit and grade":"Reveal answers"}</button></div>`;
+  } else if(t.mode==="gen"){
+    const right = t.qs.filter(p=>p.correct).length;
+    const pct = Math.round(right/t.qs.length*100);
+    h = `<div class="card scorebox"><div class="big">${right} / ${t.qs.length}</div>
+      <div class="pct">${pct}%${pct===100?" — perfect":pct>=80?" — solid":pct>=60?" — nearly there":" — worth another pass"}</div>
+      <button id="btnNewSame2" class="primary">Try a fresh test</button></div>` + h;
+  }
+  $("#testArea").innerHTML = h;
+}
+
+function submitTest(){
+  const t = currentTest; if(!t) return;
+  $$("#testArea .q").forEach(qEl=>{
+    const i = +qEl.dataset.i;
+    const inp = qEl.querySelector(".ansin");
+    t.qs[i].typed = inp ? inp.value : "";
+    if(t.mode==="gen") t.qs[i].correct = gradeAnswer(t.qs[i], t.qs[i].typed);
+  });
+  t.submitted = true;
+  renderTest();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- exports ---------- */
+/* Saving a file works two different ways depending on where the page is running.
+   Opened as a local file or on a normal web host, an anchor download works.
+   Inside the claude.ai artifact viewer, anchors are inert and the page has to
+   ask the host to save through the downloads capability. Try that first, and
+   fall back to the anchor. Returns a status string so the caller can be honest
+   about what actually happened. */
+let dlNamespace;
+async function getDownloads(){
+  if(dlNamespace !== undefined) return dlNamespace;
+  dlNamespace = null;
+  try{
+    if(window.claude && typeof window.claude.use === "function"){
+      dlNamespace = await window.claude.use("downloads");
+    }
+  }catch(e){ dlNamespace = null; }
+  return dlNamespace;
+}
+
+async function download(name, text, mime){
+  const ns = await getDownloads();
+  if(ns){
+    try{
+      await ns.save({ filename:name, data:text });
+      return "saved";
+    }catch(err){
+      const code = err && err.code;
+      if(code === "declined") return "declined";
+      if(code === "rate_limited") return "busy";
+      /* anything else: fall through and try the ordinary anchor */
+    }
+  }
+  try{
+    const b = new Blob([text], {type:mime||"text/plain;charset=utf-8"});
+    const u = URL.createObjectURL(b);
+    const a = document.createElement("a");
+    a.href = u; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(u); }, 0);
+    return "saved";
+  }catch(e){ return "failed"; }
+}
+
+function toMarkdown(){
+  let md = "# Study sheet\n\n_Exported " + new Date().toLocaleDateString() + "_\n\n";
+  const groups = {};
+  state.items.forEach(i=>{ (groups[i.subject]=groups[i.subject]||[]).push(i); });
+  Object.keys(groups).sort().forEach(sub=>{
+    md += "\n## " + (SUBJECTS[sub]||sub) + "\n\n";
+    groups[sub].forEach(i=>{
+      md += "- " + (i.priority?"**[!] ":"") + i.text + (i.priority?"**":"") + "\n";
+      const en = i.topic ? allEntries().find(e=>e.t===i.topic) : null;
+      if(en){
+        md += "  - " + en.d + "\n";
+        if(en.f) md += "  - Formula: " + en.f.replace(/\n/g," ") + "\n";
+        if(en.e) md += "  - Example: " + en.e.replace(/\n/g," ") + "\n";
+      }
+    });
+  });
+  return md;
+}
+
+/* ---------- wiring ---------- */
+function fillSubjectSelects(){
+  const used = [...new Set(state.items.map(i=>i.subject))].sort();
+  const opts = used.map(s=>`<option value="${s}">${esc(SUBJECTS[s]||s)}</option>`).join("");
+  ["#filterSubject","#mineSubject"].forEach(sel=>{
+    const el=$(sel); if(!el) return;
+    const cur=el.value;
+    el.innerHTML = `<option value="">All subjects</option>` + opts;
+    el.value = cur;
+  });
+  const own = $("#ownSubject");
+  if(own) own.innerHTML = Object.entries(SUBJECTS).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join("");
+}
+
+function refresh(){
+  $("#countSorted").textContent = state.items.length;
+  fillSubjectSelects();
+  renderList();
+}
+
+function init(){
+  load();
+  const firstRun = !state.items.length && !state.own.length;
+  if(firstRun) addLines(SEED.join("\n"));
+  buildPicker();
+
+  /* tabs */
+  $$(".tab").forEach(b=>b.addEventListener("click", ()=>{
+    $$(".tab").forEach(x=>x.classList.remove("active"));
+    $$(".view").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    $("#view-"+b.dataset.view).classList.add("active");
+  }));
+
+  /* add */
+  $("#btnSort").addEventListener("click", ()=>{
+    const raw = $("#bulk").value;
+    if(!raw.trim()) return;
+    const r = addLines(raw);
+    const box = $("#addResult");
+    box.hidden = false;
+    box.className = "result" + (r.added?"":" warn");
+    box.textContent = r.added
+      ? `Sorted ${r.added} item${r.added>1?"s":""}. ${r.matched} matched a topic I can explain${r.dupes?`. ${r.dupes} duplicate${r.dupes>1?"s":""} skipped`:""}.`
+      : `Nothing new added${r.dupes?` — ${r.dupes} were already on your list.`:"."}`;
+    if(r.added) $("#bulk").value = "";
+    refresh();
+  });
+  $("#btnClearBox").addEventListener("click", ()=>{ $("#bulk").value=""; $("#addResult").hidden=true; });
+  $("#btnSample").addEventListener("click", ()=>{
+    $("#bulk").value = [
+      "!Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
+      "Express 3/sqrt(3) in simplest form with a rational denominator",
+      "Types of discontinuities",
+      "What is photosynthesis?",
+      "!Causes of World War 1 #history",
+      "How do you write a thesis statement",
+      "Balancing chemical equations",
+      "Newton's three laws of motion"
+    ].join("\n");
+  });
+
+  /* sorted */
+  ["#search","#filterSubject","#filterStatus","#sortBy"].forEach(s=>{
+    $(s).addEventListener("input", renderList);
+    $(s).addEventListener("change", renderList);
+  });
+  $("#list").addEventListener("click", e=>{
+    const btn = e.target.closest("button[data-act]"); if(!btn) return;
+    const wrap = btn.closest(".item"); const id = wrap.dataset.id;
+    const item = state.items.find(i=>i.id===id); if(!item) return;
+    const act = btn.dataset.act;
+    if(act==="del"){ state.items = state.items.filter(i=>i.id!==id); save(); refresh(); }
+    else if(act==="done"){ item.done=!item.done; save(); renderList(); }
+    else if(act==="show"){
+      const slot = wrap.querySelector(".expSlot");
+      if(slot.innerHTML){ slot.innerHTML=""; btn.textContent="Explain"; }
+      else{
+        const en = allEntries().find(e=>e.t===item.topic);
+        slot.innerHTML = en ? explainHTML(en) : "";
+        btn.textContent="Hide";
+      }
+    }
+  });
+  $("#btnClearAll").addEventListener("click", ()=>{
+    if(!state.items.length) return;
+    if(confirm("Delete all "+state.items.length+" items? Your own saved explanations are kept.")){
+      state.items = []; save(); refresh();
+    }
+  });
+
+  /* explain */
+  $("#lookup").addEventListener("input", ()=>{
+    const q = $("#lookup").value;
+    const hits = searchEntries(q);
+    $("#suggest").innerHTML = hits.map(h=>`<button data-t="${esc(h.t)}">${esc(h.t)}</button>`).join("");
+    $("#explainOut").innerHTML = hits.length ? explainHTML(hits[0]) : (q.trim()? `<div class="card empty">Nothing in the library for “${esc(q)}” yet. Send it to me and I'll add it, or write your own under <b>Save / Load</b>.</div>` : "");
+  });
+  $("#suggest").addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    const en = allEntries().find(x=>x.t===b.dataset.t);
+    if(en) $("#explainOut").innerHTML = explainHTML(en);
+  });
+  function renderLibIndex(){
+    const all = allEntries().slice().sort((a,b)=>(SUBJECTS[a.s]||a.s).localeCompare(SUBJECTS[b.s]||b.s)||a.t.localeCompare(b.t));
+    $("#libCount").textContent = all.length;
+    $("#libIndex").innerHTML = all.map(e=>`<button data-t="${esc(e.t)}">${esc(e.t)}</button>`).join("");
+  }
+  $("#libIndex").addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    const en = allEntries().find(x=>x.t===b.dataset.t);
+    if(en){ $("#explainOut").innerHTML = explainHTML(en); window.scrollTo({top:0,behavior:"smooth"}); }
+  });
+  renderLibIndex();
+
+  /* test maker */
+  $$(".modebtn").forEach(b=>b.addEventListener("click", ()=>{
+    $$(".modebtn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    $("#modeGen").hidden = b.dataset.mode!=="gen";
+    $("#modeMine").hidden = b.dataset.mode!=="mine";
+  }));
+  $("#btnPickAll").addEventListener("click", ()=>setPicked(Object.keys(GENERATORS)));
+  $("#btnPickNone").addEventListener("click", ()=>setPicked([]));
+  $("#btnPickCalc").addEventListener("click", ()=>setPicked(CALC_KEYS));
+  $("#btnMakeTest").addEventListener("click", makeGeneratedTest);
+  $("#btnMakeMine").addEventListener("click", makeMineTest);
+
+  $("#testArea").addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    if(b.id==="btnSubmitTest") submitTest();
+    else if(b.id==="btnNewSame"||b.id==="btnNewSame2"){
+      currentTest && currentTest.mode==="gen" ? makeGeneratedTest() : makeMineTest();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    else if(b.id==="btnPrintTest") window.print();
+    else if(b.dataset.self!==undefined){
+      const i = +b.closest(".q").dataset.i;
+      currentTest.qs[i].self = +b.dataset.self;
+      renderTest();
+    }
+  });
+  $("#testArea").addEventListener("keydown", e=>{
+    if(e.key==="Enter" && e.target.classList.contains("ansin")){ e.preventDefault(); submitTest(); }
+  });
+
+  /* data */
+  $("#btnExportJson").addEventListener("click", async ()=>{
+    msg("#dataMsg","Saving backup\u2026");
+    const r = await download("study-sorter-backup.json", JSON.stringify(state,null,2), "application/json");
+    if(r==="saved") msg("#dataMsg","Backup saved. Keep it somewhere you'll find it again.");
+    else if(r==="declined") msg("#dataMsg","Save cancelled \u2014 nothing was written.", true);
+    else if(r==="busy") msg("#dataMsg","Another save is already open. Finish that one, then try again.", true);
+    else msg("#dataMsg","Couldn't save the file here. Use Print / Save as PDF instead.", true);
+  });
+  $("#btnExportMd").addEventListener("click", async ()=>{
+    msg("#dataMsg","Saving study sheet\u2026");
+    const r = await download("study-sheet.md", toMarkdown(), "text/markdown");
+    if(r==="saved") msg("#dataMsg","Study sheet saved.");
+    else if(r==="declined") msg("#dataMsg","Save cancelled \u2014 nothing was written.", true);
+    else if(r==="busy") msg("#dataMsg","Another save is already open. Finish that one, then try again.", true);
+    else msg("#dataMsg","Couldn't save the file here. Use Print / Save as PDF instead.", true);
+  });
+  $("#btnPrint").addEventListener("click", ()=>window.print());
+  $("#importFile").addEventListener("change", e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const p = JSON.parse(r.result);
+        if(!p || !Array.isArray(p.items)) throw new Error("not a Study Sorter backup");
+        state.items = p.items; state.own = p.own||[];
+        save(); refresh(); renderLibIndex();
+        msg("#dataMsg", `Imported ${state.items.length} items and ${state.own.length} of your own explanations.`);
+      }catch(err){ msg("#dataMsg","That file didn't look like a Study Sorter backup.", true); }
+    };
+    r.readAsText(f);
+    e.target.value = "";
+  });
+  $("#btnSaveOwn").addEventListener("click", ()=>{
+    const t = $("#ownTitle").value.trim();
+    const b = $("#ownBody").value.trim();
+    if(!t || !b){ msg("#ownMsg","Give it a title and some text first.", true); return; }
+    state.own = state.own.filter(o=>o.t.toLowerCase()!==t.toLowerCase());
+    state.own.push({ t, s:$("#ownSubject").value, k:[t.toLowerCase()], d:b, m:[], own:true });
+    save();
+    state.items.forEach(i=>{ if(!i.topic && findEntry(i.text)) i.topic = findEntry(i.text).t; });
+    save(); refresh(); renderLibIndex();
+    $("#ownTitle").value=""; $("#ownBody").value="";
+    msg("#ownMsg", `Saved “${t}”. It's now searchable and usable in tests.`);
+  });
+
+  function msg(sel,text,warn){
+    const el=$(sel); el.hidden=false; el.className="result"+(warn?" warn":""); el.textContent=text;
+  }
+
+  refresh();
+  if(firstRun) makeGeneratedTest();
+}
+
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
+})();
+
+</script>
