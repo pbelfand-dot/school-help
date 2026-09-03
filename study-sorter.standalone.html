@@ -372,6 +372,7 @@ derivative of x^2"></textarea>
           <button id="btnPickNone" class="ghost">Clear</button>
           <button id="btnPickCalc" class="ghost">Calc AB — Unit 1 Limits</button>
           <button id="btnPickPsych" class="ghost">AP Psych — Unit 0</button>
+          <button id="btnPickHW" class="ghost">My actual handouts</button>
         </div>
         <div class="row">
           <label class="lbl">Questions: <select id="genCount">
@@ -1796,6 +1797,911 @@ function gradeAnswer(problem, typed){
   return false;
 }
 
+/* ---- Real problems from the class handouts, with worked solutions.
+   Review answers were checked against Mr. Haruthunian's answer key;
+   the rest were solved here and verified numerically. ---- */
+const HANDOUTS = {
+ "hwReview": {
+  "label": "Unit 1 Review (the real handout)",
+  "subject": "math",
+  "topic": "The four techniques for evaluating limits",
+  "items": [
+   {
+    "q": "1.  lim(x→0)  sin x / (x² − 2x)",
+    "ans": "−1/2",
+    "accept": [
+     "-1/2",
+     "-0.5",
+     "−1/2"
+    ],
+    "steps": [
+     "Factor the bottom: x² − 2x = x(x − 2).",
+     "Split it: [sin x / x] · [1/(x − 2)].",
+     "lim sin x / x = 1, and 1/(x−2) → 1/(0−2) = −1/2.",
+     "Answer: −1/2"
+    ]
+   },
+   {
+    "q": "2.  lim(x→0)  (√(x+1) − 1) / x",
+    "ans": "1/2",
+    "accept": [
+     "1/2",
+     "0.5"
+    ],
+    "steps": [
+     "Substitution gives 0/0, and there is a radical — use the RATIONALIZING technique.",
+     "Multiply top and bottom by the conjugate (√(x+1) + 1).",
+     "Top becomes (x+1) − 1 = x, so you get x / [x(√(x+1)+1)].",
+     "Cancel the x: 1/(√(x+1)+1) → 1/(1+1).",
+     "Answer: 1/2"
+    ]
+   },
+   {
+    "q": "3.  lim(x→0)  [(3+x)² − 9] / x",
+    "ans": "6",
+    "accept": [
+     "6"
+    ],
+    "steps": [
+     "Expand the top: (3+x)² = 9 + 6x + x², so the top is 6x + x².",
+     "That gives (6x + x²)/x.",
+     "Cancel the x: 6 + x.",
+     "Substitute 0.  Answer: 6"
+    ]
+   },
+   {
+    "q": "4.  lim(x→9)  (x² − 81) / (√x − 3)",
+    "ans": "108",
+    "accept": [
+     "108"
+    ],
+    "steps": [
+     "0/0 with a radical in the bottom — rationalize by multiplying top and bottom by (√x + 3).",
+     "The bottom becomes (√x−3)(√x+3) = x − 9.",
+     "The top factors: (x−9)(x+9)(√x+3).",
+     "Cancel (x − 9), leaving (x+9)(√x+3).",
+     "Substitute 9: (18)(6).  Answer: 108"
+    ]
+   },
+   {
+    "q": "5.  lim(x→2⁻)  (x − 3) / (x − 2)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "Substituting gives −1/0 — a vertical asymptote, so decide the sign.",
+     "Coming from the LEFT of 2, (x − 2) is a tiny NEGATIVE.",
+     "The top approaches −1, also negative.  Negative ÷ negative = positive.",
+     "Answer: +∞  (your teacher accepts DNE, but ∞ is the more specific answer)"
+    ]
+   },
+   {
+    "q": "6.  lim(x→∞)  x³ / e^(−3x)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "A negative exponent in the bottom flips up: x³ / e^(−3x) = x³ · e^(3x).",
+     "Both factors grow without bound.",
+     "Answer: ∞  (DNE is accepted; ∞ is more specific)"
+    ]
+   },
+   {
+    "q": "7.  lim(x→∞)  √x / 2^(3x)",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "2^(3x) is the same as 8^x.",
+     "An exponential grows faster than any root.",
+     "The bottom outruns the top, so the fraction is squeezed to zero.",
+     "Answer: 0"
+    ]
+   },
+   {
+    "q": "8.  lim(x→∞)  sin( 1/(x−2) )",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "Work from the inside out. As x → ∞, the denominator (x−2) → ∞.",
+     "So 1/(x−2) → 0.",
+     "sin is continuous, so the limit is sin(0).",
+     "Answer: 0"
+    ]
+   },
+   {
+    "q": "9.  lim(x→0)  sin 2x / sin 3x",
+    "ans": "2/3",
+    "accept": [
+     "2/3"
+    ],
+    "steps": [
+     "Divide top and bottom by x to build two special trig limits.",
+     "Top: sin2x / x = 2 · (sin2x / 2x) → 2.   Bottom: sin3x / x = 3 · (sin3x / 3x) → 3.",
+     "Answer: 2/3"
+    ]
+   },
+   {
+    "q": "10.  lim(x→+∞)  e^(x/2)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "As x → ∞, the exponent x/2 → ∞.",
+     "An exponential with a growing positive exponent grows without bound.",
+     "Answer: ∞  (the key notes: DNE is acceptable, but infinity is more specific)"
+    ]
+   },
+   {
+    "q": "11.  lim(x→∞)  |x| / e^(x²)",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "The top grows like x. The bottom grows like e^(x²), which is far faster.",
+     "The denominator goes to infinity faster than the numerator.",
+     "Answer: 0"
+    ]
+   },
+   {
+    "q": "12.  lim(x→∞)  ln x / e^(−x)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "e^(−x) in the denominator flips up: ln x / e^(−x) = ln x · e^x.",
+     "Both factors grow without bound.",
+     "Answer: ∞  (DNE accepted; ∞ is more specific)"
+    ]
+   },
+   {
+    "q": "13.  lim(x→∞)  [ 1/(x+1) ] / e^x",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "Rewrite as 1 / [ (x+1) · e^x ].",
+     "The denominator goes to infinity much faster than the numerator, which is just 1.",
+     "Answer: 0"
+    ]
+   },
+   {
+    "q": "14.  lim(x→∞)  cos( 1/(x+5) )",
+    "ans": "1",
+    "accept": [
+     "1"
+    ],
+    "steps": [
+     "Inside first: as x → ∞, 1/(x+5) → 0.",
+     "cos is continuous, so the limit is cos(0).",
+     "Answer: 1"
+    ]
+   },
+   {
+    "q": "15.  f(x) = { (x²+3x)/x  for x > 0 ;  3  for x ≤ 0 }\n\nIs f continuous at x = 0?  (Yes or No)",
+    "ans": "Yes",
+    "accept": [
+     "yes",
+     "y",
+     "continuous",
+     "true"
+    ],
+    "steps": [
+     "Simplify the top piece: (x²+3x)/x = x(x+3)/x = x + 3 for x > 0.",
+     "f(0) uses the x ≤ 0 piece: f(0) = 3.  Defined ✓",
+     "Left limit: the constant piece → 3.  Right limit: x + 3 → 3.  Limit = 3 ✓",
+     "Limit 3 equals f(0) = 3 ✓",
+     "All three conditions hold.  Answer: Yes, continuous at x = 0"
+    ]
+   },
+   {
+    "q": "16.  f(x) = { 3x + 1  for x ≠ 2 ;  5  for x = 2 }\n\nFind lim(x→2) f(x).",
+    "ans": "7",
+    "accept": [
+     "7"
+    ],
+    "steps": [
+     "The limit never looks at the point itself, only at the neighborhood.",
+     "Near x = 2 (but not at it) the rule is 3x + 1.",
+     "3(2) + 1 = 7.",
+     "Answer: 7.  Note f(2) = 5, so 7 ≠ 5 and f is NOT continuous at 2 — a removable discontinuity."
+    ]
+   },
+   {
+    "q": "17.  f(x) = { (3x²+10x−8)/(x+4)  for x ≠ −4 ;  k  for x = −4 }\n\nFind the value of k that makes f continuous everywhere.",
+    "ans": "−14",
+    "accept": [
+     "-14",
+     "−14"
+    ],
+    "steps": [
+     "Continuity needs k to equal the limit as x → −4.",
+     "Factor the top: 3x² + 10x − 8 = (3x − 2)(x + 4).",
+     "Cancel (x + 4), leaving 3x − 2.",
+     "Substitute −4: 3(−4) − 2 = −14.",
+     "Answer: k = −14"
+    ]
+   },
+   {
+    "q": "18.  f(x) = { 2x − 3  for x ≤ 2 ;  x² + 1  for x > 2 }\n\nFind lim(x→2) f(x).  (Write DNE if it does not exist.)",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "undefined",
+     "none"
+    ],
+    "steps": [
+     "Left piece at 2: 2(2) − 3 = 1.",
+     "Right piece at 2: (2)² + 1 = 5.",
+     "1 ≠ 5, so the one-sided limits disagree.",
+     "Answer: DNE — a jump discontinuity"
+    ]
+   },
+   {
+    "q": "19.  h is continuous, with h(0) = −10 and h(5) = 4.\nWhy must there be a c in 0 < c < 5 with h(c) = −5?\n\n(Name the theorem.)",
+    "ans": "Intermediate Value Theorem",
+    "accept": [
+     "intermediatevaluetheorem",
+     "ivt",
+     "intermediate value theorem",
+     "intermediatevalue"
+    ],
+    "steps": [
+     "h is continuous on [0, 5].",
+     "−10 < −5 < 4, so the target value −5 lies between h(0) and h(5).",
+     "The INTERMEDIATE VALUE THEOREM guarantees the function takes every value between its endpoint values.",
+     "Full justification: 'Since h is continuous and −10 < −5 < 4, the IVT guarantees a value c in 0 < c < 5 such that h(c) = −5.'"
+    ]
+   },
+   {
+    "q": "21a.  From the graph: lim(x→0⁻) f(x)\n\n[Curve rises from (−6,1) to an OPEN circle at (0,4); a FILLED dot sits at (0,0).]",
+    "ans": "4",
+    "accept": [
+     "4"
+    ],
+    "steps": [
+     "Approaching 0 from the LEFT, follow the curve coming up from (−6, 1).",
+     "It heads toward the open circle at (0, 4).",
+     "The circle being open does not matter — the limit is the height approached.",
+     "Answer: 4"
+    ]
+   },
+   {
+    "q": "21c.  From the graph: lim(x→0) f(x)\n\n[Left branch rises to an OPEN circle at (0,4); right branch starts at a FILLED dot (0,0).]",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "undefined",
+     "none"
+    ],
+    "steps": [
+     "Left-hand limit: 4.   Right-hand limit: 0.",
+     "The two sides disagree, so no single value is approached.",
+     "Answer: DNE   (and f(0) = 0, which is a separate question)"
+    ]
+   },
+   {
+    "q": "22.  lim(x→−3⁻) f(x) = −1, lim(x→−3⁺) f(x) = −1, and f(−3) is undefined.\nWhich are true?\n  I. lim(x→−3) f(x) = −1\n  II. f is continuous everywhere except x = −3\n  III. f has a discontinuity at x = −3",
+    "ans": "d",
+    "accept": [
+     "d",
+     "iandiiionly",
+     "i and iii only",
+     "i,iii",
+     "iandiii"
+    ],
+    "steps": [
+     "I is TRUE — both one-sided limits equal −1, so the two-sided limit is −1.",
+     "II is FALSE — you were told nothing about any other point, so you cannot claim continuity everywhere else.",
+     "III is TRUE — f(−3) is undefined, so condition 1 of continuity fails.",
+     "Answer: (d) I and III only"
+    ]
+   }
+  ]
+ },
+ "hw110": {
+  "label": "Handout 1-10: Limits at Infinity",
+  "subject": "math",
+  "topic": "Limits at infinity (horizontal asymptotes)",
+  "items": [
+   {
+    "q": "1.  lim(x→∞)  (3 − x) / (4 + x + x²)",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "Top degree 1, bottom degree 2.",
+     "The bottom grows faster.",
+     "Answer: 0  (horizontal asymptote y = 0)"
+    ]
+   },
+   {
+    "q": "2.  lim(x→∞)  (4x⁴ + 5x + 1) / (37x³ − 9)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "Top degree 4, bottom degree 3.",
+     "The top grows faster, so the fraction is unbounded.",
+     "There is no horizontal asymptote.",
+     "Answer: ∞ (DNE)"
+    ]
+   },
+   {
+    "q": "3.  lim(x→∞)  (x³ − 4x² + 7) / (3 − 6x − 2x³)",
+    "ans": "−1/2",
+    "accept": [
+     "-1/2",
+     "−1/2",
+     "-0.5"
+    ],
+    "steps": [
+     "Both are degree 3, so use the ratio of leading coefficients.",
+     "Top leading coefficient 1; bottom leading coefficient −2.",
+     "Answer: −1/2"
+    ]
+   },
+   {
+    "q": "4.  lim(x→∞)  sin x",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none"
+    ],
+    "steps": [
+     "sin x keeps oscillating between −1 and 1 forever.",
+     "It never settles toward one value.",
+     "Answer: DNE"
+    ]
+   },
+   {
+    "q": "5.  lim(x→∞)  (2x² + 1) / [(2 − x)(2 + x)]",
+    "ans": "−2",
+    "accept": [
+     "-2",
+     "−2"
+    ],
+    "steps": [
+     "Expand the bottom: (2−x)(2+x) = 4 − x².",
+     "Both are degree 2, so take leading coefficients: 2 on top, −1 on the bottom.",
+     "Answer: −2"
+    ]
+   },
+   {
+    "q": "6.  lim(x→∞)  √(x² + 1) / (3x)",
+    "ans": "1/3",
+    "accept": [
+     "1/3"
+    ],
+    "steps": [
+     "For large positive x, √(x²+1) behaves like √(x²) = x.",
+     "So the fraction behaves like x/(3x).",
+     "Answer: 1/3   (careful: as x → −∞ this would be −1/3, since √(x²) = |x|)"
+    ]
+   },
+   {
+    "q": "7.  lim(x→∞)  √(x + 1) / (3x)",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "The top grows like x^(1/2); the bottom grows like x.",
+     "Degree 1/2 < degree 1, so the bottom wins.",
+     "Answer: 0"
+    ]
+   },
+   {
+    "q": "8.  lim(x→∞)  x² / √(3x + 1)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "Top degree 2; bottom degree 1/2.",
+     "The top grows far faster.",
+     "Answer: ∞ (DNE)"
+    ]
+   },
+   {
+    "q": "9.  lim(x→2)  ( 1 + 3/(x+2) )",
+    "ans": "7/4",
+    "accept": [
+     "7/4",
+     "1.75"
+    ],
+    "steps": [
+     "Nothing is indeterminate here — just substitute.",
+     "1 + 3/(2+2) = 1 + 3/4.",
+     "Answer: 7/4"
+    ]
+   },
+   {
+    "q": "10.  lim(x→0⁺)  1 / (3x)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "From the RIGHT, 3x is a tiny POSITIVE number.",
+     "1 divided by a tiny positive is huge and positive.",
+     "Answer: +∞"
+    ]
+   },
+   {
+    "q": "11.  lim(x→0⁻)  2 / x",
+    "ans": "−∞",
+    "accept": [
+     "-infinity",
+     "−∞",
+     "-∞",
+     "negativeinfinity",
+     "-inf",
+     "dne",
+     "doesnotexist",
+     "does not exist"
+    ],
+    "steps": [
+     "From the LEFT, x is a tiny NEGATIVE number.",
+     "2 divided by a tiny negative is huge and negative.",
+     "Answer: −∞"
+    ]
+   },
+   {
+    "q": "12.  lim(x→0)  5 / (2x)",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist"
+    ],
+    "steps": [
+     "From the right: 5/(tiny positive) → +∞.",
+     "From the left: 5/(tiny negative) → −∞.",
+     "The two sides disagree — an ODD power in the denominator always does this.",
+     "Answer: DNE"
+    ]
+   },
+   {
+    "q": "13.  lim(x→2⁺)  (x² + 4) / (x − 2)",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "The top approaches 8, a nonzero number.",
+     "From the RIGHT of 2, (x−2) is a tiny POSITIVE.",
+     "Positive ÷ tiny positive → +∞.",
+     "Answer: +∞"
+    ]
+   },
+   {
+    "q": "14.  lim(x→2⁻)  x / (x − 2)",
+    "ans": "−∞",
+    "accept": [
+     "-infinity",
+     "−∞",
+     "-∞",
+     "negativeinfinity",
+     "-inf",
+     "dne",
+     "doesnotexist",
+     "does not exist"
+    ],
+    "steps": [
+     "The top approaches 2, positive.",
+     "From the LEFT of 2, (x−2) is a tiny NEGATIVE.",
+     "Positive ÷ tiny negative → −∞.",
+     "Answer: −∞"
+    ]
+   },
+   {
+    "q": "15.  lim(x→−1)  x / (x + 1)",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist"
+    ],
+    "steps": [
+     "The top approaches −1, nonzero.",
+     "From the RIGHT of −1: (x+1) is a tiny positive, so −1/positive → −∞.",
+     "From the LEFT of −1: (x+1) is a tiny negative, so −1/negative → +∞.",
+     "The sides disagree.  Answer: DNE"
+    ]
+   },
+   {
+    "q": "16.  lim(x→0)  1 / |x|",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne"
+    ],
+    "steps": [
+     "|x| is POSITIVE on both sides of 0.",
+     "So 1/|x| → +∞ from both directions — the sides agree.",
+     "This is the difference from 1/x, where the sides disagree.",
+     "Answer: +∞"
+    ]
+   },
+   {
+    "q": "17.  lim(θ→0)  cos θ · tan θ / θ",
+    "ans": "1",
+    "accept": [
+     "1"
+    ],
+    "steps": [
+     "Rewrite tan θ as sin θ / cos θ.",
+     "cos θ · (sin θ / cos θ) = sin θ — the cosines cancel.",
+     "Left with sin θ / θ, the special trig limit.",
+     "Answer: 1"
+    ]
+   },
+   {
+    "q": "18.  lim(x→0)  sin x / (x² + 3x)",
+    "ans": "1/3",
+    "accept": [
+     "1/3"
+    ],
+    "steps": [
+     "Factor the bottom: x² + 3x = x(x + 3).",
+     "Split: (sin x / x) · 1/(x + 3).",
+     "The first factor → 1; the second → 1/3.",
+     "Answer: 1/3"
+    ]
+   },
+   {
+    "q": "19.  lim(x→0)  (x·csc x + 1) / (x·csc x)",
+    "ans": "2",
+    "accept": [
+     "2"
+    ],
+    "steps": [
+     "csc x = 1/sin x, so x·csc x = x / sin x.",
+     "As x → 0, x/sin x → 1 (it is the reciprocal of sin x / x).",
+     "So the expression → (1 + 1)/1.",
+     "Answer: 2"
+    ]
+   },
+   {
+    "q": "20.  The graph of f(x) = 4/(x² − 1) has:\n  a. one vertical asymptote at x = 1\n  b. the y-axis as a vertical asymptote\n  c. the x-axis as a horizontal asymptote and vertical asymptotes at x = ±1\n  d. two vertical asymptotes at x = ±1, but no horizontal asymptote\n  e. no asymptotes",
+    "ans": "c",
+    "accept": [
+     "c",
+     "choicec"
+    ],
+    "steps": [
+     "Vertical asymptotes where the bottom is zero: x² − 1 = 0 → x = 1 and x = −1.  That is TWO.",
+     "Horizontal: the top is degree 0, the bottom degree 2, so the bottom wins and the limit is 0.",
+     "y = 0 is the x-axis.",
+     "Answer: (c)"
+    ]
+   },
+   {
+    "q": "CHALLENGE.  lim(x→0)  (cos²x − 1) / (3x · sin 2x)\n  a. 1   b. 3   c. −3   d. 1/3   e. −1/6",
+    "ans": "e",
+    "accept": [
+     "e",
+     "-1/6",
+     "−1/6",
+     "choicee"
+    ],
+    "steps": [
+     "Use the Pythagorean identity: cos²x − 1 = −(1 − cos²x) = −sin²x.",
+     "Expand the bottom with the double-angle identity: sin 2x = 2 sin x cos x.",
+     "So the expression is −sin²x / (3x · 2 sin x cos x) = −sin x / (6x cos x).",
+     "Split: −(1/6) · (sin x / x) · (1/cos x) → −(1/6)(1)(1).",
+     "Answer: (e) −1/6"
+    ]
+   }
+  ]
+ },
+ "hw16": {
+  "label": "Handout 1-6: Continuity",
+  "subject": "math",
+  "topic": "Continuity",
+  "items": [
+   {
+    "q": "1.  f(x) = { 1/(x−1)  for x < 1 ;  x³ − 2x + 5  for x ≥ 1 }\n\nIs f continuous at x = 1?  (Yes or No)",
+    "ans": "No",
+    "accept": [
+     "no",
+     "n",
+     "notcontinuous",
+     "discontinuous",
+     "false"
+    ],
+    "steps": [
+     "Condition 1 — f(1) uses the x ≥ 1 piece: 1 − 2 + 5 = 4.  Defined ✓",
+     "Condition 2 — the left-hand limit uses 1/(x−1). As x → 1⁻, (x−1) is a tiny negative, so this → −∞.",
+     "The left-hand limit does not exist, so the limit does not exist.",
+     "Answer: No — an infinite discontinuity from the left"
+    ]
+   },
+   {
+    "q": "2.  f(x) = { 3 − x  for x < 2 ;  2  for x = 2 ;  x/2  for x > 2 }\n\nIs f continuous at x = 2?  (Yes or No)",
+    "ans": "No",
+    "accept": [
+     "no",
+     "n",
+     "notcontinuous",
+     "discontinuous",
+     "false"
+    ],
+    "steps": [
+     "Condition 1 — f(2) = 2.  Defined ✓",
+     "Condition 2 — left: 3 − 2 = 1.  Right: 2/2 = 1.  Limit = 1 ✓",
+     "Condition 3 — the limit is 1 but f(2) = 2.  1 ≠ 2 ✗",
+     "Answer: No — a removable discontinuity. Redefining f(2) = 1 would fix it."
+    ]
+   },
+   {
+    "q": "3.  f(x) = { (x²+2x−15)/(x²−9)  for x > 3 ;  4/3  for x ≤ 3 }\n\nIs f continuous at x = 3?  (Yes or No)",
+    "ans": "Yes",
+    "accept": [
+     "yes",
+     "y",
+     "continuous",
+     "true"
+    ],
+    "steps": [
+     "Condition 1 — f(3) uses the x ≤ 3 piece: 4/3.  Defined ✓",
+     "Condition 2 — left limit is the constant 4/3.  For the right, factor: (x+5)(x−3) / [(x−3)(x+3)] → (x+5)/(x+3).",
+     "Substitute 3: 8/6 = 4/3.  Both sides give 4/3 ✓",
+     "Condition 3 — the limit 4/3 equals f(3) = 4/3 ✓",
+     "Answer: Yes, continuous at x = 3"
+    ]
+   },
+   {
+    "q": "4.  f(x) = { x² − 1  for x < 3 ;  2kx  for x ≥ 3 }\n\nFind k so that f is continuous at x = 3.",
+    "ans": "4/3",
+    "accept": [
+     "4/3"
+    ],
+    "steps": [
+     "The two pieces must meet at x = 3.",
+     "Left at 3: 3² − 1 = 8.",
+     "Right at 3: 2k(3) = 6k.",
+     "Set equal: 6k = 8 → k = 8/6.",
+     "Answer: k = 4/3"
+    ]
+   },
+   {
+    "q": "5.  f(x) = { kx²  for x ≤ 2 ;  2x + k  for x > 2 }\n\nFind k so that f is continuous everywhere.",
+    "ans": "4/3",
+    "accept": [
+     "4/3"
+    ],
+    "steps": [
+     "The only place continuity can fail is the boundary x = 2 (both pieces are polynomials).",
+     "Left at 2: k(2)² = 4k.",
+     "Right at 2: 2(2) + k = 4 + k.",
+     "Set equal: 4k = 4 + k → 3k = 4.",
+     "Answer: k = 4/3"
+    ]
+   },
+   {
+    "q": "6.  f(x) = { (x²−x)/(2x)  for x ≠ 0 ;  k  for x = 0 }\nIf f is continuous at x = 0, then k =\n  a. −1   b. −1/2   c. 0   d. 1/2   e. 2",
+    "ans": "b",
+    "accept": [
+     "b",
+     "-1/2",
+     "−1/2",
+     "choiceb"
+    ],
+    "steps": [
+     "k must equal the limit as x → 0.",
+     "Factor the top: x(x − 1) / (2x).",
+     "Cancel the x: (x − 1)/2.",
+     "Substitute 0: (0 − 1)/2 = −1/2.",
+     "Answer: (b) −1/2"
+    ]
+   },
+   {
+    "q": "7.  f(x) = { (x²−1)/(x−1)  for x ≠ 1 ;  4  for x = 1 }\nWhich are true?\n  I. lim(x→1) f(x) exists\n  II. f(1) exists\n  III. f is continuous at x = 1\n  a. I only  b. II only  c. I and II only  d. all  e. none",
+    "ans": "c",
+    "accept": [
+     "c",
+     "iandiionly",
+     "i and ii only",
+     "choicec"
+    ],
+    "steps": [
+     "I — factor and cancel: (x−1)(x+1)/(x−1) → x + 1 → 2.  The limit EXISTS ✓",
+     "II — f(1) is given as 4.  It EXISTS ✓",
+     "III — continuity needs the limit to equal f(1). But 2 ≠ 4 ✗",
+     "Answer: (c) I and II only — a removable discontinuity"
+    ]
+   },
+   {
+    "q": "8.  f(x) = { (x²+x)/x  for x ≠ 0 ;  1  for x = 0 }\nWhich are true?\n  I. lim(x→0) f(x) exists\n  II. f(0) exists\n  III. f is continuous at x = 0\n  a. I only  b. II only  c. I and II only  d. all  e. none",
+    "ans": "d",
+    "accept": [
+     "d",
+     "allofthem",
+     "all",
+     "choiced"
+    ],
+    "steps": [
+     "I — factor and cancel: x(x+1)/x → x + 1 → 1.  EXISTS ✓",
+     "II — f(0) is given as 1.  EXISTS ✓",
+     "III — the limit is 1 and f(0) is 1. They agree ✓",
+     "All three conditions hold.  Answer: (d) all of them"
+    ]
+   }
+  ]
+ },
+ "hw17": {
+  "label": "Handout 1-7: Continuity & Limits",
+  "subject": "math",
+  "topic": "Continuity",
+  "items": [
+   {
+    "q": "1a.  True or False:  If lim(x→c) f(x) = L, then f(c) = L.",
+    "ans": "False",
+    "accept": [
+     "false",
+     "f",
+     "no"
+    ],
+    "steps": [
+     "The limit describes the neighborhood around c, never the point itself.",
+     "f(c) can be undefined, or defined as some completely different value.",
+     "Counterexample: f(x) = (x²−1)/(x−1) has limit 2 at x = 1 but f(1) is undefined.",
+     "Answer: FALSE"
+    ]
+   },
+   {
+    "q": "1b.  True or False:  If f(c) = L, then lim(x→c) f(x) = L.",
+    "ans": "False",
+    "accept": [
+     "false",
+     "f",
+     "no"
+    ],
+    "steps": [
+     "Being defined at a point says nothing about what happens around it.",
+     "A jump discontinuity has f(c) defined while the one-sided limits disagree.",
+     "Counterexample: f(x) = 2x−3 for x ≤ 2 and x²+1 for x > 2. f(2) = 1, but the limit does not exist.",
+     "Answer: FALSE"
+    ]
+   },
+   {
+    "q": "2.  Which of the following is NOT true?\n  a. continuous at a → the limit at a exists\n  b. continuous at a → f is defined at a\n  c. f defined at a → f is continuous at a\n  d. lim(x→a) f(x) = f(a) → continuous at a\n  e. f is a polynomial → continuous at a",
+    "ans": "c",
+    "accept": [
+     "c",
+     "choicec"
+    ],
+    "steps": [
+     "a, b and d are all restatements of the three continuity conditions — true.",
+     "e is true: polynomials are continuous everywhere.",
+     "c reverses the implication. Being defined is necessary but nowhere near sufficient.",
+     "Answer: (c)"
+    ]
+   },
+   {
+    "q": "3.  From the graph on [1,7]:  filled (1,1) rising to an OPEN circle (3,3); filled dot (3,1); the line falls to an OPEN circle (4,1.5); filled (4,3) across to filled (5,3); rising to an OPEN circle (6,4); filled (6,1) rising to filled (7,2).\n\nWhich is TRUE?\n  a. lim(x→3) f(x) = 1\n  b. lim(x→4) f(x) = 3\n  c. f is continuous at x = 3\n  d. f is continuous at x = 5\n  e. lim(x→6) f(x) = f(6)",
+    "ans": "d",
+    "accept": [
+     "d",
+     "choiced"
+    ],
+    "steps": [
+     "a — both sides approach 3 at x = 3, so the limit is 3, not 1.  FALSE",
+     "b — at x = 4 the left limit is 1.5 and the right is 3. The limit does not exist.  FALSE",
+     "c — f(3) = 1 (the filled dot) but the limit is 3, so not continuous.  FALSE",
+     "d — at x = 5 the left is 3, the right is 3, and f(5) = 3. All three conditions hold.  TRUE",
+     "e — at x = 6 the left limit is 4, the right is 1. The limit does not exist.  FALSE",
+     "Answer: (d)"
+    ]
+   },
+   {
+    "q": "4.  f(x) = 3x(x−1)/(x²−3x+2) for x ∉ {1,2}, with f(1) = 3 and f(2) = 4.\nf is continuous:\n  a. except at x = 1\n  b. except at x = 2\n  c. except at x = 1 or x = 2\n  d. except at x = 0, 1, or 2\n  e. everywhere",
+    "ans": "c",
+    "accept": [
+     "c",
+     "choicec"
+    ],
+    "steps": [
+     "Factor the bottom: x² − 3x + 2 = (x−1)(x−2).",
+     "Cancel the (x−1): the function is 3x/(x−2) away from 1 and 2.",
+     "At x = 1: the limit is 3(1)/(1−2) = −3, but f(1) = 3.  −3 ≠ 3, so discontinuous.",
+     "At x = 2: the bottom is still zero — a vertical asymptote, so no finite limit exists. Discontinuous.",
+     "Answer: (c) except at x = 1 or x = 2"
+    ]
+   },
+   {
+    "q": "5.  f is continuous on [0,2] with f(0) = 1, f(1) = k, f(2) = 2.\nThe equation y = 1/2 must have at least TWO solutions on [0,2] if k =\n  a. 0   b. 1/2   c. 1   d. 2   e. 3",
+    "ans": "a",
+    "accept": [
+     "a",
+     "0",
+     "choicea"
+    ],
+    "steps": [
+     "The endpoints are f(0) = 1 and f(2) = 2, both ABOVE 1/2.",
+     "For the graph to cross the line y = 1/2 twice, it has to dip BELOW 1/2 in between and come back up.",
+     "That requires k < 1/2.",
+     "Then IVT applies twice: once between x = 0 and x = 1, once between x = 1 and x = 2.",
+     "Only choice (a), k = 0, is below 1/2.",
+     "Answer: (a) 0"
+    ]
+   }
+  ]
+ }
+};
+
+Object.entries(HANDOUTS).forEach(([key,bank])=>{
+  GENERATORS[key] = {
+    label: bank.label, subject: bank.subject, topic: bank.topic,
+    make(){
+      const it = pick(bank.items);
+      /* The stored text keeps the handout's own numbering so it can be matched
+         against the paper. Move that number into the corner label so the test's
+         own numbering does not print twice. */
+      const m = it.q.match(/^([0-9]+[a-z]?|CHALLENGE)\.\s+/);
+      return {
+        q: m ? it.q.slice(m[0].length) : it.q,
+        ans: it.ans, accept: it.accept, steps: it.steps,
+        label: bank.label + (m ? "  \u00b7  #" + m[1] : "")
+      };
+    }
+  };
+});
+
 /* Study Sorter — app logic */
 (function(){
 "use strict";
@@ -2032,6 +2938,7 @@ const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity",
   "limitFactor","rationalLimit","limitAtInfinity","infiniteLimit","continuityTest","findK",
   "rationalize","simplifyRadical","complexFraction"];
 const PSYCH_KEYS = ["psychExperiment","psychVocab"];
+const HANDOUT_KEYS = ["hwReview","hw110","hw16","hw17"];
 
 function buildPicker(){
   const el = $("#genPicker");
@@ -2062,7 +2969,9 @@ function makeGeneratedTest(){
     let p, tries = 0;
     do { p = GENERATORS[k].make(); tries++; }
     while(tries<12 && qs.some(x=>x.q===p.q));
-    p.gen = k; p.label = GENERATORS[k].label; p.topic = GENERATORS[k].topic;
+    p.gen = k;
+    if(!p.label) p.label = GENERATORS[k].label;
+    if(!p.topic) p.topic = GENERATORS[k].topic;
     qs.push(p);
   }
   for(let i=qs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
@@ -2340,6 +3249,7 @@ function init(){
   $("#btnPickNone").addEventListener("click", ()=>setPicked([]));
   $("#btnPickCalc").addEventListener("click", ()=>setPicked(CALC_KEYS));
   $("#btnPickPsych").addEventListener("click", ()=>setPicked(PSYCH_KEYS));
+  $("#btnPickHW").addEventListener("click", ()=>setPicked(HANDOUT_KEYS));
   $("#btnMakeTest").addEventListener("click", makeGeneratedTest);
   $("#btnMakeMine").addEventListener("click", makeMineTest);
 

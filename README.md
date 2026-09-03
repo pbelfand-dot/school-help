@@ -20,8 +20,10 @@ open the full write-up inline. Mark things done as you study.
 English explanation, the key formula, a step-by-step method where it applies, a
 worked example, and the specific mistakes that lose points.
 
-**Test Maker** — two modes:
-- *New problems* — 28 generators produce fresh randomized questions with full
+**Test Maker** — two modes, plus a "My actual handouts" preset that drills the
+57 real problems from the Calculus AB Unit 1 handouts, each with a worked
+solution:
+- *New problems* — 32 generators, including the 57 real problems from the class handouts produce fresh randomized questions with full
   worked solutions. Run the same topics forever without repeating numbers.
 - *From my saved questions* — turns the questions you pasted in into a
   self-graded test against the stored explanations.

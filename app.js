@@ -234,6 +234,7 @@ const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity",
   "limitFactor","rationalLimit","limitAtInfinity","infiniteLimit","continuityTest","findK",
   "rationalize","simplifyRadical","complexFraction"];
 const PSYCH_KEYS = ["psychExperiment","psychVocab"];
+const HANDOUT_KEYS = ["hwReview","hw110","hw16","hw17"];
 
 function buildPicker(){
   const el = $("#genPicker");
@@ -264,7 +265,9 @@ function makeGeneratedTest(){
     let p, tries = 0;
     do { p = GENERATORS[k].make(); tries++; }
     while(tries<12 && qs.some(x=>x.q===p.q));
-    p.gen = k; p.label = GENERATORS[k].label; p.topic = GENERATORS[k].topic;
+    p.gen = k;
+    if(!p.label) p.label = GENERATORS[k].label;
+    if(!p.topic) p.topic = GENERATORS[k].topic;
     qs.push(p);
   }
   for(let i=qs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
@@ -542,6 +545,7 @@ function init(){
   $("#btnPickNone").addEventListener("click", ()=>setPicked([]));
   $("#btnPickCalc").addEventListener("click", ()=>setPicked(CALC_KEYS));
   $("#btnPickPsych").addEventListener("click", ()=>setPicked(PSYCH_KEYS));
+  $("#btnPickHW").addEventListener("click", ()=>setPicked(HANDOUT_KEYS));
   $("#btnMakeTest").addEventListener("click", makeGeneratedTest);
   $("#btnMakeMine").addEventListener("click", makeMineTest);
 
