@@ -810,6 +810,720 @@ function gradeAnswer(problem, typed){
    Review answers were checked against Mr. Haruthunian's answer key;
    the rest were solved here and verified numerically. ---- */
 const HANDOUTS = {
+ "hw11": {
+  "label": "Handout 1-1: Introduction to Limits",
+  "subject": "math",
+  "topic": "Limits — the idea",
+  "items": [
+   {
+    "q": "1.  A table for f(x) = (x³−1)/(x−1) gives:\n   x     .75    .9    .999   1     1.001   1.1    1.25\n  f(x)  2.313  2.710  2.997  DNE   3.003  3.310  3.813\n\nWhat is lim(x→1) f(x)?",
+    "ans": "3",
+    "accept": [
+     "3"
+    ],
+    "steps": [
+     "Read the table from both directions and see what the outputs close in on.",
+     "From the left: 2.313 → 2.710 → 2.997.  From the right: 3.003 → 3.310 → 3.813 read backwards toward 3.",
+     "Both sides converge on 3.",
+     "f(1) itself is undefined — the table says DNE — and that does not matter.",
+     "Answer: 3.  This is the informal definition: f(x) gets arbitrarily close to a single number L as x approaches c from either side."
+    ]
+   },
+   {
+    "q": "2.  f(x) = { 1 for x ≠ 2 ;  0 for x = 2 }\n\nFind lim(x→2) f(x).",
+    "ans": "1",
+    "accept": [
+     "1"
+    ],
+    "steps": [
+     "Everywhere near 2 — but not at 2 — the function equals 1.",
+     "The limit only cares about the neighborhood, never the point.",
+     "Answer: 1, even though f(2) = 0."
+    ]
+   },
+   {
+    "q": "3.  Consider  lim(x→0)  |x| / x",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none",
+     "nolimit",
+     "no limit"
+    ],
+    "steps": [
+     "For x > 0, |x| = x, so the expression is x/x = 1.",
+     "For x < 0, |x| = −x, so the expression is −x/x = −1.",
+     "Right-hand limit 1, left-hand limit −1.  They disagree.",
+     "Answer: DNE — the graph is a jump between the lines y = 1 and y = −1."
+    ]
+   },
+   {
+    "q": "4.  Consider  lim(x→0)  1 / x²",
+    "ans": "∞",
+    "accept": [
+     "infinity",
+     "∞",
+     "+∞",
+     "inf",
+     "dne",
+     "doesnotexist",
+     "does not exist"
+    ],
+    "steps": [
+     "x² is positive on BOTH sides of 0.",
+     "So 1/x² grows without bound from either direction — the sides agree.",
+     "This is unbounded behavior: there is no real number L being approached.",
+     "Answer: ∞  (formally the limit does not exist, but ∞ is the specific description)"
+    ]
+   },
+   {
+    "q": "5.  Consider  lim(x→0)  sin(1/x)",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none",
+     "nolimit",
+     "no limit"
+    ],
+    "steps": [
+     "As x → 0, the inside 1/x races off to infinity.",
+     "So sin(1/x) keeps sweeping between −1 and 1, faster and faster.",
+     "It never settles on a single value — oscillating behavior.",
+     "Answer: DNE"
+    ]
+   },
+   {
+    "q": "6.  Show that  lim(x→3) (x² + 5x) = 24  using the properties of limits.",
+    "ans": "24",
+    "accept": [
+     "24"
+    ],
+    "steps": [
+     "Sum rule: lim(x² + 5x) = lim(x²) + lim(5x).",
+     "Power rule: lim(x²) = (lim x)² = 3² = 9.",
+     "Scalar multiple rule: lim(5x) = 5·lim(x) = 5(3) = 15.",
+     "Add: 9 + 15 = 24.",
+     "Answer: 24"
+    ]
+   },
+   {
+    "q": "7a.  Given lim f(x) = 4 and lim g(x) = 3/2, find  lim [ f(x) / g(x) ]",
+    "ans": "8/3",
+    "accept": [
+     "8/3"
+    ],
+    "steps": [
+     "Quotient rule — allowed because lim g = 3/2 ≠ 0.",
+     "4 ÷ (3/2) = 4 × (2/3).",
+     "Answer: 8/3"
+    ]
+   },
+   {
+    "q": "7b.  Given lim f(x) = 4 and lim g(x) = 3/2, find  lim [ f(x) · g(x) ]",
+    "ans": "6",
+    "accept": [
+     "6"
+    ],
+    "steps": [
+     "Product rule: (lim f)(lim g).",
+     "4 × 3/2 = 6.",
+     "Answer: 6"
+    ]
+   },
+   {
+    "q": "7c.  Given lim f(x) = 4 and lim g(x) = 3/2, find  lim [ 3f(x) + 4g(x) ]",
+    "ans": "18",
+    "accept": [
+     "18"
+    ],
+    "steps": [
+     "Scalar multiple then sum: 3(lim f) + 4(lim g).",
+     "3(4) + 4(3/2) = 12 + 6.",
+     "Answer: 18"
+    ]
+   }
+  ]
+ },
+ "hw13": {
+  "label": "Handout 1-3: Evaluating Limits",
+  "subject": "math",
+  "topic": "The four techniques for evaluating limits",
+  "items": [
+   {
+    "q": "1.  lim(x→0)  sin 4x / x",
+    "ans": "4",
+    "accept": [
+     "4"
+    ],
+    "steps": [
+     "The inside of the sine is 4x but the bottom is x — make them match.",
+     "Multiply top and bottom by 4:  4 · sin(4x)/(4x).",
+     "lim sin(4x)/(4x) = 1.",
+     "Answer: 4"
+    ]
+   },
+   {
+    "q": "2.  lim(x→0)  sin x / (5x)",
+    "ans": "1/5",
+    "accept": [
+     "1/5",
+     "0.2"
+    ],
+    "steps": [
+     "Pull the constant out: (1/5) · sin x / x.",
+     "sin x / x → 1.",
+     "Answer: 1/5"
+    ]
+   },
+   {
+    "q": "3.  lim(x→π)  cos 3x",
+    "ans": "−1",
+    "accept": [
+     "-1",
+     "−1"
+    ],
+    "steps": [
+     "cosine is continuous everywhere, so just substitute.",
+     "cos(3π) = cos(π) = −1.",
+     "Answer: −1"
+    ]
+   },
+   {
+    "q": "4.  lim(x→1)  (x² − 1)/(x − 1)",
+    "ans": "2",
+    "accept": [
+     "2"
+    ],
+    "steps": [
+     "0/0 — factor.  x² − 1 = (x−1)(x+1).",
+     "Cancel (x−1), leaving x + 1.",
+     "Substitute 1.",
+     "Answer: 2"
+    ]
+   },
+   {
+    "q": "5.  lim(x→−3)  (x² − x − 12)/(x + 3)",
+    "ans": "−7",
+    "accept": [
+     "-7",
+     "−7"
+    ],
+    "steps": [
+     "0/0 — factor the top: x² − x − 12 = (x − 4)(x + 3).",
+     "Cancel (x+3), leaving x − 4.",
+     "Substitute −3: −3 − 4.",
+     "Answer: −7"
+    ]
+   },
+   {
+    "q": "6.  lim(x→−2)  (x + 2)/(x² − x − 6)",
+    "ans": "−1/5",
+    "accept": [
+     "-1/5",
+     "−1/5",
+     "-0.2"
+    ],
+    "steps": [
+     "0/0 — factor the bottom: x² − x − 6 = (x − 3)(x + 2).",
+     "Cancel (x+2), leaving 1/(x − 3).",
+     "Substitute −2: 1/(−5).",
+     "Answer: −1/5"
+    ]
+   },
+   {
+    "q": "7.  lim(x→1)  (x³ − 1)/(x² − 1)",
+    "ans": "3/2",
+    "accept": [
+     "3/2",
+     "1.5"
+    ],
+    "steps": [
+     "0/0 — factor both.  Difference of cubes on top: x³ − 1 = (x−1)(x² + x + 1).",
+     "Difference of squares on the bottom: x² − 1 = (x−1)(x+1).",
+     "Cancel (x−1): (x² + x + 1)/(x + 1).",
+     "Substitute 1: (1+1+1)/2.",
+     "Answer: 3/2"
+    ]
+   },
+   {
+    "q": "8.  lim(h→0)  [(3+h)² − 9]/h",
+    "ans": "6",
+    "accept": [
+     "6"
+    ],
+    "steps": [
+     "Expand: (3+h)² = 9 + 6h + h², so the top is 6h + h².",
+     "Factor out h and cancel: 6 + h.",
+     "Substitute 0.",
+     "Answer: 6"
+    ]
+   },
+   {
+    "q": "9.  lim(x→9)  (9 − x)/(3 − √x)",
+    "ans": "6",
+    "accept": [
+     "6"
+    ],
+    "steps": [
+     "0/0 with a radical — rationalize by multiplying top and bottom by (3 + √x).",
+     "The bottom becomes (3−√x)(3+√x) = 9 − x.",
+     "That cancels the top, leaving 3 + √x.",
+     "Substitute 9: 3 + 3.",
+     "Answer: 6"
+    ]
+   },
+   {
+    "q": "10.  lim(t→0)  (√(2−t) − √2)/t",
+    "ans": "−√2/4",
+    "accept": [
+     "-sqrt2/4",
+     "−√2/4",
+     "-√2/4",
+     "-1/(2sqrt2)",
+     "-0.35355"
+    ],
+    "steps": [
+     "Rationalize: multiply top and bottom by (√(2−t) + √2).",
+     "The top becomes (2 − t) − 2 = −t.",
+     "Cancel the t: −1/(√(2−t) + √2).",
+     "Substitute 0: −1/(√2 + √2) = −1/(2√2).",
+     "Rationalize the denominator.  Answer: −√2/4"
+    ]
+   },
+   {
+    "q": "11.  lim(x→9)  (x² − 81)/(√x − 3)",
+    "ans": "108",
+    "accept": [
+     "108"
+    ],
+    "steps": [
+     "Rationalize with (√x + 3); the bottom becomes x − 9.",
+     "The top factors as (x−9)(x+9), so the (x−9) cancels.",
+     "Left with (x + 9)(√x + 3).",
+     "Substitute 9: (18)(6).",
+     "Answer: 108"
+    ]
+   },
+   {
+    "q": "12.  lim(x→2)  (1/x − 1/2)/(x − 2)",
+    "ans": "−1/4",
+    "accept": [
+     "-1/4",
+     "−1/4",
+     "-0.25"
+    ],
+    "steps": [
+     "A complex fraction — combine the top over a common denominator first.",
+     "1/x − 1/2 = (2 − x)/(2x).",
+     "Now divide by (x − 2): (2 − x) / [2x(x − 2)].",
+     "Note 2 − x = −(x − 2), so this is −1/(2x).",
+     "Substitute 2: −1/4.",
+     "Answer: −1/4"
+    ]
+   },
+   {
+    "q": "13.  lim(x→6)  (1/x − 1/6)/(x − 6)",
+    "ans": "−1/36",
+    "accept": [
+     "-1/36",
+     "−1/36"
+    ],
+    "steps": [
+     "Combine the top: 1/x − 1/6 = (6 − x)/(6x).",
+     "Divide by (x − 6): (6 − x)/[6x(x − 6)] = −1/(6x).",
+     "Substitute 6: −1/36.",
+     "Answer: −1/36"
+    ]
+   },
+   {
+    "q": "14.  lim(θ→0)  3(1 − cos θ)/θ",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "Pull the 3 out: 3 · (1 − cos θ)/θ.",
+     "This is the OTHER special trig limit, and its value is 0, not 1.",
+     "3 × 0 = 0.",
+     "Answer: 0"
+    ]
+   },
+   {
+    "q": "15.  lim(x→0)  cos x · tan x / x",
+    "ans": "1",
+    "accept": [
+     "1"
+    ],
+    "steps": [
+     "Rewrite tan x as sin x / cos x.",
+     "cos x · (sin x / cos x) = sin x — the cosines cancel.",
+     "Left with sin x / x.",
+     "Answer: 1"
+    ]
+   },
+   {
+    "q": "16.  lim(x→0)  (sec x − 1)/(x · sec x)",
+    "ans": "0",
+    "accept": [
+     "0"
+    ],
+    "steps": [
+     "sec x = 1/cos x. Top: 1/cos x − 1 = (1 − cos x)/cos x.",
+     "Bottom: x · sec x = x/cos x.",
+     "Dividing, the cos x factors cancel, leaving (1 − cos x)/x.",
+     "That is the special limit equal to 0.",
+     "Answer: 0"
+    ]
+   }
+  ]
+ },
+ "hw14": {
+  "label": "Handout 1-4: Evaluating Limits 2",
+  "subject": "math",
+  "topic": "The four techniques for evaluating limits",
+  "items": [
+   {
+    "q": "1a.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind lim(x→1⁻) f(x).",
+    "ans": "1",
+    "accept": [
+     "1"
+    ],
+    "steps": [
+     "From the LEFT of 1 the rule is f(x) = x.",
+     "Substitute 1.",
+     "Answer: 1"
+    ]
+   },
+   {
+    "q": "1b.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind lim(x→1⁺) f(x).",
+    "ans": "3",
+    "accept": [
+     "3"
+    ],
+    "steps": [
+     "From the RIGHT of 1 the rule is the constant 3.",
+     "Answer: 3"
+    ]
+   },
+   {
+    "q": "1c.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind lim(x→1) f(x).",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none",
+     "nolimit",
+     "no limit"
+    ],
+    "steps": [
+     "Left gives 1, right gives 3.",
+     "They disagree, so no single value is approached.",
+     "Answer: DNE — a jump"
+    ]
+   },
+   {
+    "q": "1d.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind f(1).",
+    "ans": "3",
+    "accept": [
+     "3"
+    ],
+    "steps": [
+     "Which piece actually contains x = 1?  The middle one, since 1 ≤ x < 3 includes 1.",
+     "That piece is the constant 3.",
+     "Answer: 3"
+    ]
+   },
+   {
+    "q": "1e.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind lim(x→3⁻) f(x).",
+    "ans": "3",
+    "accept": [
+     "3"
+    ],
+    "steps": [
+     "Just below 3 the rule is the constant 3.",
+     "Answer: 3"
+    ]
+   },
+   {
+    "q": "1f.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind lim(x→3⁺) f(x).",
+    "ans": "3",
+    "accept": [
+     "3"
+    ],
+    "steps": [
+     "Just above 3 the rule is f(x) = x.",
+     "Substitute 3.",
+     "Answer: 3"
+    ]
+   },
+   {
+    "q": "1g.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind lim(x→3) f(x).",
+    "ans": "3",
+    "accept": [
+     "3"
+    ],
+    "steps": [
+     "Left gives 3 and right gives 3.",
+     "They agree, so the two-sided limit exists.",
+     "Answer: 3"
+    ]
+   },
+   {
+    "q": "1h.  f(x) = { x for x < 1 ;  3 for 1 ≤ x < 3 ;  x for x > 3 }\n\nFind f(3).",
+    "ans": "undefined",
+    "accept": [
+     "undefined",
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none"
+    ],
+    "steps": [
+     "Check each piece: x < 1 excludes 3.  1 ≤ x < 3 excludes 3.  x > 3 excludes 3.",
+     "No piece covers x = 3, so the function has no value there.",
+     "This is the nice case where the LIMIT exists (it is 3) but f(3) does not.",
+     "Answer: undefined"
+    ]
+   },
+   {
+    "q": "2a.  From the graph: lim(x→7) f(x)\n\n[The curve dips to an OPEN circle at (7,−1) and comes back up.]",
+    "ans": "−1",
+    "accept": [
+     "-1",
+     "−1"
+    ],
+    "steps": [
+     "The curve approaches the same height from both sides.",
+     "The circle being open does not change the limit.",
+     "Answer: −1"
+    ]
+   },
+   {
+    "q": "2d.  From the graph: lim(x→5) f(x)\n\n[A peak with a FILLED dot at (5,4).]",
+    "ans": "4",
+    "accept": [
+     "4"
+    ],
+    "steps": [
+     "The curve rises to the peak from the left and falls from it on the right.",
+     "Both sides approach 4.",
+     "Answer: 4"
+    ]
+   },
+   {
+    "q": "2f.  From the graph: lim(x→0) f(x)\n\n[Left branch rises to an OPEN circle at (0,4); right branch starts at a FILLED dot (0,0).]",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none",
+     "nolimit",
+     "no limit"
+    ],
+    "steps": [
+     "Left-hand limit: 4.  Right-hand limit: 0.",
+     "The sides disagree.",
+     "Answer: DNE"
+    ]
+   },
+   {
+    "q": "2g.  From the graph: lim(x→3) f(x)\n\n[Left branch rises to an OPEN circle at (3,2); right branch starts at a FILLED dot (3,−1).]",
+    "ans": "DNE",
+    "accept": [
+     "dne",
+     "doesnotexist",
+     "does not exist",
+     "none",
+     "nolimit",
+     "no limit"
+    ],
+    "steps": [
+     "Left-hand limit: 2.  Right-hand limit: −1.",
+     "The sides disagree.",
+     "Answer: DNE"
+    ]
+   },
+   {
+    "q": "2h.  From the graph: lim(x→3⁺) f(x)\n\n[The right branch leaves from a FILLED dot at (3,−1).]",
+    "ans": "−1",
+    "accept": [
+     "-1",
+     "−1"
+    ],
+    "steps": [
+     "The ⁺ means approach from the RIGHT only.",
+     "That branch starts at height −1.",
+     "Answer: −1"
+    ]
+   },
+   {
+    "q": "3.  lim(h→0)  [ 3(x+h)² − 3x² ] / h\n  a. 6xh   b. 6   c. 6x   d. 3x   e. 3",
+    "ans": "c",
+    "accept": [
+     "c",
+     "6x",
+     "choicec"
+    ],
+    "steps": [
+     "Expand: 3(x² + 2xh + h²) − 3x² = 6xh + 3h².",
+     "Factor out h and cancel: 6x + 3h.",
+     "Let h → 0.",
+     "Answer: (c) 6x   — this is the derivative of 3x²"
+    ]
+   },
+   {
+    "q": "4.  lim(h→0)  [ 7(x+h)² − 7x² ] / h\n  a. 14xh   b. 14   c. 14x   d. 7x   e. 7",
+    "ans": "c",
+    "accept": [
+     "c",
+     "14x",
+     "choicec"
+    ],
+    "steps": [
+     "Expand: 7(x² + 2xh + h²) − 7x² = 14xh + 7h².",
+     "Cancel the h: 14x + 7h.",
+     "Let h → 0.",
+     "Answer: (c) 14x"
+    ]
+   },
+   {
+    "q": "5.  lim(h→0)  (√(x+h) − √x)/h\n  a. 2√x   b. −2√x   c. 1/(2√x)   d. −1/(2√x)   e. 2x",
+    "ans": "c",
+    "accept": [
+     "c",
+     "1/(2sqrtx)",
+     "choicec"
+    ],
+    "steps": [
+     "Rationalize with the conjugate (√(x+h) + √x).",
+     "The top becomes (x + h) − x = h.",
+     "Cancel the h: 1/(√(x+h) + √x).",
+     "Let h → 0: 1/(√x + √x).",
+     "Answer: (c) 1/(2√x)"
+    ]
+   },
+   {
+    "q": "6.  lim(x→9)  (x − 9)/(√x − 3)\n  a. 0   b. ∞   c. 6   d. No limit   e. 6x",
+    "ans": "c",
+    "accept": [
+     "c",
+     "6",
+     "choicec"
+    ],
+    "steps": [
+     "Rationalize with (√x + 3); the bottom becomes x − 9.",
+     "That cancels the top entirely, leaving √x + 3.",
+     "Substitute 9.",
+     "Answer: (c) 6"
+    ]
+   },
+   {
+    "q": "7.  lim(h→0)  [ 1/(x+h) − 1/x ] / h\n  a. 1/x²   b. −x²   c. −1/x²   d. x²   e. −1/x",
+    "ans": "c",
+    "accept": [
+     "c",
+     "-1/x^2",
+     "−1/x²",
+     "choicec"
+    ],
+    "steps": [
+     "Combine the top over a common denominator: [x − (x+h)] / [x(x+h)] = −h / [x(x+h)].",
+     "Divide by h — that cancels the h: −1 / [x(x+h)].",
+     "Let h → 0.",
+     "Answer: (c) −1/x²"
+    ]
+   },
+   {
+    "q": "8.  f(x) = { −7 for x = 4 ;  2x + 7 for x ≠ 4 }\n\nFind lim(x→4) f(x).",
+    "ans": "15",
+    "accept": [
+     "15"
+    ],
+    "steps": [
+     "The limit ignores the single point x = 4 entirely.",
+     "Everywhere near 4 the rule is 2x + 7.",
+     "2(4) + 7 = 15.",
+     "Answer: 15 — note f(4) = −7, so f is not continuous there."
+    ]
+   },
+   {
+    "q": "9.  lim(x→3)  (1/x − 1/3)/(x − 3)\n  a. 0   b. −1/9   c. 1/27   d. 1/9   e. 1/3",
+    "ans": "b",
+    "accept": [
+     "b",
+     "-1/9",
+     "−1/9",
+     "choiceb"
+    ],
+    "steps": [
+     "Combine the top: 1/x − 1/3 = (3 − x)/(3x).",
+     "Divide by (x − 3): (3 − x)/[3x(x − 3)].",
+     "Since 3 − x = −(x − 3), this is −1/(3x).",
+     "Substitute 3: −1/9.",
+     "Answer: (b) −1/9"
+    ]
+   },
+   {
+    "q": "10.  lim(x→1/2)  (8x³ − 1)/(10x² − 7x + 1)\n  a. 0   b. 1/2   c. 2   d. 10/7   e. 8/3",
+    "ans": "c",
+    "accept": [
+     "c",
+     "2",
+     "choicec"
+    ],
+    "steps": [
+     "Substituting 1/2 gives 0/0, so factor both.",
+     "Difference of cubes: 8x³ − 1 = (2x − 1)(4x² + 2x + 1).",
+     "Bottom: 10x² − 7x + 1 = (2x − 1)(5x − 1).",
+     "Cancel (2x − 1): (4x² + 2x + 1)/(5x − 1).",
+     "Substitute 1/2: (1 + 1 + 1)/(3/2) = 3 ÷ 3/2.",
+     "Answer: (c) 2"
+    ]
+   },
+   {
+    "q": "11.  Find A so that  lim(x→2)  (x² + Ax − 10)/(x − 2)  exists.",
+    "ans": "3",
+    "accept": [
+     "3",
+     "a=3"
+    ],
+    "steps": [
+     "The bottom is 0 at x = 2, so the only way the limit can exist is if the TOP is 0 there too.",
+     "That way (x − 2) cancels instead of blowing up.",
+     "Set the top to zero at x = 2:  4 + 2A − 10 = 0.",
+     "2A = 6, so A = 3.",
+     "Check: x² + 3x − 10 = (x − 2)(x + 5), so the limit is 7.",
+     "Answer: A = 3"
+    ]
+   },
+   {
+    "q": "12.  If  lim(x→0)  (√(Ax + B) − 2)/x = 3,  find A and B.",
+    "ans": "A = 12, B = 4",
+    "accept": [
+     "a=12,b=4",
+     "a=12b=4",
+     "12,4",
+     "12and4",
+     "a=12 b=4"
+    ],
+    "steps": [
+     "The bottom → 0, so for a finite limit the top must → 0 as well.",
+     "√B − 2 = 0, so B = 4.",
+     "Now rationalize: (√(Ax+4) − 2)/x × (√(Ax+4) + 2)/(√(Ax+4) + 2).",
+     "The top becomes (Ax + 4) − 4 = Ax, so you get Ax / [x(√(Ax+4) + 2)] = A/(√(Ax+4) + 2).",
+     "Let x → 0: A/(2 + 2) = A/4.",
+     "Set A/4 = 3, so A = 12.",
+     "Answer: A = 12, B = 4"
+    ]
+   }
+  ]
+ },
  "hwReview": {
   "label": "Unit 1 Review (the real handout)",
   "subject": "math",

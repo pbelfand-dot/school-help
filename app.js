@@ -234,7 +234,7 @@ const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity",
   "limitFactor","rationalLimit","limitAtInfinity","infiniteLimit","continuityTest","findK",
   "rationalize","simplifyRadical","complexFraction"];
 const PSYCH_KEYS = ["psychExperiment","psychVocab"];
-const HANDOUT_KEYS = ["hwReview","hw110","hw16","hw17"];
+const HANDOUT_KEYS = ["hw11","hw13","hw14","hw16","hw17","hw110","hwReview"];
 
 function buildPicker(){
   const el = $("#genPicker");
