@@ -19,6 +19,7 @@ const SEED = [
   "Limits of piecewise functions - one sided",
   "Types of discontinuities",
   "Reading discontinuities off a graph",
+  "Limits of rational functions - hole or asymptote",
   "Limit properties when one limit does not exist",
   "What is photosynthesis?",
   "Causes of World War 1 #history",
@@ -209,7 +210,7 @@ function itemHTML(i){
 /* ---------- test maker ---------- */
 let currentTest = null;
 
-const CALC_KEYS = ["trigLimit","piecewiseLimit","discontinuity","limitProperties","limitFactor","rationalize","simplifyRadical","complexFraction"];
+const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties","limitFactor","rationalLimit","rationalize","simplifyRadical","complexFraction"];
 
 function buildPicker(){
   const el = $("#genPicker");

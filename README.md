@@ -16,12 +16,12 @@ has a stored explanation. `#bio` forces a subject, a leading `!` marks priority.
 **Sorted** — search, filter, and group everything. Hit *Explain* on any item to
 open the full write-up inline. Mark things done as you study.
 
-**Explain** — look up any of the 55 built-in topics. Each one gives you a plain
+**Explain** — look up any of the 56 built-in topics. Each one gives you a plain
 English explanation, the key formula, a step-by-step method where it applies, a
 worked example, and the specific mistakes that lose points.
 
 **Test Maker** — two modes:
-- *New problems* — 21 generators produce fresh randomized questions with full
+- *New problems* — 22 generators produce fresh randomized questions with full
   worked solutions. Run the same topics forever without repeating numbers.
 - *From my saved questions* — turns the questions you pasted in into a
   self-graded test against the stored explanations.
@@ -31,10 +31,10 @@ PDF, or write your own explanations into the library.
 
 ## Coverage
 
-55 topics across Math (incl. Calculus AB limits), Biology, Chemistry, Physics,
+56 topics across Math (incl. Calculus AB limits), Biology, Chemistry, Physics,
 History, English, Computer Science, Economics, and Geography.
 
-21 problem generators: trig limits (including the substitution trap), one-sided
+22 problem generators: limits of rational functions (hole vs. asymptote), trig limits (including the substitution trap), one-sided
 and piecewise limits, discontinuity types, limit properties, limits by
 factoring, rationalizing denominators, simplifying radicals, complex fractions,
 difference of squares, factoring trinomials, the quadratic formula, slope,

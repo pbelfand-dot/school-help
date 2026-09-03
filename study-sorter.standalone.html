@@ -455,7 +455,7 @@ const SUBJECT_HINTS = {
 const LIB = [
 
 /* ================= MATH ================= */
-{t:"Complex fractions",s:"math",k:["complex fraction","fraction inside fraction","stacked fraction","simplify fraction"],
+{t:"Complex fractions",s:"math",k:["complex fraction","fraction inside fraction","stacked fraction","simplify fraction","fully simplify","compound fraction","x^2/","x²/","divide by a fraction","reciprocal"],
  d:"A complex fraction is a fraction that has fractions inside its numerator, denominator, or both. You never divide them as-is. You turn the top into one single fraction, turn the bottom into one single fraction, then divide — and dividing by a fraction means multiplying by its reciprocal (flip it).",
  f:"(a/b) ÷ (c/d) = (a/b) × (d/c)",
  steps:["Combine the top into ONE fraction over a common denominator.","Combine the bottom into ONE fraction over a common denominator.","Rewrite the stack as top ÷ bottom.","Flip the bottom fraction and multiply.","Factor everything you can and cancel matching factors.","State restrictions: any x that made an original denominator zero is excluded."],
@@ -581,6 +581,13 @@ const LIB = [
  steps:["Find every x where the curve breaks, has a circle, or has an asymptote.","At each one, trace the curve in from the LEFT and note the height it ends at.","Trace the curve out to the RIGHT and note the height it starts at.","Equal heights \u2192 removable. Different finite heights \u2192 jump. Infinite \u2192 infinite.","Only now look at the filled dot \u2014 it tells you f(c), which affects continuity but never the limit."],
  e:"A curve rises to a closed dot at (\u22126, 5), and the next branch begins at an open circle at (\u22126, 0).\nLeft height 5, right height 0 \u2014 both finite, not equal \u2192 JUMP at x = \u22126.\n\nA curve runs smoothly through an open circle at (2, 3) with a closed dot floating at (2, 5).\nLeft height 3, right height 3 \u2014 equal \u2192 REMOVABLE at x = 2, even though f(2) = 5.",
  m:["The classic trap: an open circle and a closed dot stacked at the same x. That is only removable if the curve reaches the SAME height from both sides \u2014 otherwise it is a jump.","Deciding the type from the dots instead of from the two one-sided heights.","Including endpoints of the whole graph. If the interval is open, like \u22129 < x < 9, the ends are not in it.","Forgetting that a removable discontinuity still counts as discontinuous \u2014 'removable' means patchable, not continuous."]},
+
+{t:"Limits of rational functions",s:"math",k:["rational function limit","limit of rational","hole or asymptote","0/0","indeterminate","vertical asymptote limit","cancel and substitute"],
+ d:"A rational function is one polynomial over another. Substituting first tells you which job you have. If you get an ordinary number, that is the limit. If you get a nonzero number over zero, it is a vertical asymptote and the limit does not exist. If you get 0/0, that is indeterminate \u2014 it means nothing yet, so factor, cancel, and substitute again. The whole question is decided by ONE check after cancelling: is the denominator still zero?",
+ f:"After factoring and cancelling, substitute again:\n\u2022 Denominator \u2260 0  \u2192  it was a HOLE. That value is the limit.\n\u2022 Denominator = 0 still  \u2192  VERTICAL ASYMPTOTE. The limit DOES NOT EXIST.\nAnd before any of that: (nonzero)/0 straight away \u2192 DNE, no factoring needed.",
+ steps:["Substitute the value. Stop here if you get a real number \u2014 that is the answer.","Got (nonzero)/0? Vertical asymptote, answer DNE. Done.","Got 0/0? Factor the top and the bottom completely.","Cancel every common factor.","Substitute AGAIN into what is left.","Denominator alive \u2192 that number is the limit (there was a hole). Denominator still zero \u2192 DNE."],
+ e:"HOLE \u2014 lim(x\u21921) (5x\u22125)/(x\u00b2\u22125x+4)\n= 5(x\u22121) / [(x\u22121)(x\u22124)] = 5/(x\u22124)\nSubstitute: 5/(1\u22124) = \u22125/3.  The denominator survived, so the answer is \u22125/3.\n\nASYMPTOTE \u2014 lim(x\u2192\u22123) (x\u00b2+4x)/(x\u00b2+3x)\n= x(x+4) / [x(x+3)] = (x+4)/(x+3)\nSubstitute: 1/0.  The denominator died, so the answer is DNE.\n\nSTILL ZERO AFTER CANCELLING \u2014 lim(x\u21922) (x\u00b2\u22124)/(x\u00b2\u22124x+4)\n= (x\u22122)(x+2) / (x\u22122)\u00b2 = (x+2)/(x\u22122)\nSubstitute: 4/0.  DNE. Cancelling once does not make you safe.",
+ m:["Writing DNE the moment you see 0/0. That is indeterminate, not an answer \u2014 it means do more work.","Cancelling once and assuming you are finished. Substitute again and re-check the denominator.","Forgetting that the factor you cancelled created a HOLE, not a fixed point \u2014 the function is still undefined there, but the limit exists.","Treating a hole and an asymptote as the same thing. A hole has a limit; an asymptote does not."]},
 
 {t:"Limit properties",s:"math",k:["limit properties","limit laws","sum of limits","limit rules","graphically"],
  d:"Limits distribute over the ordinary operations, as long as each individual limit exists. That's what lets you break a messy expression into pieces, read each piece off a graph or table, and recombine.",
@@ -838,6 +845,66 @@ const lin = (m,k)=>{
 const sq = d => d===0 ? "x\u00b2" : (d<0 ? `x\u00b2 \u2212 ${-d}` : `x\u00b2 + ${d}`);
 
 const GENERATORS = {
+
+rationalLimit:{label:"Limits of rational functions", subject:"math", topic:"Limits of rational functions",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  const kind = R(1,3);
+
+  if(kind===1){
+    /* 0/0 that cancels to a live denominator -> a hole, finite limit */
+    let a=R(-5,5), b=R(-5,5), k=R(2,9);
+    while(a===0 || b===0 || a===b || a+b===0){ a=R(-5,5); b=R(-5,5); }
+    const num = a-b;
+    const g = gcd(k,num);
+    let n = k/g, d = num/g;
+    if(d<0){ n=-n; d=-d; }
+    const ansStr = d===1 ? String(n) : `${n}/${d}`;
+    return {
+      q:`Determine the limit in simplest form:\n\n   lim(x\u2192${a})  ( ${k}x ${sgn(-k*a)} ) / ( x\u00b2 ${sgn(-(a+b))}x ${sgn(a*b)} )`,
+      ans:ansStr, accept:[ansStr, String(k/num), (k/num).toFixed(4)], num:k/num,
+      steps:[
+        `Substitute ${a}: top = 0, bottom = 0. That is 0/0 \u2014 indeterminate, so factor.`,
+        `Factor: ${k}(x ${sgn(-a)}) / [ (x ${sgn(-a)})(x ${sgn(-b)}) ]`,
+        `Cancel the (x ${sgn(-a)}) factors, leaving ${k}/(x ${sgn(-b)}).`,
+        `Substitute again: ${k}/(${a} ${sgn(-b)}) = ${k}/${num}`,
+        `The denominator is ${num}, not zero \u2014 so this was a HOLE and the limit exists.`,
+        `Answer: ${ansStr}`
+      ]};
+  }
+
+  if(kind===2){
+    /* nonzero over zero -> vertical asymptote, DNE */
+    let p=R(-6,6), q=R(-6,6);
+    while(p===0 || q===0 || p===q){ p=R(-6,6); q=R(-6,6); }
+    const c = -q;
+    return {
+      q:`Determine the limit in simplest form:\n\n   lim(x\u2192${c})  ( x\u00b2 ${sgn(p)}x ) / ( x\u00b2 ${sgn(q)}x )`,
+      ans:"DNE", accept:["dne","doesnotexist","does not exist","undefined","infinity"],
+      steps:[
+        `Factor out an x from both: x(x ${sgn(p)}) / [ x(x ${sgn(q)}) ]`,
+        `Cancel the x, leaving (x ${sgn(p)})/(x ${sgn(q)}).`,
+        `Substitute ${c}: top = ${c+p} (not zero), bottom = 0.`,
+        `A nonzero number over zero is a VERTICAL ASYMPTOTE, not a hole.`,
+        `Answer: DNE`
+      ]};
+  }
+
+  /* 0/0 that is STILL 0 in the denominator after cancelling -> DNE */
+  let a=R(-5,5);
+  while(a===0) a=R(-5,5);
+  return {
+    q:`Determine the limit in simplest form:\n\n   lim(x\u2192${a})  ( x\u00b2 \u2212 ${a*a} ) / ( x\u00b2 ${sgn(-2*a)}x ${sgn(a*a)} )`,
+    ans:"DNE", accept:["dne","doesnotexist","does not exist","undefined","infinity"],
+    steps:[
+      `Substitute ${a}: top = 0, bottom = 0. Indeterminate, so factor.`,
+      `Top is a difference of squares: (x ${sgn(-a)})(x ${sgn(a)}).`,
+      `Bottom is a perfect square: (x ${sgn(-a)})\u00b2.`,
+      `Cancel ONE (x ${sgn(-a)}), leaving (x ${sgn(a)})/(x ${sgn(-a)}).`,
+      `Substitute again: ${2*a}/0. The denominator is STILL zero.`,
+      `Cancelling once did not save it \u2014 this is an asymptote. Answer: DNE`
+    ]};
+ }},
 
 trigLimit:{label:"Trig limits", subject:"math", topic:"Trig limits",
  make(){
@@ -1309,6 +1376,7 @@ const SEED = [
   "Limits of piecewise functions - one sided",
   "Types of discontinuities",
   "Reading discontinuities off a graph",
+  "Limits of rational functions - hole or asymptote",
   "Limit properties when one limit does not exist",
   "What is photosynthesis?",
   "Causes of World War 1 #history",
@@ -1499,7 +1567,7 @@ function itemHTML(i){
 /* ---------- test maker ---------- */
 let currentTest = null;
 
-const CALC_KEYS = ["trigLimit","piecewiseLimit","discontinuity","limitProperties","limitFactor","rationalize","simplifyRadical","complexFraction"];
+const CALC_KEYS = ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties","limitFactor","rationalLimit","rationalize","simplifyRadical","complexFraction"];
 
 function buildPicker(){
   const el = $("#genPicker");

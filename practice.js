@@ -34,6 +34,66 @@ const sq = d => d===0 ? "x\u00b2" : (d<0 ? `x\u00b2 \u2212 ${-d}` : `x\u00b2 + $
 
 const GENERATORS = {
 
+rationalLimit:{label:"Limits of rational functions", subject:"math", topic:"Limits of rational functions",
+ make(){
+  const sgn = v => v<0 ? `\u2212 ${-v}` : `+ ${v}`;
+  const kind = R(1,3);
+
+  if(kind===1){
+    /* 0/0 that cancels to a live denominator -> a hole, finite limit */
+    let a=R(-5,5), b=R(-5,5), k=R(2,9);
+    while(a===0 || b===0 || a===b || a+b===0){ a=R(-5,5); b=R(-5,5); }
+    const num = a-b;
+    const g = gcd(k,num);
+    let n = k/g, d = num/g;
+    if(d<0){ n=-n; d=-d; }
+    const ansStr = d===1 ? String(n) : `${n}/${d}`;
+    return {
+      q:`Determine the limit in simplest form:\n\n   lim(x\u2192${a})  ( ${k}x ${sgn(-k*a)} ) / ( x\u00b2 ${sgn(-(a+b))}x ${sgn(a*b)} )`,
+      ans:ansStr, accept:[ansStr, String(k/num), (k/num).toFixed(4)], num:k/num,
+      steps:[
+        `Substitute ${a}: top = 0, bottom = 0. That is 0/0 \u2014 indeterminate, so factor.`,
+        `Factor: ${k}(x ${sgn(-a)}) / [ (x ${sgn(-a)})(x ${sgn(-b)}) ]`,
+        `Cancel the (x ${sgn(-a)}) factors, leaving ${k}/(x ${sgn(-b)}).`,
+        `Substitute again: ${k}/(${a} ${sgn(-b)}) = ${k}/${num}`,
+        `The denominator is ${num}, not zero \u2014 so this was a HOLE and the limit exists.`,
+        `Answer: ${ansStr}`
+      ]};
+  }
+
+  if(kind===2){
+    /* nonzero over zero -> vertical asymptote, DNE */
+    let p=R(-6,6), q=R(-6,6);
+    while(p===0 || q===0 || p===q){ p=R(-6,6); q=R(-6,6); }
+    const c = -q;
+    return {
+      q:`Determine the limit in simplest form:\n\n   lim(x\u2192${c})  ( x\u00b2 ${sgn(p)}x ) / ( x\u00b2 ${sgn(q)}x )`,
+      ans:"DNE", accept:["dne","doesnotexist","does not exist","undefined","infinity"],
+      steps:[
+        `Factor out an x from both: x(x ${sgn(p)}) / [ x(x ${sgn(q)}) ]`,
+        `Cancel the x, leaving (x ${sgn(p)})/(x ${sgn(q)}).`,
+        `Substitute ${c}: top = ${c+p} (not zero), bottom = 0.`,
+        `A nonzero number over zero is a VERTICAL ASYMPTOTE, not a hole.`,
+        `Answer: DNE`
+      ]};
+  }
+
+  /* 0/0 that is STILL 0 in the denominator after cancelling -> DNE */
+  let a=R(-5,5);
+  while(a===0) a=R(-5,5);
+  return {
+    q:`Determine the limit in simplest form:\n\n   lim(x\u2192${a})  ( x\u00b2 \u2212 ${a*a} ) / ( x\u00b2 ${sgn(-2*a)}x ${sgn(a*a)} )`,
+    ans:"DNE", accept:["dne","doesnotexist","does not exist","undefined","infinity"],
+    steps:[
+      `Substitute ${a}: top = 0, bottom = 0. Indeterminate, so factor.`,
+      `Top is a difference of squares: (x ${sgn(-a)})(x ${sgn(a)}).`,
+      `Bottom is a perfect square: (x ${sgn(-a)})\u00b2.`,
+      `Cancel ONE (x ${sgn(-a)}), leaving (x ${sgn(a)})/(x ${sgn(-a)}).`,
+      `Substitute again: ${2*a}/0. The denominator is STILL zero.`,
+      `Cancelling once did not save it \u2014 this is an asymptote. Answer: DNE`
+    ]};
+ }},
+
 trigLimit:{label:"Trig limits", subject:"math", topic:"Trig limits",
  make(){
   const a=R(2,9); let b=R(2,9);
