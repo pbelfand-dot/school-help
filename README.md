@@ -1,64 +1,52 @@
-# Study Sorter
+# Study Catalog
 
-A one-page study site for the end of the school year. Paste in your notes and
-questions, it sorts them by subject, explains the topics it knows, and builds
-you a randomized practice test.
+A class-first catalog for the 2026–27 school year. You pick a class, and
+everything inside is scoped to it — the topics, the practice sets, the real
+handout problems, and whatever you've added yourself.
 
-**No install, no account, no internet after the first load.** Open `index.html`
-in any browser — including on your phone.
+**No install, no account, no internet after the first load.** Open
+`index.html` in any browser, including on a phone.
 
-## What it does
+## The five classes
 
-**Add** — dump notes and questions in, one per line. It tags each one with a
-subject, a type (question / formula / definition / date / note), and whether it
-has a stored explanation. `#bio` forces a subject, a leading `!` marks priority.
+Only the real academic classes on the schedule. PE, Wind Ensemble and the
+counselor homeroom are not classes with coursework, so they aren't here.
 
-**Sorted** — search, filter, and group everything. Hit *Explain* on any item to
-open the full write-up inline. Mark things done as you study.
+| Class | | Topics | Practice sets |
+|---|---|---|---|
+| AP Calculus AB | Mr. Haruthunian · Unit 1 Limits and Continuity | 25 | 28 (incl. 105 real handout problems) |
+| AP Psychology | Period 6 · Unit 0 Research Methods and Statistics | 18 | 4 |
+| AP English Literature | Mr. Elias · Period 3 | 9 | 1 |
+| AP Microeconomics | Period 1 | 4 | 1 |
+| AP Macroeconomics | Period 2 | 2 | 1 |
 
-**Explain** — look up any of the 84 built-in topics. Each one gives you a plain
-English explanation, the key formula, a step-by-step method where it applies, a
-worked example, and the specific mistakes that lose points.
+## Inside a class
 
-**Test Maker** — two modes, plus a "My actual handouts" preset that drills all
-105 problems from the seven Calculus AB Unit 1 handouts, each with a worked
-solution:
-- *New problems* — 35 generators, including the 105 real problems from the class handouts produce fresh randomized questions with full
-  worked solutions. Run the same topics forever without repeating numbers.
-- *From my saved questions* — turns the questions you pasted in into a
-  self-graded test against the stored explanations.
+**Topics** — searchable list of that class's explanations. Each gives a plain
+English explanation, the key formulas or facts, a step-by-step method where one
+applies, a worked example, and the specific mistakes that lose points.
 
-**Save / Load** — export a JSON backup, export a markdown study sheet, print to
-PDF, or write your own explanations into the library.
+**Practice** — pick which sets to draw from and build a randomized test. The
+Calculus handout sets serve the actual problems from the seven Unit 1 handouts,
+each with a full worked solution and its original handout number. Answers are
+graded loosely, so `sqrt3`, `√3` and `sqrt(3)` all count, as do `dne` and
+`does not exist`.
 
-## Coverage
+**My items** — whatever you added to that class, with its matched explanation,
+a done toggle and priority flags.
 
-84 topics across Math (Calculus AB Unit 1 in depth), Psychology, English,
-Economics, Biology, Chemistry, Physics, History, Computer Science, and
-Geography — weighted toward the classes actually on the schedule: AP Calc AB,
-AP Psychology, AP English Lit, AP Micro and AP Macro.
+## Adding things
 
-28 problem generators: continuity (3-part test), solving for k to make a
-piecewise function continuous, limits at infinity, infinite limits, limits of
-rational functions (hole vs. asymptote), experimental design (IV/DV/confound),
-psychology vocabulary, trig limits (including the substitution trap), one-sided
-and piecewise limits, discontinuity types, limit properties, limits by
-factoring, rationalizing denominators, simplifying radicals, complex fractions,
-difference of squares, factoring trinomials, the quadratic formula, slope,
-Pythagorean theorem, exponent rules, systems of equations, mean/median,
-probability, moles, Newton's second law, and Punnett squares.
+The **Add** tab takes pasted lines, one per item, and files each into a class by
+matching it against that class's own topic keywords. You can force a class from
+the dropdown, and `!` at the start of a line marks it priority. Anything it
+can't file is reported rather than silently dropped.
 
-Answer grading accepts loose formatting — `sqrt3`, `√3`, and `sqrt(3)` all
-count, as do `dne` / `does not exist` and `(3,-2)` / `x=3, y=-2`.
+## Your work lives in the browser
 
-## Two ways to run it
-
-- **Hosted link** — a single-file build published as a private Artifact. Open it
-  on your phone, nothing to install. Its source is `study-sorter.standalone.html`
-  (everything inlined, plus the `downloads` capability so exports work inside the
-  viewer).
-- **Local / GitHub Pages** — the split files below. `download()` falls back to a
-  normal anchor download when the artifact capability isn't there.
+Everything persists in `localStorage`, which survives closing the tab but not
+clearing your browser data. **Export a backup** from Save / Load before
+anything important.
 
 ## Files
 
@@ -66,17 +54,12 @@ count, as do `dne` / `does not exist` and `(3,-2)` / `x=3, y=-2`.
 |---|---|
 | `index.html` | Page structure |
 | `style.css` | All styling, including print rules |
-| `library.js` | The 54-topic explanation library + subject keyword routing |
-| `practice.js` | The 21 problem generators + answer grading |
-| `app.js` | Sorting, rendering, test flow, storage, import/export |
-| `study-sorter.standalone.html` | Single-file build (generated — edit the sources above, not this) |
-
-## Your work is saved in the browser
-
-Everything persists in `localStorage`. That means it survives closing the tab,
-but clearing your browser data wipes it. **Export a backup before finals week.**
+| `library.js` | `CLASSES`, plus 57 topic entries each tagged to its class |
+| `practice.js` | 35 generators and the 105 handout problems, each tagged to its class |
+| `app.js` | Navigation, filing, test flow, storage, import/export |
+| `study-catalog.standalone.html` | Single-file build (generated — edit the sources above) |
 
 ## Hosting it
 
-It's static, so GitHub Pages works for free: repo Settings → Pages → deploy
-from the `main` branch, root folder.
+Static, so GitHub Pages works for free: Settings → Pages → deploy from `main`,
+root folder.

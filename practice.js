@@ -2424,3 +2424,108 @@ Object.entries(HANDOUTS).forEach(([key,bank])=>{
     }
   };
 });
+
+/* ---- Class assignment. The catalog is entered by class, so every generator
+   states which class it belongs to. Anything off the schedule is removed. ---- */
+const GEN_CLASS = {
+  calc: ["trigLimit","piecewiseLimit","oneSidedLimit","discontinuity","limitProperties",
+         "limitFactor","rationalLimit","limitAtInfinity","infiniteLimit","continuityTest","findK",
+         "rationalize","simplifyRadical","complexFraction","diffSquares","factorTrinomial",
+         "quadratic","slope","pythagoras","exponents","system",
+         "hw11","hw13","hw14","hw16","hw17","hw110","hwReview"],
+  psych: ["psychExperiment","psychVocab","meanMedian","probability"]
+};
+["moles","newton","punnett"].forEach(k => { delete GENERATORS[k]; });
+Object.entries(GEN_CLASS).forEach(([cls,keys]) => {
+  keys.forEach(k => { if(GENERATORS[k]) GENERATORS[k].cls = cls; });
+});
+Object.keys(GENERATORS).forEach(k => { if(!GENERATORS[k].cls) delete GENERATORS[k]; });
+
+/* ---- Term drills for the classes that are read rather than computed ---- */
+function termDrill(bank, promptText){
+  const [term, def, acc] = pick(bank);
+  return {
+    q: `${promptText}\n\n   "${def}"`,
+    ans: term,
+    accept: acc.concat([term.toLowerCase().replace(/[^a-z]/g,"")]),
+    steps: [`Definition: ${def}`, `Term: ${term}`]
+  };
+}
+
+GENERATORS.litTerms = {
+ label:"Literary terms and devices", subject:"english", topic:"Common literary devices",
+ make(){ return termDrill([
+  ["Simile","a comparison between two unlike things using like or as",["simile"]],
+  ["Metaphor","a direct comparison that says one thing IS another, with no like or as",["metaphor"]],
+  ["Personification","giving human qualities to something that is not human",["personification"]],
+  ["Situational irony","the outcome is the opposite of what was expected",["situationalirony","situational"]],
+  ["Dramatic irony","the audience knows something a character does not",["dramaticirony","dramatic"]],
+  ["Verbal irony","a speaker says the opposite of what they actually mean",["verbalirony","verbal"]],
+  ["Symbolism","an object or image standing for a larger idea",["symbolism","symbol"]],
+  ["Imagery","sensory description that makes a reader see, hear or feel something",["imagery"]],
+  ["Alliteration","repetition of the same initial consonant sound across nearby words",["alliteration"]],
+  ["Hyperbole","deliberate exaggeration for effect, not meant literally",["hyperbole"]],
+  ["Foreshadowing","an early hint at something that happens later",["foreshadowing","foreshadow"]],
+  ["Allusion","a passing reference to another work, person or event",["allusion"]],
+  ["Motif","a recurring image or idea that builds meaning across a work",["motif"]],
+  ["Tone","the author's attitude toward the subject",["tone"]],
+  ["Mood","the atmosphere a text creates in the reader",["mood"]],
+  ["Diction","an author's specific word choice",["diction"]],
+  ["Syntax","the arrangement of words and the structure of sentences",["syntax"]],
+  ["Ethos","a persuasive appeal based on the speaker's credibility",["ethos"]],
+  ["Pathos","a persuasive appeal to the audience's emotions",["pathos"]],
+  ["Logos","a persuasive appeal built on logic and evidence",["logos"]],
+  ["Theme","a complete statement about life that a work conveys, not a single word",["theme"]],
+  ["Formalist criticism","a lens reading only the text itself — structure, imagery, irony — ignoring author and context",["formalist","newcriticism","formalistcriticism"]],
+  ["Feminist criticism","a lens examining how a text constructs gender and power",["feminist","feministcriticism","gendercriticism"]],
+  ["Marxist criticism","a lens reading a text through class, money and who holds power",["marxist","marxistcriticism"]],
+  ["Reader-response criticism","a lens holding that meaning is created in the encounter between reader and text",["readerresponse","reader-response"]]
+ ], "Which term does this define?"); }, cls:"lit"
+};
+
+GENERATORS.microTerms = {
+ label:"Microeconomics terms", subject:"economics", topic:"Supply and demand",
+ make(){ return termDrill([
+  ["Opportunity cost","the value of the next best alternative given up when you choose",["opportunitycost"]],
+  ["Scarcity","limited resources set against unlimited wants, which is what forces choice",["scarcity"]],
+  ["Sunk cost","money already spent that cannot be recovered and should not affect a decision",["sunkcost"]],
+  ["Equilibrium","the price at which quantity supplied equals quantity demanded",["equilibrium","marketequilibrium"]],
+  ["Surplus","the excess that results when price sits above equilibrium",["surplus","excesssupply"]],
+  ["Shortage","the gap that results when price sits below equilibrium",["shortage","excessdemand"]],
+  ["Elastic demand","demand that responds a lot to a change in price",["elastic","elasticdemand"]],
+  ["Inelastic demand","demand that barely responds to a change in price",["inelastic","inelasticdemand"]],
+  ["Substitute good","a good buyers switch to when the price of another rises",["substitute","substitutegood","substitutes"]],
+  ["Complement good","a good bought alongside another, so their demands move together",["complement","complementgood","complements"]],
+  ["Inferior good","a good people buy LESS of as their income rises",["inferiorgood","inferior"]],
+  ["Normal good","a good people buy more of as their income rises",["normalgood","normal"]],
+  ["Law of demand","as price rises, quantity demanded falls, all else equal",["lawofdemand"]],
+  ["Law of supply","as price rises, quantity supplied rises, all else equal",["lawofsupply"]],
+  ["Ceteris paribus","the assumption that all other factors are held constant",["ceterisparibus","allelseequal"]],
+  ["Price ceiling","a legal maximum price, which creates a shortage when set below equilibrium",["priceceiling","ceiling"]],
+  ["Price floor","a legal minimum price, which creates a surplus when set above equilibrium",["pricefloor","floor"]],
+  ["Marginal cost","the additional cost of producing one more unit",["marginalcost"]]
+ ], "Which term does this define?"); }, cls:"micro"
+};
+
+GENERATORS.macroTerms = {
+ label:"Macroeconomics terms", subject:"economics", topic:"GDP, inflation, and unemployment",
+ make(){ return termDrill([
+  ["GDP","the total market value of all final goods and services produced in a country in a year",["gdp","grossdomesticproduct"]],
+  ["Real GDP","output measured in constant prices, so inflation is stripped out",["realgdp","real"]],
+  ["Nominal GDP","output measured at current prices, so inflation is still baked in",["nominalgdp","nominal"]],
+  ["CPI","the index tracking the price of a fixed basket of consumer goods over time",["cpi","consumerpriceindex"]],
+  ["Inflation","a general rise in the price level, so each dollar buys less",["inflation"]],
+  ["Deflation","a general FALL in the price level",["deflation"]],
+  ["Disinflation","prices still rising, but more slowly than before",["disinflation"]],
+  ["Labor force","everyone employed plus everyone actively looking for work",["laborforce","labourforce"]],
+  ["Unemployment rate","the unemployed divided by the labor force, not by the whole population",["unemploymentrate","unemployment"]],
+  ["Discouraged worker","someone who stopped looking for work and so left the labor force entirely",["discouragedworker","discouraged"]],
+  ["Recession","commonly defined as two consecutive quarters of falling real GDP",["recession"]],
+  ["Fiscal policy","government use of spending and taxation to steer the economy",["fiscalpolicy","fiscal"]],
+  ["Monetary policy","central bank use of interest rates and the money supply to steer the economy",["monetarypolicy","monetary"]],
+  ["Business cycle","the recurring pattern of expansion, peak, contraction and trough",["businesscycle"]],
+  ["Aggregate demand","total spending on domestic output at each price level",["aggregatedemand","ad"]],
+  ["Net exports","exports minus imports, the X − M term in GDP",["netexports","xminusm"]],
+  ["Fallacy of composition","assuming what is true for one person must be true for the whole economy",["fallacyofcomposition"]]
+ ], "Which term does this define?"); }, cls:"macro"
+};

@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Study Sorter — organize notes &amp; explain topics</title>
+<title>Study Catalog</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
   <div class="wrap">
-    <h1>Study Sorter</h1>
-    <p class="tag">Paste your notes and questions. It sorts them, then explains the topics.</p>
+    <div class="brand">
+      <h1>Study Catalog</h1>
+      <p class="tag">Everything you've uploaded, filed by class.</p>
+    </div>
     <nav class="tabs" role="tablist">
-      <button class="tab active" data-view="add">Add</button>
-      <button class="tab" data-view="sorted">Sorted <span class="count" id="countSorted">0</span></button>
-      <button class="tab" data-view="explain">Explain</button>
-      <button class="tab" data-view="test">Test Maker</button>
+      <button class="tab active" data-view="classes">Classes</button>
+      <button class="tab" data-view="add">Add</button>
       <button class="tab" data-view="data">Save / Load</button>
     </nav>
   </div>
@@ -23,123 +23,41 @@
 
 <main class="wrap">
 
+  <!-- CLASSES: picker, then a single class -->
+  <section id="view-classes" class="view active">
+    <div id="classPicker"></div>
+    <div id="classDetail" hidden></div>
+  </section>
+
   <!-- ADD -->
-  <section id="view-add" class="view active">
+  <section id="view-add" class="view">
     <div class="card">
-      <h2>Dump everything here</h2>
-      <p class="hint">One item per line. Works with questions, definitions, formulas, or plain notes.
-      Add <code>#subject</code> anywhere on a line to force a subject (e.g. <code>#bio</code>), and
-      <code>!</code> at the start to mark it high priority.</p>
-      <textarea id="bulk" rows="12" placeholder="What is photosynthesis?
-!Quadratic formula
-mitochondria are the site of cellular respiration
-Causes of World War 1 #history
-derivative of x^2"></textarea>
+      <h2>Add to the catalog</h2>
+      <p class="hint">One item per line — a question, a topic, a note. Each line is filed
+      into a class automatically, and matched to an explanation where one exists.
+      Start a line with <code>!</code> to flag it as priority.</p>
+      <label class="lbl">File into
+        <select id="addClass"><option value="">work it out from the text</option></select>
+      </label>
+      <textarea id="bulk" rows="10" placeholder="Evaluate the limit of sin(4x)/x as x approaches 0
+!Types of discontinuities
+Random sampling vs random assignment
+The Story of an Hour — the open window
+Elasticity of demand"></textarea>
       <div class="row">
-        <button id="btnSort" class="primary">Sort it</button>
-        <button id="btnSample" class="ghost">Load example</button>
-        <button id="btnClearBox" class="ghost">Clear box</button>
+        <button id="btnSort" class="primary">Add to catalog</button>
+        <button id="btnClearBox" class="ghost">Clear</button>
       </div>
       <div id="addResult" class="result" hidden></div>
     </div>
-
-    <div class="card">
-      <h2>How it decides</h2>
-      <ul class="plain">
-        <li><b>Subject</b> — matches keywords against a built-in dictionary (math, biology, chemistry, physics, history, English, computer science, economics, geography).</li>
-        <li><b>Type</b> — question, formula, definition, date/event, or note.</li>
-        <li><b>Priority</b> — lines starting with <code>!</code>, or things it can already explain in depth, get pushed up.</li>
-        <li><b>Explained?</b> — green if the built-in library has a full explanation, amber if it doesn't yet.</li>
-      </ul>
-    </div>
   </section>
 
-  <!-- SORTED -->
-  <section id="view-sorted" class="view">
-    <div class="card toolbar">
-      <input id="search" type="search" placeholder="Search your items…">
-      <select id="filterSubject"><option value="">All subjects</option></select>
-      <select id="filterStatus">
-        <option value="">All items</option>
-        <option value="explained">Has explanation</option>
-        <option value="unexplained">Needs explanation</option>
-        <option value="priority">High priority</option>
-        <option value="done">Marked done</option>
-        <option value="notdone">Not done</option>
-      </select>
-      <select id="sortBy">
-        <option value="subject">Group by subject</option>
-        <option value="priority">Priority first</option>
-        <option value="added">Newest first</option>
-        <option value="alpha">A → Z</option>
-      </select>
-      <button id="btnClearAll" class="danger">Delete all</button>
-    </div>
-    <div id="list"></div>
-  </section>
-
-  <!-- EXPLAIN -->
-  <section id="view-explain" class="view">
-    <div class="card">
-      <h2>Look up any topic</h2>
-      <input id="lookup" type="search" placeholder="Type a topic — photosynthesis, mitosis, quadratic formula, Newton's laws…" autocomplete="off">
-      <div id="suggest" class="suggest"></div>
-    </div>
-    <div id="explainOut"></div>
-    <div class="card">
-      <h2>Everything in the library <span class="count" id="libCount">0</span></h2>
-      <div id="libIndex" class="libindex"></div>
-    </div>
-  </section>
-
-  <!-- TEST MAKER -->
-  <section id="view-test" class="view">
-    <div class="card">
-      <h2>Build a test</h2>
-      <div class="row modeRow">
-        <button class="modebtn active" data-mode="gen">New problems (I generate them)</button>
-        <button class="modebtn" data-mode="mine">From my saved questions</button>
-      </div>
-
-      <div id="modeGen">
-        <p class="hint">Pick the problem types. Every test is freshly randomized, so you can run the same topics over and over and never repeat the same numbers.</p>
-        <div id="genPicker" class="picker"></div>
-        <div class="row">
-          <button id="btnPickAll" class="ghost">Select all</button>
-          <button id="btnPickNone" class="ghost">Clear</button>
-          <button id="btnPickCalc" class="ghost">Calc AB — Unit 1 Limits</button>
-          <button id="btnPickPsych" class="ghost">AP Psych — Unit 0</button>
-          <button id="btnPickHW" class="ghost">My actual handouts</button>
-        </div>
-        <div class="row">
-          <label class="lbl">Questions: <select id="genCount">
-            <option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option>
-          </select></label>
-          <button id="btnMakeTest" class="primary">Make the test</button>
-        </div>
-      </div>
-
-      <div id="modeMine" hidden>
-        <p class="hint">Turns the questions you pasted into the Add tab into a self-graded test. You grade yourself against the explanation.</p>
-        <div class="row">
-          <select id="mineSubject"><option value="">All subjects</option></select>
-          <label class="lbl">Questions: <select id="mineCount">
-            <option>5</option><option selected>10</option><option>15</option><option>20</option>
-          </select></label>
-          <button id="btnMakeMine" class="primary">Make the test</button>
-        </div>
-        <div id="mineWarn" class="result warn" hidden></div>
-      </div>
-    </div>
-
-    <div id="testArea"></div>
-  </section>
-
-  <!-- DATA -->
+  <!-- SAVE / LOAD -->
   <section id="view-data" class="view">
     <div class="card">
       <h2>Don't lose your work</h2>
-      <p class="hint">Everything saves in this browser automatically. Export a backup before finals week — clearing your browser wipes it.</p>
+      <p class="hint">The catalog lives in this browser. Export a backup before anything
+      important — clearing your browser data wipes it.</p>
       <div class="row">
         <button id="btnExportJson" class="primary">Export backup (.json)</button>
         <button id="btnExportMd" class="ghost">Export study sheet (.md)</button>
@@ -151,12 +69,12 @@ derivative of x^2"></textarea>
       <div id="dataMsg" class="result" hidden></div>
     </div>
     <div class="card">
-      <h2>Add your own explanation</h2>
-      <p class="hint">If the library doesn't cover something, write it once here and it's yours forever.</p>
-      <input id="ownTitle" placeholder="Topic name (e.g. Treaty of Versailles)">
-      <select id="ownSubject"></select>
-      <textarea id="ownBody" rows="6" placeholder="Explain it in your own words. Blank line = new paragraph."></textarea>
-      <button id="btnSaveOwn" class="primary">Save to my library</button>
+      <h2>Write your own explanation</h2>
+      <p class="hint">Anything the catalog doesn't cover, write once and it's filed with the rest.</p>
+      <input id="ownTitle" placeholder="Topic name">
+      <label class="lbl">Class <select id="ownClass"></select></label>
+      <textarea id="ownBody" rows="6" placeholder="Explain it in your own words."></textarea>
+      <button id="btnSaveOwn" class="primary">Save to my catalog</button>
       <div id="ownMsg" class="result" hidden></div>
     </div>
   </section>
@@ -164,7 +82,7 @@ derivative of x^2"></textarea>
 </main>
 
 <footer class="wrap foot">
-  <p>Runs entirely in your browser. No account, no internet needed after the first load.</p>
+  <p>Runs entirely in your browser. No account, nothing to install.</p>
 </footer>
 
 <script src="library.js"></script>
