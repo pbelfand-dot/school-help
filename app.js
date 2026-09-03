@@ -14,21 +14,30 @@ let state = { items:[], own:[] };
    Anything the user adds or deletes replaces this immediately. */
 const SEED = [
   /* Calculus AB — Unit 1 Limits */
-  "!Types of discontinuities",
+  "!The four techniques for evaluating limits",
+  "Types of discontinuities",
   "Limits of rational functions - hole or asymptote",
   "Limits of piecewise functions - one sided",
-  "Continuity - the three part test",
-  "!Making a piecewise function continuous - find k",
+  "!Continuity - the three part test",
+  "Making a piecewise function continuous - find k",
   "Limits at infinity and horizontal asymptotes",
   "Infinite limits and vertical asymptotes",
-  "Evaluate the limit of 5cos(x)tan(x)/(7x) as x approaches 0",
-  /* AP Psychology — Unit 0 */
+  /* AP Psychology — Unit 0: Research Methodology and Statistical Analysis */
   "!Experimental design - independent and dependent variable",
+  "Hypothesis and falsifiability",
+  "Sampling - population, sample and bias",
   "Random sampling vs random assignment",
   "Correlation does not equal causation",
+  "Survey methodology and self-report bias",
+  "Cognitive biases - confirmation, hindsight, overconfidence",
+  "Central tendency and variability",
+  "Frequency distributions, the normal curve and skew",
+  "Statistical significance, effect size and replication",
+  "Regression to the mean and the gambler's fallacy",
   "Ethics in psychological research",
   /* AP English Lit */
   "!The Story of an Hour by Kate Chopin",
+  "AP English Lit course reference - grading and reading list",
   "Critical lenses for reading literature",
   "Writing a literary analysis paragraph",
   /* Micro and Macro */

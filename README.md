@@ -16,7 +16,7 @@ has a stored explanation. `#bio` forces a subject, a leading `!` marks priority.
 **Sorted** — search, filter, and group everything. Hit *Explain* on any item to
 open the full write-up inline. Mark things done as you study.
 
-**Explain** — look up any of the 72 built-in topics. Each one gives you a plain
+**Explain** — look up any of the 84 built-in topics. Each one gives you a plain
 English explanation, the key formula, a step-by-step method where it applies, a
 worked example, and the specific mistakes that lose points.
 
@@ -31,7 +31,7 @@ PDF, or write your own explanations into the library.
 
 ## Coverage
 
-72 topics across Math (Calculus AB Unit 1 in depth), Psychology, English,
+84 topics across Math (Calculus AB Unit 1 in depth), Psychology, English,
 Economics, Biology, Chemistry, Physics, History, Computer Science, and
 Geography — weighted toward the classes actually on the schedule: AP Calc AB,
 AP Psychology, AP English Lit, AP Micro and AP Macro.
